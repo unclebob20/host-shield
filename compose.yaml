@@ -1,0 +1,49 @@
+services:
+  # 1. Database: Native ARM64 (Works fine)
+  db:
+    image: postgres:15-alpine
+    container_name: hostshield_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hostshield
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  # 2. OCR Sidecar: Emulate x86_64
+  ocr-engine:
+    platform: linux/amd64
+    image: tesseractshadow/tesseract4re:latest
+    container_name: hostshield_ocr
+    volumes:
+      - ./samples:/tmp/samples
+
+  # 3. Gov-Bridge: Slovensko.digital official GHCR image
+  gov-bridge:
+    platform: linux/amd64
+    image: ghcr.io/slovensko-digital/slovensko-sk-api:latest
+    container_name: hostshield_gov_api
+    environment:
+      - API_TOKEN=test_token_123
+      - RAILS_ENV=production
+      - SECRET_KEY_BASE=a_random_string_of_at_least_32_chars
+      - RAILS_LOG_TO_STDOUT=true
+    volumes:
+      # This line replaces the broken file inside the container with your new one
+      - ./gov_db.yml:/app/config/database.yml:ro
+    ports:
+      - "3001:3000"
+      
+  # 4. Your API Server: Runs natively (No platform flag needed)
+  api-server:
+    build: ./apps/api-server
+    container_name: hostshield_api
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/hostshield
+      - OCR_ENGINE_URL=http://ocr-engine:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
