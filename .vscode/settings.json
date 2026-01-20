@@ -1,0 +1,4 @@
+{
+    "python.analysis.extraPaths": ["./apps/api-server"],
+    "python.defaultInterpreterPath": "./venv/bin/python" 
+}

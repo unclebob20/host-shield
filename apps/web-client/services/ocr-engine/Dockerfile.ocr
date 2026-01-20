@@ -1,0 +1,18 @@
+# Use a lightweight Debian-based image
+FROM debian:bookworm-slim
+
+# Install Tesseract OCR and specific language packs for Slovakia and EU
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    tesseract-ocr-slk \
+    tesseract-ocr-eng \
+    libtesseract-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up the working directory for image processing
+WORKDIR /app
+
+# The app will interact with Tesseract via a simple API or shared volume
+# For now, we expose the version to verify installation
+CMD ["tesseract", "--version"]
