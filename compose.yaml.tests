@@ -1,0 +1,88 @@
+services:
+  # 1. Database: Native ARM64 (Works fine)
+  db:
+    image: postgres:15-alpine
+    container_name: hostshield_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hostshield
+    volumes:
+      - ./databse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+
+  # Gov-Bridge dependencies (the slovensko.digital image expects Postgres + Redis)
+  gov-db:
+    image: postgres:15-alpine
+    container_name: hostshield_gov_db
+    environment:
+      POSTGRES_USER: gov
+      POSTGRES_PASSWORD: govpass
+      POSTGRES_DB: slovensko_api
+    networks:
+      - hostshield-network
+
+  gov-redis:
+    image: redis:7-alpine
+    container_name: hostshield_gov_redis
+    networks:
+      - hostshield-network
+
+  # 2. OCR Sidecar: Emulate x86_64
+  ocr-engine:
+    platform: linux/amd64
+    image: tesseractshadow/tesseract4re:latest
+    container_name: hostshield_ocr
+    volumes:
+      - ./samples:/tmp/samples
+
+  # 3. Gov-Bridge: Slovensko.digital official GHCR image
+  gov-bridge:
+    platform: linux/amd64
+    image: ghcr.io/slovensko-digital/slovensko-sk-api:latest
+    container_name: hostshield_gov_api
+    environment:
+      - API_TOKEN=test_token_123
+      - RAILS_ENV=production
+      - RAILS_LOG_TO_STDOUT=true
+      - SECRET_KEY_BASE=dummy_secret_key_for_bridge_only_12345
+      - DATABASE_URL=postgresql://gov:govpass@gov-db:5432/slovensko_api
+      - REDIS_URL=redis://gov-redis:6379/0
+    networks:
+      - hostshield-network
+    ports:
+      - "3001:3000"
+    volumes:
+      # This line replaces the broken file inside the container with your new one
+      - ./gov_db.yml:/app/config/database.yml:ro
+      - ./gov_fake_public.pem:/app/security/api_token_production.public.pem:ro
+      # Minimal "subject exists" stub so API token `sub=test_token_123` is accepted in local tests
+      - ./gov_fake_sts.keystore:/app/security/sts/test_token_123_dev.keystore:ro
+    depends_on:
+      - gov-db
+      - gov-redis
+      
+  # 4. Your API Server: Runs natively (No platform flag needed)
+  api-server:
+    build: ./apps/api-server
+    container_name: hostshield_api
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/hostshield
+      - OCR_ENGINE_URL=http://ocr-engine:8080
+      - BRIDGE_BASE_URL=http://gov-bridge:3000/api
+      - BRIDGE_API_SUBJECT=test_token_123
+      - BRIDGE_PRIVATE_KEY_PATH=/run/secrets/gov_fake_private.key
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - gov-bridge
+    networks:
+      - hostshield-network
+    volumes:
+      - ./gov_fake_private.key:/run/secrets/gov_fake_private.key:ro
+
+networks:
+  hostshield-network:
+    driver: bridge
