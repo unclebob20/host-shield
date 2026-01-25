@@ -9,8 +9,10 @@ function requireIsoDate(value, fieldName) {
 
 exports.exportLedgerPdf = async (req, res) => {
   try {
-    const { hostId, fromDate, toDate } = req.body || {};
-    if (!hostId) throw new Error('hostId is required');
+    const { fromDate, toDate } = req.body || {};
+
+    // hostId comes from authenticated user (req.authenticatedHost is set by requireAuth middleware)
+    const hostId = req.authenticatedHost.id;
 
     const from = requireIsoDate(fromDate, 'fromDate');
     const to = requireIsoDate(toDate, 'toDate');
@@ -44,11 +46,13 @@ exports.exportLedgerPdf = async (req, res) => {
 };
 
 // JSON preview of ledger entries before generating PDF.
-// Body: { hostId, fromDate: 'YYYY-MM-DD', toDate: 'YYYY-MM-DD' }
+// Body: { fromDate: 'YYYY-MM-DD', toDate: 'YYYY-MM-DD' }
 exports.previewLedger = async (req, res) => {
   try {
-    const { hostId, fromDate, toDate } = req.body || {};
-    if (!hostId) throw new Error('hostId is required');
+    const { fromDate, toDate } = req.body || {};
+
+    // hostId comes from authenticated user (req.authenticatedHost is set by requireAuth middleware)
+    const hostId = req.authenticatedHost.id;
 
     const from = requireIsoDate(fromDate, 'fromDate');
     const to = requireIsoDate(toDate, 'toDate');
