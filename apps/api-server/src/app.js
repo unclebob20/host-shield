@@ -6,6 +6,7 @@ require('dotenv').config();
 // STEP 6: Added the new guest routes
 const guestRoutes = require('./routes/guestRoutes');
 const ledgerRoutes = require('./routes/ledgerRoutes');
+const hostRoutes = require('./routes/hostRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,8 @@ app.use(express.json());
 
 // Routes
 // app.use('/api/v1', uploadRoutes);
+// Authentication routes
+app.use('/api/auth', hostRoutes);
 // STEP 6: Connected the guest routes to the /api/guests path
 app.use('/api/guests', guestRoutes);
 app.use('/api/ledger', ledgerRoutes);
