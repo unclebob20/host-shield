@@ -1,4 +1,24 @@
-samples
-docs
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+
+# Environment
+.env
+.env.local
 *.pem
 *.key
+
+# System
+.DS_Store
+Thumbs.db
+
+# Build Artifacts
+dist/
+build/
+coverage/
+
+# Misc
+samples/
+docs/
+.vscode/
