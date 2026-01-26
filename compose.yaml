@@ -35,15 +35,24 @@ services:
       - ./gov_db.yml:/app/config/database.yml:ro
     ports:
       - "3001:3000"
-      
-  # 4. Your API Server: Runs natively (No platform flag needed)
+
+  # 4. MRZ Reader: PassportEye microservice for production-grade MRZ extraction
+  mrz-reader:
+    build: ./apps/api-server/src/services/mrz-reader
+    container_name: hostshield_mrz
+    ports:
+      - "8001:8000"
+
+  # 5. Your API Server: Runs natively (No platform flag needed)
   api-server:
     build: ./apps/api-server
     container_name: hostshield_api
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/hostshield
       - OCR_ENGINE_URL=http://ocr-engine:8080
+      - MRZ_READER_URL=http://mrz-reader:8000
     ports:
       - "3000:3000"
     depends_on:
       - db
+      - mrz-reader

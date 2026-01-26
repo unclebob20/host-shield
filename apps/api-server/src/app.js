@@ -7,6 +7,7 @@ require('dotenv').config();
 const guestRoutes = require('./routes/guestRoutes');
 const ledgerRoutes = require('./routes/ledgerRoutes');
 const hostRoutes = require('./routes/hostRoutes');
+const ocrRoutes = require('./routes/ocrRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,8 @@ app.use(express.json());
 // app.use('/api/v1', uploadRoutes);
 // Authentication routes
 app.use('/api/auth', hostRoutes);
+// OCR routes
+app.use('/api/ocr', ocrRoutes);
 // STEP 6: Connected the guest routes to the /api/guests path
 app.use('/api/guests', guestRoutes);
 app.use('/api/ledger', ledgerRoutes);
