@@ -1,5 +1,28 @@
 const GovBridgeService = require('../services/govBridgeService');
 const { buildGuestStayXml } = require('../services/xmlFactory');
+const GuestService = require('../services/guestService');
+
+/**
+ * Saves a guest to the database
+ * Typically called after OCR scan and user confirmation
+ */
+exports.saveGuest = async (req, res) => {
+  try {
+    const hostId = req.authenticatedHost.id;
+    const guestData = req.body;
+
+    const guest = await GuestService.createGuest(hostId, guestData);
+
+    res.status(201).json({
+      success: true,
+      message: 'Guest saved successfully',
+      guest
+    });
+  } catch (error) {
+    console.error('Save Guest Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 exports.registerGuest = async (req, res) => {
   try {
