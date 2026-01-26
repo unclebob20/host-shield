@@ -48,13 +48,28 @@ services:
     build: ./apps/api-server
     container_name: hostshield_api
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/hostshield
-      - OCR_ENGINE_URL=http://ocr-engine:8080
-      - MRZ_READER_URL=http://mrz-reader:8000
-      - BRIDGE_BASE_URL=http://gov-bridge:3000/api
+      - DATABASE_URL=postgresql://user:password@hostshield_db:5432/hostshield
+      - OCR_ENGINE_URL=http://hostshield_ocr:8080
+      - MRZ_READER_URL=http://hostshield_mrz:8000
+      - BRIDGE_BASE_URL=http://hostshield_gov_api:3000/api
       - BRIDGE_API_TOKEN=test_token_123
     ports:
       - "3000:3000"
     depends_on:
       - db
       - mrz-reader
+
+  # 6. Web Client (Frontend)
+  web-client:
+    build: ./apps/web-client
+    container_name: hostshield_web
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./apps/web-client:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+    depends_on:
+      - api-server

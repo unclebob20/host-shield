@@ -78,3 +78,21 @@ exports.previewGuestXml = (req, res) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
+
+/**
+ * Fetch all guests for the authenticated host
+ */
+exports.getGuests = async (req, res) => {
+  try {
+    const hostId = req.authenticatedHost.id;
+    const guests = await GuestService.getGuestsByHostId(hostId);
+
+    res.status(200).json({
+      success: true,
+      guests
+    });
+  } catch (error) {
+    console.error('Get Guests Error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch guests' });
+  }
+};

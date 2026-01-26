@@ -16,6 +16,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Debug logging
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+    next();
+});
+
 // Routes
 // app.use('/api/v1', uploadRoutes);
 // Authentication routes
@@ -43,4 +49,8 @@ app.listen(PORT, async () => {
         console.log('Running scheduled file cleanup...');
         await cleanupOldFiles();
     }, 60 * 60 * 1000);
+
+    // Start Government Submission Scheduler
+    const SchedulerService = require('./services/schedulerService');
+    SchedulerService.start();
 });
