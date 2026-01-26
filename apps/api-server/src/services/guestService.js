@@ -71,8 +71,22 @@ async function getGuestById(hostId, guestId) {
 module.exports = {
     createGuest,
     getGuestById,
-    updateGuestStatus
+    updateGuestStatus,
+    getGuestsByHostId
 };
+
+/**
+ * Fetches all guests for a specific host
+ * @param {string} hostId - ID of the host
+ */
+async function getGuestsByHostId(hostId) {
+    const { rows } = await query(
+        'SELECT * FROM guest_register WHERE host_id = $1 ORDER BY created_at DESC',
+        [hostId]
+    );
+    return rows;
+}
+
 
 /**
  * Updates the government submission status of a guest
