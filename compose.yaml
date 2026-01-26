@@ -51,6 +51,8 @@ services:
       - DATABASE_URL=postgresql://user:password@db:5432/hostshield
       - OCR_ENGINE_URL=http://ocr-engine:8080
       - MRZ_READER_URL=http://mrz-reader:8000
+      - BRIDGE_BASE_URL=http://gov-bridge:3000/api
+      - BRIDGE_API_TOKEN=test_token_123
     ports:
       - "3000:3000"
     depends_on:

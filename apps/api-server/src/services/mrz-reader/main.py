@@ -81,7 +81,7 @@ async def extract_mrz(file: UploadFile = File(...)):
                 "date_of_birth": format_date(mrz_dict.get("date_of_birth")),
                 "document_type": map_document_type(mrz_dict.get("type")),
                 "sex": mrz_dict.get("sex"),
-                "expiry_date": format_date(mrz_dict.get("expiration_date")),
+                "document_expiry_date": format_date(mrz_dict.get("expiration_date")),
                 "valid_score": mrz_dict.get("valid_score", 0),
                 "mrz_type": mrz_data.mrz_type
             }

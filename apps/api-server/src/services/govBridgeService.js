@@ -19,14 +19,14 @@ class GovBridgeService {
       'RegistrationOfStay': {
         '@xmlns': 'http://schemas.gov.sk/form/MVSR.HlaseniePobytu/1.0',
         'Guest': {
-          'FirstName': guest.firstName,
-          'Surname': guest.lastName, // Schema uses 'Surname', not 'LastName'
-          'BirthDate': guest.dob,
-          'Nationality': guest.countryCode,
-          'PassportNumber': guest.passportNumber,
+          'FirstName': guest.first_name || guest.firstName,
+          'Surname': guest.last_name || guest.lastName,
+          'BirthDate': guest.date_of_birth || guest.dob,
+          'Nationality': guest.nationality_iso3 || guest.countryCode || guest.nationality,
+          'PassportNumber': guest.document_number || guest.passportNumber,
           'StayDetails': {
-            'ArrivalDate': guest.arrivalDate,
-            'DepartureDate': guest.departureDate
+            'ArrivalDate': guest.arrival_date || guest.arrivalDate,
+            'DepartureDate': guest.departure_date || guest.departureDate
           }
         }
       }
