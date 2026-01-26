@@ -18,6 +18,7 @@ async function createGuest(hostId, guestData) {
         nationality_iso3,
         document_type,
         document_number,
+        document_expiry_date,
         arrival_date,
         departure_date,
         purpose_of_stay
@@ -31,11 +32,12 @@ async function createGuest(hostId, guestData) {
       date_of_birth, 
       nationality_iso3, 
       document_type, 
-      document_number, 
+      document_number,
+      document_expiry_date,
       arrival_date, 
       departure_date, 
       purpose_of_stay
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING *`,
         [
             hostId,
@@ -45,6 +47,7 @@ async function createGuest(hostId, guestData) {
             nationality_iso3,
             document_type,
             document_number,
+            document_expiry_date,
             arrival_date,
             departure_date,
             purpose_of_stay || 'turistika'
@@ -67,5 +70,38 @@ async function getGuestById(hostId, guestId) {
 
 module.exports = {
     createGuest,
-    getGuestById
+    getGuestById,
+    updateGuestStatus
 };
+
+/**
+ * Updates the government submission status of a guest
+ * @param {string} guestId - ID of the guest
+ * @param {string} status - New status (pending, sent, error, confirmed)
+ * @param {string} [submissionId] - Optional ID returned by government API
+ */
+async function updateGuestStatus(guestId, status, submissionId = null) {
+    const updates = ['submission_status = $2'];
+    const params = [guestId, status];
+    let paramIndex = 3;
+
+    if (status === 'sent' || status === 'confirmed') {
+        updates.push(`submitted_at = NOW()`);
+    }
+
+    if (submissionId) {
+        updates.push(`gov_submission_id = $${paramIndex}`);
+        params.push(submissionId);
+        paramIndex++;
+    }
+
+    const queryText = `
+        UPDATE guest_register 
+        SET ${updates.join(', ')} 
+        WHERE id = $1
+        RETURNING *
+    `;
+
+    const { rows } = await query(queryText, params);
+    return rows[0];
+}

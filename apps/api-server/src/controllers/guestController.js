@@ -26,8 +26,39 @@ exports.saveGuest = async (req, res) => {
 
 exports.registerGuest = async (req, res) => {
   try {
-    const result = await GovBridgeService.sendToGov(req.body);
-    res.status(200).json({ success: true, govResponse: result });
+    const hostId = req.authenticatedHost.id;
+    const { guestId } = req.body;
+
+    if (!guestId) {
+      return res.status(400).json({ success: false, error: 'guestId is required' });
+    }
+
+    // 1. Fetch guest from DB to ensure validity and ownership
+    const guest = await GuestService.getGuestById(hostId, guestId);
+    if (!guest) {
+      return res.status(404).json({ success: false, error: 'Guest not found' });
+    }
+
+    // 2. Submit to Gov Bridge
+    let result;
+    try {
+      result = await GovBridgeService.sendToGov(guest);
+      // 3. Update status on success
+      await GuestService.updateGuestStatus(guestId, 'sent', 'mock-submission-id'); // Bridge doesn't return ID yet, mocking it
+    } catch (bridgeError) {
+      console.error('GovBridge submission failed:', bridgeError.message);
+      // Update status on failure
+      await GuestService.updateGuestStatus(guestId, 'error');
+      throw bridgeError; // Re-throw to be caught by outer catch
+    }
+
+    res.status(200).json({
+      success: true,
+      govResponse: result,
+      guestId: guestId,
+      status: 'sent'
+    });
+
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

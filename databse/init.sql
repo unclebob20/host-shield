@@ -28,6 +28,7 @@ CREATE TABLE guest_register (
     -- Travel Document Details
     document_type VARCHAR(50) NOT NULL, -- Passport, ID Card, Residence Permit
     document_number VARCHAR(50) NOT NULL,
+    document_expiry_date DATE,
     
     -- Stay Information
     arrival_date DATE NOT NULL,
