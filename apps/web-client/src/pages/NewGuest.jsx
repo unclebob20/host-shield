@@ -67,6 +67,38 @@ const NewGuest = () => {
                 <div className="bg-white shadow sm:rounded-lg p-6">
                     <h2 className="text-lg font-medium text-gray-900 mb-4">Step 1: Scan Document</h2>
                     <Scanner onScanComplete={handleScanComplete} />
+                    <div className="mt-6 flex flex-col items-center">
+                        <div className="relative w-full mb-6">
+                            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                <div className="w-full border-t border-gray-300" />
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="bg-white px-2 text-gray-500">Or manually enter details</span>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setScannedData({
+                                    first_name: '',
+                                    last_name: '',
+                                    document_number: '',
+                                    nationality_iso3: '',
+                                    date_of_birth: ''
+                                });
+                                // Initialize default dates and empty form
+                                setFormData({
+                                    arrival_date: new Date().toISOString().split('T')[0],
+                                    departure_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+                                    purpose_of_stay: 'turistika',
+                                    document_type: 'P'
+                                });
+                            }}
+                            className="text-blue-600 hover:text-blue-800 font-medium text-sm focus:outline-none underline"
+                        >
+                            Skip & Enter Manually
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div className="bg-white shadow sm:rounded-lg overflow-hidden">

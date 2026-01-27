@@ -10,7 +10,7 @@ class GovBridgeService {
     this.baseUrl = process.env.BRIDGE_BASE_URL || 'http://localhost:3001/api';
     // Back-compat: if you provide BRIDGE_API_TOKEN (a pre-built JWT), we'll use it.
     this.apiToken = process.env.BRIDGE_API_TOKEN || null;
-    this.apiSubject = process.env.BRIDGE_API_SUBJECT || 'iscep_test_subject';
+    this.apiSubject = process.env.BRIDGE_API_SUBJECT || 'host_shield_test';
     this.privateKeyPath = process.env.BRIDGE_PRIVATE_KEY_PATH || null;
   }
 
@@ -50,7 +50,7 @@ class GovBridgeService {
     return jwt.sign(
       {
         sub: this.apiSubject,
-        exp: now + 300,
+        exp: now + 3600, // Increase to 1 hour to handle Docker clock skew
         jti
       },
       privateKey,
@@ -71,7 +71,7 @@ class GovBridgeService {
         {
           params: { identifier: 'App.GeneralAgenda', version: '1.9' },
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`, // Restore Bearer prefix for JWT
             'Content-Type': 'application/json'
           }
         }

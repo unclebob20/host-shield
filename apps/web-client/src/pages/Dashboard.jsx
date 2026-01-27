@@ -59,7 +59,7 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto animate-fade-in">
             <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h1>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -98,8 +98,8 @@ const Dashboard = () => {
                                             </p>
                                             <div className="ml-2 flex-shrink-0 flex">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${guest.submission_status === 'sent' ? 'bg-green-100 text-green-800' :
-                                                        guest.submission_status === 'error' ? 'bg-red-100 text-red-800' :
-                                                            'bg-yellow-100 text-yellow-800'
+                                                    guest.submission_status === 'error' ? 'bg-red-100 text-red-800' :
+                                                        'bg-yellow-100 text-yellow-800'
                                                     }`}>
                                                     {guest.submission_status || 'pending'}
                                                 </span>
