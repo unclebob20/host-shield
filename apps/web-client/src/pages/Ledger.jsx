@@ -72,7 +72,7 @@ const Ledger = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in">
             <h1 className="text-2xl font-semibold text-gray-900 mb-6">Guest Ledger (Kniha ubytovaných)</h1>
 
             <div className="bg-white shadow sm:rounded-lg mb-8">
