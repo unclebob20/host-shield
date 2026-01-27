@@ -26,6 +26,12 @@ describe('Guest API Endpoints', () => {
         jest.clearAllMocks();
     });
 
+    test('GET /health returns active status', async () => {
+        const res = await request(app).get('/health');
+        expect(res.statusCode).toBe(200);
+        expect(res.body.status).toBe('active');
+    });
+
     test('GET /api/guests returns list of guests', async () => {
         const mockGuests = [{ id: 1, firstName: 'John' }];
         GuestService.getGuestsByHostId.mockResolvedValue(mockGuests);
