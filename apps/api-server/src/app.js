@@ -37,20 +37,24 @@ app.get('/health', (req, res) => {
     res.json({ status: 'active', timestamp: new Date() });
 });
 
-app.listen(PORT, async () => {
-    console.log(`🚀 HostShield API running on port ${PORT}`);
+if (require.main === module) {
+    app.listen(PORT, async () => {
+        console.log(`🚀 HostShield API running on port ${PORT}`);
 
-    // Ensure upload directory exists
-    const { ensureUploadDir, cleanupOldFiles } = require('./services/storageService');
-    await ensureUploadDir();
+        // Ensure upload directory exists
+        const { ensureUploadDir, cleanupOldFiles } = require('./services/storageService');
+        await ensureUploadDir();
 
-    // Schedule cleanup job (every 1 hour)
-    setInterval(async () => {
-        console.log('Running scheduled file cleanup...');
-        await cleanupOldFiles();
-    }, 60 * 60 * 1000);
+        // Schedule cleanup job (every 1 hour)
+        setInterval(async () => {
+            console.log('Running scheduled file cleanup...');
+            await cleanupOldFiles();
+        }, 60 * 60 * 1000);
 
-    // Start Government Submission Scheduler
-    const SchedulerService = require('./services/schedulerService');
-    SchedulerService.start();
-});
+        // Start Government Submission Scheduler
+        const SchedulerService = require('./services/schedulerService');
+        SchedulerService.start();
+    });
+}
+
+module.exports = app;

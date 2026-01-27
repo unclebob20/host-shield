@@ -33,6 +33,7 @@ services:
     volumes:
       # This line replaces the broken file inside the container with your new one
       - ./gov_db.yml:/app/config/database.yml:ro
+      - ./gov_fake_public.pem:/app/security/api_token_production.public.pem:ro
     ports:
       - "3001:3000"
 

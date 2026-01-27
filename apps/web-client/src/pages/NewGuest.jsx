@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Scanner from '../components/Scanner';
 import api from '../lib/api';
-import { Check } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 
 const NewGuest = () => {
     const navigate = useNavigate();
@@ -124,117 +124,136 @@ const NewGuest = () => {
                                 </div>
                             )}
 
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                                    <div className="sm:col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700">First name</label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                name="first_name"
-                                                value={formData.first_name || ''}
-                                                onChange={handleChange}
-                                                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                                            />
+                            <form onSubmit={handleSubmit} className="space-y-8 animate-fade-in">
+                                <div>
+                                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide border-b border-gray-200 pb-2 mb-4">
+                                        Personal Details
+                                    </h4>
+                                    <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                        <div className="sm:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700">First name</label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="text"
+                                                    name="first_name"
+                                                    value={formData.first_name || ''}
+                                                    onChange={handleChange}
+                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="sm:col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700">Last name</label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                name="last_name"
-                                                value={formData.last_name || ''}
-                                                onChange={handleChange}
-                                                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                                            />
+                                        <div className="sm:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700">Last name</label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="text"
+                                                    name="last_name"
+                                                    value={formData.last_name || ''}
+                                                    onChange={handleChange}
+                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="sm:col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="date"
-                                                name="date_of_birth"
-                                                value={formData.date_of_birth || ''}
-                                                onChange={handleChange}
-                                                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                                            />
+                                        <div className="sm:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="date"
+                                                    name="date_of_birth"
+                                                    value={formData.date_of_birth || ''}
+                                                    onChange={handleChange}
+                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="sm:col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700">Nationality (ISO3)</label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                name="nationality_iso3"
-                                                maxLength={3}
-                                                value={formData.nationality_iso3 || ''}
-                                                onChange={handleChange}
-                                                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700">Document Type</label>
-                                        <div className="mt-1">
-                                            <select
-                                                name="document_type"
-                                                value={formData.document_type || 'P'}
-                                                onChange={handleChange}
-                                                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                                            >
-                                                <option value="P">Passport (P)</option>
-                                                <option value="ID">Identity Card (I)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700">Document Number</label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="text"
-                                                name="document_number"
-                                                value={formData.document_number || ''}
-                                                onChange={handleChange}
-                                                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700">Arrival Date</label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="date"
-                                                name="arrival_date"
-                                                value={formData.arrival_date || ''}
-                                                onChange={handleChange}
-                                                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="sm:col-span-3">
-                                        <label className="block text-sm font-medium text-gray-700">Departure Date</label>
-                                        <div className="mt-1">
-                                            <input
-                                                type="date"
-                                                name="departure_date"
-                                                value={formData.departure_date || ''}
-                                                onChange={handleChange}
-                                                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                                            />
+                                        <div className="sm:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700">Nationality (ISO3)</label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="text"
+                                                    name="nationality_iso3"
+                                                    maxLength={3}
+                                                    value={formData.nationality_iso3 || ''}
+                                                    onChange={handleChange}
+                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="pt-5 border-t border-gray-200 flex justify-end">
+                                <div>
+                                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide border-b border-gray-200 pb-2 mb-4">
+                                        Identity Document
+                                    </h4>
+                                    <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                        <div className="sm:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700">Document Type</label>
+                                            <div className="mt-1">
+                                                <select
+                                                    name="document_type"
+                                                    value={formData.document_type || 'P'}
+                                                    onChange={handleChange}
+                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
+                                                >
+                                                    <option value="P">Passport (P)</option>
+                                                    <option value="ID">Identity Card (I)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="sm:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700">Document Number</label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="text"
+                                                    name="document_number"
+                                                    value={formData.document_number || ''}
+                                                    onChange={handleChange}
+                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide border-b border-gray-200 pb-2 mb-4">
+                                        Stay Experience
+                                    </h4>
+                                    <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                        <div className="sm:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700">Arrival Date</label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="date"
+                                                    name="arrival_date"
+                                                    value={formData.arrival_date || ''}
+                                                    onChange={handleChange}
+                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="sm:col-span-1">
+                                            <label className="block text-sm font-medium text-gray-700">Departure Date</label>
+                                            <div className="mt-1">
+                                                <input
+                                                    type="date"
+                                                    name="departure_date"
+                                                    value={formData.departure_date || ''}
+                                                    onChange={handleChange}
+                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-6 border-t border-gray-200 flex justify-end">
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -243,17 +262,26 @@ const NewGuest = () => {
                                                 setFileType(null);
                                             }
                                         }}
-                                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-3"
+                                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-3 transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                                        className="inline-flex justify-center items-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
                                     >
-                                        {saving ? 'Saving...' : 'Save & Register Guest'}
-                                        {!saving && <Check className="ml-2 -mr-1 h-4 w-4" />}
+                                        {saving ? (
+                                            <>
+                                                <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Save & Register Guest
+                                                <Check className="ml-2 -mr-1 h-4 w-4" />
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             </form>
