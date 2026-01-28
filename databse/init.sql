@@ -58,3 +58,8 @@ CREATE TABLE compliance_audit_log (
 CREATE INDEX idx_guest_host ON guest_register(host_id);
 CREATE INDEX idx_guest_doc ON guest_register(document_number);
 CREATE INDEX idx_submission_status ON guest_register(submission_status);
+
+-- 5. Seed Data (Development/Testing)
+-- Default User: testhost@example.com / Test1234
+INSERT INTO hosts (email, hashed_password, full_name, police_provider_id)
+VALUES ('testhost@example.com', '$2b$10$UmyjAmx2t2P9liSiJ8pHqu01JYA9K77FRcbAuBp2XHsDOsWIyeJMW', 'Test Host', 'TEST_PROVIDER_123');

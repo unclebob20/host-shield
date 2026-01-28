@@ -50,7 +50,7 @@ class GovBridgeService {
     return jwt.sign(
       {
         sub: this.apiSubject,
-        exp: now + 3600, // Increase to 1 hour to handle Docker clock skew
+        exp: now + 240, // Max 5 minutes allowed by GovBridge logic
         jti
       },
       privateKey,
