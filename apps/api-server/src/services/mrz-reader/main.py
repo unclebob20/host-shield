@@ -5,7 +5,7 @@ from pdf2image import convert_from_path
 import tempfile
 import os
 from typing import Optional
-from PIL import Image
+import PIL.Image as PILImage
 
 app = FastAPI(title="MRZ Reader Service", version="1.0.0")
 
@@ -55,10 +55,29 @@ async def extract_mrz(file: UploadFile = File(...)):
                     }
                 )
         
-        # Use PassportEye to read MRZ
-        mrz_data = read_mrz(image_path)
+        # 1. Try Original
+        mrz = read_mrz(image_path, save_roi=True)
         
-        if mrz_data is None or not mrz_data.mrz_type:
+        # 2. If fail, try rotations
+        rotated_path = image_path + "_rot.jpg"
+        
+        if not mrz:
+            print("Original failed, trying rotations...")
+            try:
+                with PILImage.open(image_path) as img:
+                    for angle in [90, 180, 270]:
+                        print(f"Trying rotation {angle}...")
+                        rotated = img.rotate(angle, expand=True)
+                        rotated.save(rotated_path)
+                        
+                        mrz = read_mrz(rotated_path, save_roi=True)
+                        if mrz:
+                            print(f"Success at {angle} degrees!")
+                            break
+            except Exception as e:
+                print(f"Rotation error: {e}")
+
+        if not mrz:
             return JSONResponse(
                 status_code=200,
                 content={
@@ -66,32 +85,37 @@ async def extract_mrz(file: UploadFile = File(...)):
                     "error": "No MRZ found in image. Please ensure the document is clearly visible and well-lit."
                 }
             )
+
+        mrz_data = mrz.to_dict()
         
-        # Extract fields
-        mrz_dict = mrz_data.to_dict()
-        
-        # Map to our format
+        # Parse Dates safely
+        birth_date = format_date(mrz_data.get("date_of_birth", ""))
+        expiration_date = format_date(mrz_data.get("expiration_date", ""))
+
         result = {
             "success": True,
             "data": {
-                "first_name": clean_name(mrz_dict.get("names")),
-                "last_name": clean_name(mrz_dict.get("surname")),
-                "nationality_iso3": mrz_dict.get("nationality"),
-                "document_number": clean_document_number(mrz_dict.get("number")),
-                "date_of_birth": format_date(mrz_dict.get("date_of_birth")),
-                "document_type": map_document_type(mrz_dict.get("type")),
-                "sex": mrz_dict.get("sex"),
-                "document_expiry_date": format_date(mrz_dict.get("expiration_date")),
-                "valid_score": mrz_dict.get("valid_score", 0),
-                "mrz_type": mrz_data.mrz_type
+                "document_type": map_document_type(mrz_data.get("type", "P")),
+                "country_code": mrz_data.get("country", ""),
+                "last_name": clean_name(mrz_data.get("surname", "")),
+                "first_name": clean_name(mrz_data.get("names", "")),
+                "document_number": clean_document_number(mrz_data.get("number", "")),
+                "nationality_iso3": mrz_data.get("nationality", ""),
+                "date_of_birth": birth_date,
+                "document_expiry_date": expiration_date, # Renamed from expiration_date to document_expiry_date
+                "sex": mrz_data.get("sex", "U"),
+                "valid_score": mrz_data.get("valid_score", 0), # Added back from original
+                "mrz_type": mrz.mrz_type, # Added back from original
+                "raw_mrz": str(mrz) # Added from new code
             }
         }
         
         return JSONResponse(content=result)
-        
+
     except Exception as e:
+        print(f"Error processing: {e}")
         return JSONResponse(
-            status_code=200,
+            status_code=200, # Changed to 200 as per original code's error status
             content={
                 "success": False,
                 "error": f"MRZ extraction failed: {str(e)}"
@@ -114,11 +138,14 @@ def clean_name(name: Optional[str]) -> Optional[str]:
     
     # Remove sequences of K and L (OCR misreads of <)
     import re
-    # Remove trailing K/L (with or without spaces)
-    # "IVANK" -> "IVAN", "IVAN K K K" -> "IVAN"
-    cleaned = re.sub(r'[KL\s]+$', '', cleaned)
-    # Remove isolated K/L between spaces
-    cleaned = re.sub(r'\s+[KL]\s+', ' ', cleaned)
+    # Remove trailing K/L/E/C/S/M logic (OCR misreads of <)
+    # ONLY if preceded by space to protect names ending in K/L (e.g. MARK)
+    # "BORIS S KKK" -> "BORIS", "MARK" -> "MARK"
+    cleaned = re.sub(r'\s+[KLECSM\s]+$', '', cleaned)
+    
+    # Remove isolated chars between spaces (likely filler noise)
+    # "IVAN K THE" -> "IVAN THE"
+    cleaned = re.sub(r'\s+[KLECSM]\s+', ' ', cleaned)
     
     # Normalize multiple spaces to single space
     cleaned = ' '.join(cleaned.split())
@@ -136,14 +163,22 @@ def format_date(date_str: Optional[str]) -> Optional[str]:
     if not date_str or len(date_str) != 6:
         return None
     
-    yy = int(date_str[0:2])
-    mm = date_str[2:4]
-    dd = date_str[4:6]
-    
-    # Y2K logic: 00-49 = 20xx, 50-99 = 19xx
-    yyyy = f"20{yy:02d}" if yy < 50 else f"19{yy:02d}"
-    
-    return f"{yyyy}-{mm}-{dd}"
+    try:
+        yy = int(date_str[0:2])
+        mm = date_str[2:4]
+        dd = date_str[4:6]
+        
+        # Validate Month/Day are numeric too
+        if not (mm.isdigit() and dd.isdigit()):
+             return None
+
+        # Y2K logic: 00-49 = 20xx, 50-99 = 19xx
+        yyyy = f"20{yy:02d}" if yy < 50 else f"19{yy:02d}"
+        
+        return f"{yyyy}-{mm}-{dd}"
+    except ValueError:
+        # OCR read garbage characters instead of numbers
+        return None
 
 def map_document_type(doc_type: Optional[str]) -> str:
     """Map MRZ document type to our enum"""

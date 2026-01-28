@@ -12,14 +12,6 @@ services:
     ports:
       - "5432:5432"
 
-  # 2. OCR Sidecar: Emulate x86_64
-  ocr-engine:
-    platform: linux/amd64
-    image: tesseractshadow/tesseract4re:latest
-    container_name: hostshield_ocr
-    volumes:
-      - ./samples:/tmp/samples
-
   # 2.5 Redis for Gov Bridge Token Cache
   redis:
     image: redis:7-alpine
@@ -68,6 +60,7 @@ services:
   mrz-reader:
     build: ./apps/api-server/src/services/mrz-reader
     container_name: hostshield_mrz
+    restart: unless-stopped
     ports:
       - "8001:8000"
 
@@ -77,7 +70,6 @@ services:
     container_name: hostshield_api
     environment:
       - DATABASE_URL=postgresql://user:password@hostshield_db:5432/hostshield
-      - OCR_ENGINE_URL=http://hostshield_ocr:8080
       - MRZ_READER_URL=http://hostshield_mrz:8000
       - BRIDGE_BASE_URL=http://hostshield_gov_api:3000/api
       - BRIDGE_PRIVATE_KEY_PATH=/app/security/gov_fake_private.key
