@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Scanner from '../components/Scanner';
 import api from '../lib/api';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, ArrowLeft, ScanLine } from 'lucide-react';
 
 const NewGuest = () => {
     const navigate = useNavigate();
@@ -60,20 +60,46 @@ const NewGuest = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Register New Guest</h1>
+        <div className="max-w-4xl mx-auto animate-fade-in pb-10">
+            {/* Header */}
+            <div className="mb-8">
+                <button
+                    onClick={() => navigate('/guests')}
+                    className="flex items-center text-sm text-slate-500 hover:text-blue-600 mb-4 transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4 mr-1" />
+                    Back to Registry
+                </button>
+                <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700">
+                    Register New Guest
+                </h1>
+                <p className="mt-2 text-slate-500">
+                    Scan a document or manually enter details to register a guest.
+                </p>
+            </div>
 
             {!scannedData ? (
-                <div className="bg-white shadow sm:rounded-lg p-6">
-                    <h2 className="text-lg font-medium text-gray-900 mb-4">Step 1: Scan Document</h2>
-                    <Scanner onScanComplete={handleScanComplete} />
-                    <div className="mt-6 flex flex-col items-center">
+                <div className="glass-card rounded-2xl p-8 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <ScanLine className="w-16 h-16 text-blue-500" />
+                    </div>
+
+                    <h2 className="text-xl font-semibold text-slate-900 mb-6 flex items-center">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 text-sm font-bold mr-3">1</span>
+                        Upload Document
+                    </h2>
+
+                    <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-slate-200/50">
+                        <Scanner onScanComplete={handleScanComplete} />
+                    </div>
+
+                    <div className="mt-8 flex flex-col items-center">
                         <div className="relative w-full mb-6">
                             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                <div className="w-full border-t border-gray-300" />
+                                <div className="w-full border-t border-slate-200" />
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="bg-white px-2 text-gray-500">Or manually enter details</span>
+                                <span className="bg-white/80 backdrop-blur px-2 text-slate-400 rounded-full">Or manually enter details</span>
                             </div>
                         </div>
                         <button
@@ -94,17 +120,18 @@ const NewGuest = () => {
                                     document_type: 'P'
                                 });
                             }}
-                            className="text-blue-600 hover:text-blue-800 font-medium text-sm focus:outline-none underline"
+                            className="text-slate-600 hover:text-blue-600 font-medium text-sm focus:outline-none hover:underline transition-colors"
                         >
-                            Skip & Enter Manually
+                            Skip Upload & Enter Manually
                         </button>
                     </div>
                 </div>
             ) : (
-                <div className="bg-white shadow sm:rounded-lg overflow-hidden">
-                    <div className="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">
-                            Step 2: Review & Confirm
+                <div className="glass-card rounded-2xl overflow-hidden">
+                    <div className="px-6 py-5 border-b border-slate-200/60 flex justify-between items-center bg-white/30 backdrop-blur-sm">
+                        <h3 className="text-lg font-medium text-slate-900 flex items-center">
+                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold mr-3">2</span>
+                            Review & Confirm
                         </h3>
                         <button
                             onClick={() => {
@@ -113,18 +140,18 @@ const NewGuest = () => {
                                 setPreviewUrl(null);
                                 setFileType(null);
                             }}
-                            className="text-sm text-blue-600 hover:text-blue-500"
+                            className="text-sm text-slate-500 hover:text-blue-600 transition-colors"
                         >
-                            Scan different document
+                            Upload different document
                         </button>
                     </div>
 
                     <div className="md:flex">
                         {/* Image Preview Sidebar */}
-                        <div className="md:w-1/3 bg-gray-50 p-6 border-r border-gray-200">
-                            <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Scanned Document</h4>
+                        <div className="md:w-1/3 bg-slate-50/50 p-6 border-r border-slate-200/60">
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Uploaded Document</h4>
                             {previewUrl && (
-                                <div className="border border-gray-300 rounded-lg overflow-hidden shadow-sm bg-white">
+                                <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white">
                                     {fileType === 'application/pdf' ? (
                                         <embed src={previewUrl} type="application/pdf" className="w-full h-64 md:h-96 object-contain" />
                                     ) : (
@@ -133,159 +160,146 @@ const NewGuest = () => {
                                 </div>
                             )}
 
-                            <div className="mt-6">
-                                <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Extraction Confidence</h4>
+                            <div className="mt-6 p-4 rounded-xl bg-white/60 border border-slate-100">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Extraction Confidence</h4>
                                 <div className="flex items-center">
-                                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                        <div className="bg-green-500 h-2 rounded-full" style={{ width: '92%' }}></div>
+                                    <div className="flex-1 bg-slate-200 rounded-full h-2">
+                                        <div className="bg-emerald-500 h-2 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: '92%' }}></div>
                                     </div>
-                                    <span className="ml-2 text-sm font-medium text-gray-700">92%</span>
+                                    <span className="ml-2 text-sm font-bold text-emerald-600">92%</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Form */}
-                        <div className="md:w-2/3 p-6">
+                        <div className="md:w-2/3 p-6 md:p-8">
                             {error && (
-                                <div className="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
+                                <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
                                     <div className="flex">
                                         <div className="ml-3">
-                                            <p className="text-sm text-red-700">{error}</p>
+                                            <p className="text-sm text-red-700 font-medium">{error}</p>
                                         </div>
                                     </div>
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit} className="space-y-8 animate-fade-in">
+                                {/* Personal Details Section */}
                                 <div>
-                                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide border-b border-gray-200 pb-2 mb-4">
+                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/60 pb-2 mb-4">
                                         Personal Details
                                     </h4>
-                                    <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                    <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700">First name</label>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="text"
-                                                    name="first_name"
-                                                    value={formData.first_name || ''}
-                                                    onChange={handleChange}
-                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
-                                                />
-                                            </div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">First name</label>
+                                            <input
+                                                type="text"
+                                                name="first_name"
+                                                value={formData.first_name || ''}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            />
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700">Last name</label>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="text"
-                                                    name="last_name"
-                                                    value={formData.last_name || ''}
-                                                    onChange={handleChange}
-                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
-                                                />
-                                            </div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Last name</label>
+                                            <input
+                                                type="text"
+                                                name="last_name"
+                                                value={formData.last_name || ''}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            />
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="date"
-                                                    name="date_of_birth"
-                                                    value={formData.date_of_birth || ''}
-                                                    onChange={handleChange}
-                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
-                                                />
-                                            </div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
+                                            <input
+                                                type="date"
+                                                name="date_of_birth"
+                                                value={formData.date_of_birth || ''}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            />
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700">Nationality (ISO3)</label>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="text"
-                                                    name="nationality_iso3"
-                                                    maxLength={3}
-                                                    value={formData.nationality_iso3 || ''}
-                                                    onChange={handleChange}
-                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
-                                                />
-                                            </div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Nationality (ISO3)</label>
+                                            <input
+                                                type="text"
+                                                name="nationality_iso3"
+                                                maxLength={3}
+                                                value={formData.nationality_iso3 || ''}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            />
                                         </div>
                                     </div>
                                 </div>
 
+                                {/* Identity Document Section */}
                                 <div>
-                                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide border-b border-gray-200 pb-2 mb-4">
+                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/60 pb-2 mb-4">
                                         Identity Document
                                     </h4>
-                                    <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                    <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700">Document Type</label>
-                                            <div className="mt-1">
-                                                <select
-                                                    name="document_type"
-                                                    value={formData.document_type || 'P'}
-                                                    onChange={handleChange}
-                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
-                                                >
-                                                    <option value="P">Passport (P)</option>
-                                                    <option value="ID">Identity Card (I)</option>
-                                                </select>
-                                            </div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Document Type</label>
+                                            <select
+                                                name="document_type"
+                                                value={formData.document_type || 'P'}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            >
+                                                <option value="P">Passport (P)</option>
+                                                <option value="ID">Identity Card (I)</option>
+                                            </select>
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700">Document Number</label>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="text"
-                                                    name="document_number"
-                                                    value={formData.document_number || ''}
-                                                    onChange={handleChange}
-                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
-                                                />
-                                            </div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Document Number</label>
+                                            <input
+                                                type="text"
+                                                name="document_number"
+                                                value={formData.document_number || ''}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            />
                                         </div>
                                     </div>
                                 </div>
 
+                                {/* Stay Experience Section */}
                                 <div>
-                                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide border-b border-gray-200 pb-2 mb-4">
+                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/60 pb-2 mb-4">
                                         Stay Experience
                                     </h4>
-                                    <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                    <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700">Arrival Date</label>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="date"
-                                                    name="arrival_date"
-                                                    value={formData.arrival_date || ''}
-                                                    onChange={handleChange}
-                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
-                                                />
-                                            </div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Arrival Date</label>
+                                            <input
+                                                type="date"
+                                                name="arrival_date"
+                                                value={formData.arrival_date || ''}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            />
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-gray-700">Departure Date</label>
-                                            <div className="mt-1">
-                                                <input
-                                                    type="date"
-                                                    name="departure_date"
-                                                    value={formData.departure_date || ''}
-                                                    onChange={handleChange}
-                                                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2.5 border transition-colors"
-                                                />
-                                            </div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Departure Date</label>
+                                            <input
+                                                type="date"
+                                                name="departure_date"
+                                                value={formData.departure_date || ''}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="pt-6 border-t border-gray-200 flex justify-end">
+                                <div className="pt-6 border-t border-slate-200/60 flex justify-end">
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -294,14 +308,14 @@ const NewGuest = () => {
                                                 setFileType(null);
                                             }
                                         }}
-                                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-3 transition-colors"
+                                        className="bg-white py-2.5 px-5 border border-slate-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-3 transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="inline-flex justify-center items-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
+                                        className="inline-flex justify-center items-center py-2.5 px-6 border border-transparent shadow-lg shadow-blue-500/30 text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:shadow-none transition-all"
                                     >
                                         {saving ? (
                                             <>

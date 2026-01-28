@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import { UserPlus, Search, Filter, MoreVertical, Loader2 } from 'lucide-react';
+import { UserPlus, Search, Filter, MoreVertical, Loader2, Send } from 'lucide-react';
 import clsx from 'clsx';
 
 const GuestList = () => {
@@ -55,118 +55,128 @@ const GuestList = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
+            <div className="flex justify-center items-center h-[calc(100vh-100px)]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto animate-fade-in">
-            <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto">
-                    <h1 className="text-2xl font-semibold text-gray-900">Guests</h1>
-                    <p className="mt-2 text-sm text-gray-700">
-                        A list of all guests registered in your establishment.
+        <div className="space-y-8 animate-fade-in pb-10">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700">
+                        Guest Registry
+                    </h1>
+                    <p className="mt-2 text-slate-500">
+                        Manage all registered guests and their reporting status.
                     </p>
                 </div>
-                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <div className="flex-none">
                     <button
                         onClick={() => navigate('/guests/new')}
-                        className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
+                        className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 hover:shadow-blue-500/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
                         <UserPlus className="h-4 w-4 mr-2" />
-                        Add Guest
+                        Add New Guest
                     </button>
                 </div>
             </div>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
+            {/* Controls */}
+            <div className="glass-card rounded-2xl p-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
                 <div className="relative w-full sm:w-96">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                        <Search className="h-4 w-4 text-slate-400" aria-hidden="true" />
                     </div>
                     <input
                         type="text"
-                        className="block w-full rounded-md border-gray-300 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 border"
-                        placeholder="Search by name or document number"
+                        className="block w-full rounded-xl border-slate-200/60 bg-white/50 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 placeholder-slate-400 backdrop-blur-sm transition-all"
+                        placeholder="Search by name or passport..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                {/* <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filter
-                </button> */}
+                {/* Placeholder for future filters */}
             </div>
 
-            <div className="mt-8 flex flex-col">
-                <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                        <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-300">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Nationality</th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Arrival</th>
-                                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-                                        <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                            <span className="sr-only">Actions</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200 bg-white">
-                                    {filteredGuests.length > 0 ? (
-                                        filteredGuests.map((guest) => (
-                                            <tr key={guest.id}>
-                                                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                                                    <div className="font-medium text-gray-900">{guest.first_name} {guest.last_name}</div>
-                                                    <div className="text-gray-500">{guest.document_type} • {guest.document_number}</div>
-                                                </td>
-                                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+            {/* Table Card */}
+            <div className="glass-card rounded-2xl overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-slate-100/50">
+                        <thead className="bg-slate-50/50">
+                            <tr>
+                                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 sm:pl-6">Guest Details</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Nationality</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Arrival</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Validation Status</th>
+                                <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                                    <span className="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100/50 bg-white/40">
+                            {filteredGuests.length > 0 ? (
+                                filteredGuests.map((guest) => (
+                                    <tr key={guest.id} className="hover:bg-slate-50/50 transition-colors">
+                                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
+                                            <div className="font-semibold text-slate-900">{guest.first_name} {guest.last_name}</div>
+                                            <div className="text-slate-500 text-xs mt-0.5">{guest.document_type} • {guest.document_number}</div>
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-600">
+                                            <div className="flex items-center">
+                                                <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-medium border border-slate-200">
                                                     {guest.nationality_iso3}
-                                                </td>
-                                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                                    {new Date(guest.arrival_date).toLocaleDateString()}
-                                                </td>
-                                                <td className="whitespace-nowrap px-3 py-4 text-sm">
-                                                    <span className={clsx(
-                                                        "inline-flex rounded-full px-2 text-xs font-semibold leading-5",
-                                                        guest.submission_status === 'sent' ? "bg-green-100 text-green-800" :
-                                                            guest.submission_status === 'error' ? "bg-red-100 text-red-800" :
-                                                                guest.submission_status === 'sending' ? "bg-blue-100 text-blue-800 animate-pulse" :
-                                                                    "bg-yellow-100 text-yellow-800"
-                                                    )}>
-                                                        {guest.submission_status || 'pending'}
-                                                    </span>
-                                                </td>
-                                                <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                    {(guest.submission_status === 'pending' || guest.submission_status === 'error') && (
-                                                        <button
-                                                            onClick={() => handleSubmission(guest.id)}
-                                                            className="text-blue-600 hover:text-blue-900 mr-4"
-                                                        >
-                                                            Submit
-                                                        </button>
-                                                    )}
-                                                    {/* <button className="text-gray-400 hover:text-gray-600">
-                                                        <MoreVertical className="h-5 w-5" />
-                                                    </button> */}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="5" className="py-10 text-center text-gray-500 text-sm">
-                                                No guests found.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-600">
+                                            {new Date(guest.arrival_date).toLocaleDateString()}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-4 text-sm">
+                                            <span className={clsx(
+                                                "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize",
+                                                guest.submission_status === 'sent' ? "bg-emerald-100 text-emerald-800 border border-emerald-200/50" :
+                                                    guest.submission_status === 'error' ? "bg-red-100 text-red-800 border border-red-200/50" :
+                                                        guest.submission_status === 'sending' ? "bg-blue-100 text-blue-800 animate-pulse border border-blue-200/50" :
+                                                            "bg-amber-100 text-amber-800 border border-amber-200/50"
+                                            )}>
+                                                {guest.submission_status === 'sent' && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></div>}
+                                                {guest.submission_status === 'error' && <div className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></div>}
+                                                {guest.submission_status || 'pending'}
+                                            </span>
+                                        </td>
+                                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                            {(guest.submission_status === 'pending' || guest.submission_status === 'error') && (
+                                                <button
+                                                    onClick={() => handleSubmission(guest.id)}
+                                                    className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg"
+                                                >
+                                                    <Send className="w-3.5 h-3.5 mr-1.5" />
+                                                    Submit
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" className="py-16 text-center text-slate-500">
+                                        <div className="flex flex-col items-center justify-center">
+                                            <div className="bg-slate-100 p-4 rounded-full mb-3">
+                                                <Search className="h-6 w-6 text-slate-400" />
+                                            </div>
+                                            <p className="text-sm font-medium text-slate-900">No guests found</p>
+                                            <p className="text-sm text-slate-500 mt-1">
+                                                Try adjusting your search or add a new guest.
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
