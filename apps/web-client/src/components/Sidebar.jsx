@@ -4,18 +4,25 @@ import { Home, Users, FileText, Settings, LogOut, X, PlusCircle, Calendar, Build
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
 
+import { useTranslation } from 'react-i18next';
+
 const Sidebar = ({ isOpen, setIsOpen }) => {
     const { logout } = useAuth();
+    const { t, i18n } = useTranslation();
 
     const navItems = [
-        { icon: Home, label: 'Overview', to: '/' },
-        { icon: PlusCircle, label: 'New Guest', to: '/guests/new' },
-        { icon: Calendar, label: 'Calendar', to: '/calendar' },
-        { icon: Users, label: 'Guests', to: '/guests' },
-        { icon: Building, label: 'Properties', to: '/properties' },
-        { icon: FileText, label: 'Ledger', to: '/ledger' },
-        // { icon: Settings, label: 'Settings', to: '/settings' },
+        { icon: Home, label: t('nav.overview'), to: '/' },
+        { icon: PlusCircle, label: t('nav.new_guest'), to: '/guests/new' },
+        { icon: Calendar, label: t('nav.calendar'), to: '/calendar' },
+        { icon: Users, label: t('nav.guests'), to: '/guests' },
+        { icon: Building, label: t('nav.properties'), to: '/properties' },
+        { icon: FileText, label: t('nav.ledger'), to: '/ledger' },
     ];
+
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'sk' ? 'en' : 'sk';
+        i18n.changeLanguage(newLang);
+    };
 
     return (
         <>
@@ -30,7 +37,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
             {/* Sidebar */}
             <aside className={clsx(
-                "fixed inset-y-0 left-0 z-30 w-64 glass transform transition-transform duration-300 ease-spring lg:translate-x-0 lg:static lg:inset-auto",
+                "fixed inset-y-0 left-0 z-30 w-64 glass transform transition-transform duration-300 ease-spring lg:translate-x-0",
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="flex items-center justify-between h-20 px-6 border-b border-white/10">
@@ -42,7 +49,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                             className="h-10 w-auto object-contain mix-blend-multiply"
                         />
                         <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-violet-600">
-                            HostShield
+                            {t('app.title')}
                         </span>
                     </div>
                     <button
@@ -76,13 +83,38 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                         ))}
                     </nav>
 
-                    <div className="pt-4 border-t border-white/10">
+                    <div className="pt-4 border-t border-white/10 space-y-2">
+                        {/* Language Switcher */}
+                        <div className="flex items-center justify-between px-4 py-2">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Language</span>
+                            <div className="flex bg-slate-100 rounded-lg p-1">
+                                <button
+                                    onClick={() => i18n.changeLanguage('en')}
+                                    className={clsx(
+                                        "px-2 py-1 text-xs font-medium rounded-md transition-all",
+                                        i18n.language === 'en' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                                    )}
+                                >
+                                    EN
+                                </button>
+                                <button
+                                    onClick={() => i18n.changeLanguage('sk')}
+                                    className={clsx(
+                                        "px-2 py-1 text-xs font-medium rounded-md transition-all",
+                                        i18n.language === 'sk' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                                    )}
+                                >
+                                    SK
+                                </button>
+                            </div>
+                        </div>
+
                         <button
                             onClick={logout}
                             className="flex items-center w-full px-4 py-3.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
                         >
                             <LogOut className="w-5 h-5 mr-3 text-slate-400 group-hover:text-red-500 transition-colors" />
-                            Logout
+                            {t('nav.logout')}
                         </button>
                     </div>
                 </div>

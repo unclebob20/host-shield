@@ -1,0 +1,80 @@
+{
+    "app": {
+        "title": "HostShield",
+        "subtitle": "Sign in to continue to HostShield"
+    },
+    "auth": {
+        "login_failed": "Login Failed",
+        "email": "Email Address",
+        "password": "Password",
+        "sign_in": "Sign In",
+        "no_account": "Don't have an account?",
+        "create_account": "Create Account",
+        "reg_alert": "Registration",
+        "reg_msg": "Please contact administrator to create an account."
+    },
+    "nav": {
+        "overview": "Overview",
+        "new_guest": "New Guest",
+        "guests": "Guests",
+        "ledger": "Ledger",
+        "logout": "Logout"
+    },
+    "dashboard": {
+        "welcome": "Welcome back,",
+        "subtitle": "Here's what's happening today.",
+        "arrivals_today": "Arrivals Today",
+        "active_guests": "Active Guests",
+        "check_in": "Check-in Guest",
+        "check_in_sub": "Scan passport or enter manually",
+        "recent_activity": "Recent Activity",
+        "checked_in": "Checked in",
+        "ago": "ago"
+    },
+    "new_guest": {
+        "title": "New Guest",
+        "method_title": "Choose a method to scan document",
+        "scan_camera": "Scan with Camera",
+        "upload_file": "Upload File",
+        "enter_manual": "Enter Manually",
+        "analyzing": "Analyzing Document...",
+        "permission_needed": "Permission needed for camera.",
+        "grant_permission": "Grant Permission",
+        "go_back": "Go Back",
+        "verify_title": "Verify Guest",
+        "pdf_attached": "PDF Attached",
+        "no_image": "No Image Attached",
+        "save": "Save Guest",
+        "cancel": "Cancel",
+        "retry": "Retry"
+    },
+    "form": {
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "doc_number": "Document Number",
+        "nationality": "Nationality (ISO3)",
+        "dob": "Date of Birth",
+        "arrival": "Arrival",
+        "departure": "Departure",
+        "select_date": "Select Date"
+    },
+    "alerts": {
+        "error": "Error",
+        "camera_error": "Failed to take picture.",
+        "pick_error": "Failed to pick file",
+        "val_failed": "Validation Failed",
+        "no_valid_data": "No valid passport data found.",
+        "scan_issue": "Scan Issue",
+        "scan_conn_fail": "Scanner connection failed. Falling back to manual entry.",
+        "fill_required": "Please fill in required fields.",
+        "save_success": "Guest saved to database!",
+        "save_failed": "Save Failed"
+    },
+    "common": {
+        "loading": "Loading App...",
+        "under_construction": "Module under construction"
+    },
+    "login": {
+        "success": "Login Successful"
+    }
+}

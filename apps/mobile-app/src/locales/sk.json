@@ -1,0 +1,80 @@
+{
+    "app": {
+        "title": "HostShield",
+        "subtitle": "Prihláste sa pre pokračovanie"
+    },
+    "auth": {
+        "login_failed": "Prihlásenie zlyhalo",
+        "email": "Emailová adresa",
+        "password": "Heslo",
+        "sign_in": "Prihlásiť sa",
+        "no_account": "Nemáte účet?",
+        "create_account": "Vytvoriť účet",
+        "reg_alert": "Registrácia",
+        "reg_msg": "Kontaktujte administrátora pre vytvorenie účtu."
+    },
+    "nav": {
+        "overview": "Prehľad",
+        "new_guest": "Nový hosť",
+        "guests": "Hostia",
+        "ledger": "Kniha",
+        "logout": "Odhlásiť"
+    },
+    "dashboard": {
+        "welcome": "Vitajte späť,",
+        "subtitle": "Prehľad dnešného dňa.",
+        "arrivals_today": "Dnešné príchody",
+        "active_guests": "Aktívni hostia",
+        "check_in": "Ubytovať hosťa",
+        "check_in_sub": "Naskenovať pas alebo zadať ručne",
+        "recent_activity": "Nedávna aktivita",
+        "checked_in": "Ubytovaný",
+        "ago": "dozadu"
+    },
+    "new_guest": {
+        "title": "Nový hosť",
+        "method_title": "Vyberte spôsob skenovania",
+        "scan_camera": "Skenovať kamerou",
+        "upload_file": "Nahrať súbor",
+        "enter_manual": "Zadať ručne",
+        "analyzing": "Analyzujem dokument...",
+        "permission_needed": "Potrebné povolenie pre kameru.",
+        "grant_permission": "Povoliť kameru",
+        "go_back": "Späť",
+        "verify_title": "Overiť hosťa",
+        "pdf_attached": "PDF priložené",
+        "no_image": "Žiadny obrázok",
+        "save": "Uložiť hosťa",
+        "cancel": "Zrušiť",
+        "retry": "Skúsiť znova"
+    },
+    "form": {
+        "first_name": "Meno",
+        "last_name": "Priezvisko",
+        "doc_number": "Číslo dokladu",
+        "nationality": "Národnosť (ISO3)",
+        "dob": "Dátum narodenia",
+        "arrival": "Príchod",
+        "departure": "Odchod",
+        "select_date": "Vybrať dátum"
+    },
+    "alerts": {
+        "error": "Chyba",
+        "camera_error": "Nepodarilo sa odfotiť.",
+        "pick_error": "Nepodarilo sa vybrať súbor",
+        "val_failed": "Overenie zlyhalo",
+        "no_valid_data": "Nenašli sa platné údaje o pase.",
+        "scan_issue": "Chyba skenovania",
+        "scan_conn_fail": "Spojenie so skenerom zlyhalo. Prechádzam na ručné zadávanie.",
+        "fill_required": "Prosím vyplňte povinné polia.",
+        "save_success": "Hosť uložený do databázy!",
+        "save_failed": "Uloženie zlyhalo"
+    },
+    "common": {
+        "loading": "Načítavam aplikáciu...",
+        "under_construction": "Modul vo vývoji"
+    },
+    "login": {
+        "success": "Prihlásenie úspešné"
+    }
+}

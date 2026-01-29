@@ -8,11 +8,13 @@ import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { API_URL } from '../config';
 import * as SecureStore from 'expo-secure-store';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function CameraScreen({ onLogout }) {
+    const { t, i18n } = useTranslation();
     // --- Navigation State ---
     const [currentScreen, setCurrentScreen] = useState('overview'); // overview, new_guest, guests, ledger
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -74,7 +76,7 @@ export default function CameraScreen({ onLogout }) {
                 await scanDocument(finalPhoto);
             } catch (e) {
                 console.error(e);
-                Alert.alert('Camera Error', 'Failed to take picture.');
+                Alert.alert(t('alerts.error'), t('alerts.camera_error'));
                 isProcessing.current = false;
                 setPhoto(null);
             }
@@ -103,7 +105,7 @@ export default function CameraScreen({ onLogout }) {
                 }
             }
         } catch (e) {
-            Alert.alert('Error', 'Failed to pick file');
+            Alert.alert(t('alerts.error'), t('alerts.pick_error'));
         }
     };
 
@@ -125,10 +127,10 @@ export default function CameraScreen({ onLogout }) {
                 const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
                 setGuestData({ ...response.data.data, arrival_date: today, departure_date: tomorrow });
             } else {
-                Alert.alert('Validation Failed', response.data.error || 'No valid passport data found.', [{ text: 'Retry', style: 'cancel', onPress: () => setPhoto(null) }, { text: 'Enter Manually', onPress: () => initManualEntry() }]);
+                Alert.alert(t('alerts.val_failed'), response.data.error || t('alerts.no_valid_data'), [{ text: t('new_guest.retry'), style: 'cancel', onPress: () => setPhoto(null) }, { text: t('new_guest.enter_manual'), onPress: () => initManualEntry() }]);
             }
         } catch (error) {
-            Alert.alert('Scan Issue', 'Scanner connection failed. Falling back to manual entry.', [{ text: 'Retry', style: 'cancel', onPress: () => setPhoto(null) }, { text: 'Enter Manually', onPress: () => initManualEntry() }]);
+            Alert.alert(t('alerts.scan_issue'), t('alerts.scan_conn_fail'), [{ text: t('new_guest.retry'), style: 'cancel', onPress: () => setPhoto(null) }, { text: t('new_guest.enter_manual'), onPress: () => initManualEntry() }]);
         } finally {
             setScanning(false);
             isProcessing.current = false;
@@ -147,18 +149,18 @@ export default function CameraScreen({ onLogout }) {
     const saveGuest = async () => {
         try {
             if (!guestData.arrival_date || !guestData.departure_date || !guestData.document_number) {
-                Alert.alert('Validaton Error', 'Please fill in required fields.');
+                Alert.alert(t('alerts.val_failed'), t('alerts.fill_required'));
                 return;
             }
             const token = await SecureStore.getItemAsync('userToken');
             await axios.post(`${API_URL}/guests/save`, guestData, { headers: { 'Authorization': `Bearer ${token}` } });
-            Alert.alert('Success', 'Guest saved to database!');
+            Alert.alert(t('login.success'), t('alerts.save_success'));
             setGuestData(null);
             setPhoto(null);
             setMode('menu');
             setCurrentScreen('guests'); // Redirect to guests list after save
         } catch (error) {
-            Alert.alert('Save Failed', error.response?.data?.error || error.message);
+            Alert.alert(t('alerts.save_failed'), error.response?.data?.error || error.message);
         }
     };
 
@@ -193,31 +195,42 @@ export default function CameraScreen({ onLogout }) {
                     <View style={styles.sidebarHeader}>
                         <Text style={styles.sidebarBrand}>HostShield</Text>
                     </View>
+
+                    {/* Language Switcher */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 20 }}>
+                        <TouchableOpacity onPress={() => i18n.changeLanguage('en')} style={{ padding: 10, opacity: i18n.language === 'en' ? 1 : 0.5 }}>
+                            <Text style={{ fontSize: 24 }}>🇬🇧</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => i18n.changeLanguage('sk')} style={{ padding: 10, opacity: i18n.language === 'sk' ? 1 : 0.5 }}>
+                            <Text style={{ fontSize: 24 }}>🇸🇰</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <View style={styles.navItems}>
                         <TouchableOpacity style={[styles.navItem, currentScreen === 'overview' && styles.navItemActive]} onPress={() => { setCurrentScreen('overview'); setIsSidebarOpen(false); }}>
                             <Feather name="home" size={20} color={currentScreen === 'overview' ? '#2563eb' : '#64748b'} />
-                            <Text style={[styles.navText, currentScreen === 'overview' && styles.navTextActive]}>Overview</Text>
+                            <Text style={[styles.navText, currentScreen === 'overview' && styles.navTextActive]}>{t('nav.overview')}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.navItem, currentScreen === 'new_guest' && styles.navItemActive]} onPress={() => { setCurrentScreen('new_guest'); setIsSidebarOpen(false); }}>
                             <Feather name="plus-circle" size={20} color={currentScreen === 'new_guest' ? '#2563eb' : '#64748b'} />
-                            <Text style={[styles.navText, currentScreen === 'new_guest' && styles.navTextActive]}>New Guest</Text>
+                            <Text style={[styles.navText, currentScreen === 'new_guest' && styles.navTextActive]}>{t('nav.new_guest')}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.navItem, currentScreen === 'guests' && styles.navItemActive]} onPress={() => { setCurrentScreen('guests'); setIsSidebarOpen(false); }}>
                             <Feather name="users" size={20} color={currentScreen === 'guests' ? '#2563eb' : '#64748b'} />
-                            <Text style={[styles.navText, currentScreen === 'guests' && styles.navTextActive]}>Guests</Text>
+                            <Text style={[styles.navText, currentScreen === 'guests' && styles.navTextActive]}>{t('nav.guests')}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.navItem, currentScreen === 'ledger' && styles.navItemActive]} onPress={() => { setCurrentScreen('ledger'); setIsSidebarOpen(false); }}>
                             <Feather name="file-text" size={20} color={currentScreen === 'ledger' ? '#2563eb' : '#64748b'} />
-                            <Text style={[styles.navText, currentScreen === 'ledger' && styles.navTextActive]}>Ledger</Text>
+                            <Text style={[styles.navText, currentScreen === 'ledger' && styles.navTextActive]}>{t('nav.ledger')}</Text>
                         </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity style={styles.logoutItem} onPress={onLogout}>
                         <Feather name="log-out" size={20} color="#ef4444" />
-                        <Text style={styles.logoutText}>Logout</Text>
+                        <Text style={styles.logoutText}>{t('nav.logout')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -226,11 +239,11 @@ export default function CameraScreen({ onLogout }) {
 
     const renderDashboard = () => (
         <View style={styles.containerLight}>
-            {renderHeader('Overview')}
+            {renderHeader(t('nav.overview'))}
             <ScrollView contentContainerStyle={styles.contentContainer}>
                 <View style={styles.welcomeCard}>
-                    <Text style={styles.welcomeTitle}>Welcome back,</Text>
-                    <Text style={styles.welcomeSub}>Here's what's happening today.</Text>
+                    <Text style={styles.welcomeTitle}>{t('dashboard.welcome')}</Text>
+                    <Text style={styles.welcomeSub}>{t('dashboard.subtitle')}</Text>
                 </View>
 
                 <View style={styles.statsGrid}>
@@ -239,14 +252,14 @@ export default function CameraScreen({ onLogout }) {
                             <Feather name="log-in" size={20} color="#2563eb" />
                         </View>
                         <Text style={styles.statValue}>12</Text>
-                        <Text style={styles.statLabel}>Arrivals Today</Text>
+                        <Text style={styles.statLabel}>{t('dashboard.arrivals_today')}</Text>
                     </View>
                     <View style={styles.statCard}>
                         <View style={[styles.statIcon, { backgroundColor: '#dcfce7' }]}>
                             <Feather name="user-check" size={20} color="#16a34a" />
                         </View>
                         <Text style={styles.statValue}>45</Text>
-                        <Text style={styles.statLabel}>Active Guests</Text>
+                        <Text style={styles.statLabel}>{t('dashboard.active_guests')}</Text>
                     </View>
                 </View>
 
@@ -255,21 +268,21 @@ export default function CameraScreen({ onLogout }) {
                         <Feather name="plus" size={32} color="white" />
                     </View>
                     <View>
-                        <Text style={styles.bigActionTitle}>Check-in Guest</Text>
-                        <Text style={styles.bigActionSub}>Scan passport or enter manually</Text>
+                        <Text style={styles.bigActionTitle}>{t('dashboard.check_in')}</Text>
+                        <Text style={styles.bigActionSub}>{t('dashboard.check_in_sub')}</Text>
                     </View>
                 </TouchableOpacity>
 
-                <Text style={styles.sectionTitle}>Recent Activity</Text>
+                <Text style={styles.sectionTitle}>{t('dashboard.recent_activity')}</Text>
                 <View style={styles.activityList}>
                     {[1, 2, 3].map((i) => (
                         <View key={i} style={styles.activityItem}>
                             <View style={styles.avatarPlaceholder}><Text style={styles.avatarText}>JD</Text></View>
                             <View>
                                 <Text style={styles.activityName}>John Doe</Text>
-                                <Text style={styles.activityDetail}>Checked in • Room 10{i}</Text>
+                                <Text style={styles.activityDetail}>{t('dashboard.checked_in')} • Room 10{i}</Text>
                             </View>
-                            <Text style={styles.activityTime}>{i * 10}m ago</Text>
+                            <Text style={styles.activityTime}>{i * 10}m {t('dashboard.ago')}</Text>
                         </View>
                     ))}
                 </View>
@@ -284,7 +297,7 @@ export default function CameraScreen({ onLogout }) {
                 <View style={styles.containerDark}>
                     <StatusBar barStyle="light-content" />
                     <ActivityIndicator size="large" color="#2563eb" />
-                    <Text style={styles.messageDark}>Analyzing Document...</Text>
+                    <Text style={styles.messageDark}>{t('new_guest.analyzing')}</Text>
                 </View>
             );
         }
@@ -295,10 +308,10 @@ export default function CameraScreen({ onLogout }) {
             if (!permission.granted) {
                 return (
                     <View style={styles.containerDark}>
-                        <Text style={styles.messageDark}>Permission needed for camera.</Text>
-                        <Button onPress={requestPermission} title="Grant Permission" />
+                        <Text style={styles.messageDark}>{t('new_guest.permission_needed')}</Text>
+                        <Button onPress={requestPermission} title={t('new_guest.grant_permission')} />
                         <TouchableOpacity onPress={() => setMode('menu')} style={{ marginTop: 20 }}>
-                            <Text style={{ color: '#fff' }}>Go Back</Text>
+                            <Text style={{ color: '#fff' }}>{t('new_guest.go_back')}</Text>
                         </TouchableOpacity>
                     </View>
                 );
@@ -330,31 +343,31 @@ export default function CameraScreen({ onLogout }) {
                         <TouchableOpacity onPress={retake} style={{ padding: 8 }}>
                             <Feather name="arrow-left" size={24} color="#0f172a" />
                         </TouchableOpacity>
-                        <Text style={{ fontSize: 18, fontWeight: '600', marginLeft: 16 }}>Verify Guest</Text>
+                        <Text style={{ fontSize: 18, fontWeight: '600', marginLeft: 16 }}>{t('new_guest.verify_title')}</Text>
                     </View>
                     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
                         <ScrollView contentContainerStyle={styles.reviewContainer}>
                             {photo ? (
                                 photo.isPdf ? (
-                                    <View style={styles.placeholderImage}><Text style={{ fontSize: 50 }}>📄</Text><Text style={styles.subtext}>PDF Attached</Text></View>
+                                    <View style={styles.placeholderImage}><Text style={{ fontSize: 50 }}>📄</Text><Text style={styles.subtext}>{t('new_guest.pdf_attached')}</Text></View>
                                 ) : (<Image source={{ uri: photo.uri }} style={styles.previewImage} />)
                             ) : (
-                                <View style={styles.placeholderImage}><Text style={styles.subtext}>No Image Attached</Text></View>
+                                <View style={styles.placeholderImage}><Text style={styles.subtext}>{t('new_guest.no_image')}</Text></View>
                             )}
-                            <View style={styles.formGroup}><Text style={styles.label}>First Name</Text><TextInput style={styles.input} value={guestData.first_name} onChangeText={t => updateField('first_name', t)} /></View>
-                            <View style={styles.formGroup}><Text style={styles.label}>Last Name</Text><TextInput style={styles.input} value={guestData.last_name} onChangeText={t => updateField('last_name', t)} /></View>
-                            <View style={styles.formGroup}><Text style={styles.label}>Document Number</Text><TextInput style={styles.input} value={guestData.document_number} onChangeText={t => updateField('document_number', t)} /></View>
-                            <View style={styles.formGroup}><Text style={styles.label}>Nationality (ISO3)</Text><TextInput style={styles.input} value={guestData.nationality_iso3} onChangeText={t => updateField('nationality_iso3', t)} maxLength={3} autoCapitalize="characters" /></View>
+                            <View style={styles.formGroup}><Text style={styles.label}>{t('form.first_name')}</Text><TextInput style={styles.input} value={guestData.first_name} onChangeText={t => updateField('first_name', t)} /></View>
+                            <View style={styles.formGroup}><Text style={styles.label}>{t('form.last_name')}</Text><TextInput style={styles.input} value={guestData.last_name} onChangeText={t => updateField('last_name', t)} /></View>
+                            <View style={styles.formGroup}><Text style={styles.label}>{t('form.doc_number')}</Text><TextInput style={styles.input} value={guestData.document_number} onChangeText={t => updateField('document_number', t)} /></View>
+                            <View style={styles.formGroup}><Text style={styles.label}>{t('form.nationality')}</Text><TextInput style={styles.input} value={guestData.nationality_iso3} onChangeText={t => updateField('nationality_iso3', t)} maxLength={3} autoCapitalize="characters" /></View>
                             <TouchableOpacity onPress={() => openDatePicker('date_of_birth')}>
-                                <View style={styles.formGroup}><Text style={styles.label}>Date of Birth</Text><View pointerEvents="none"><TextInput style={styles.input} value={guestData.date_of_birth} placeholder="Select Date" editable={false} /></View></View>
+                                <View style={styles.formGroup}><Text style={styles.label}>{t('form.dob')}</Text><View pointerEvents="none"><TextInput style={styles.input} value={guestData.date_of_birth} placeholder={t('form.select_date')} editable={false} /></View></View>
                             </TouchableOpacity>
                             <View style={styles.row}>
-                                <View style={{ flex: 1, marginRight: 8 }}><TouchableOpacity onPress={() => openDatePicker('arrival_date')}><View style={styles.formGroup}><Text style={styles.label}>Arrival</Text><View pointerEvents="none"><TextInput style={styles.input} value={guestData.arrival_date} editable={false} /></View></View></TouchableOpacity></View>
-                                <View style={{ flex: 1, marginLeft: 8 }}><TouchableOpacity onPress={() => openDatePicker('departure_date')}><View style={styles.formGroup}><Text style={styles.label}>Departure</Text><View pointerEvents="none"><TextInput style={styles.input} value={guestData.departure_date} editable={false} /></View></View></TouchableOpacity></View>
+                                <View style={{ flex: 1, marginRight: 8 }}><TouchableOpacity onPress={() => openDatePicker('arrival_date')}><View style={styles.formGroup}><Text style={styles.label}>{t('form.arrival')}</Text><View pointerEvents="none"><TextInput style={styles.input} value={guestData.arrival_date} editable={false} /></View></View></TouchableOpacity></View>
+                                <View style={{ flex: 1, marginLeft: 8 }}><TouchableOpacity onPress={() => openDatePicker('departure_date')}><View style={styles.formGroup}><Text style={styles.label}>{t('form.departure')}</Text><View pointerEvents="none"><TextInput style={styles.input} value={guestData.departure_date} editable={false} /></View></View></TouchableOpacity></View>
                             </View>
                             <View style={styles.actions}>
-                                <TouchableOpacity style={styles.primaryButton} onPress={saveGuest}><Text style={styles.primaryButtonText}>Save Guest</Text></TouchableOpacity>
-                                <TouchableOpacity style={styles.secondaryButton} onPress={retake}><Text style={styles.secondaryButtonText}>Cancel</Text></TouchableOpacity>
+                                <TouchableOpacity style={styles.primaryButton} onPress={saveGuest}><Text style={styles.primaryButtonText}>{t('new_guest.save')}</Text></TouchableOpacity>
+                                <TouchableOpacity style={styles.secondaryButton} onPress={retake}><Text style={styles.secondaryButtonText}>{t('new_guest.cancel')}</Text></TouchableOpacity>
                             </View>
                             <View style={{ height: 50 }} />
                             {datePicker.visible && <DateTimePicker value={new Date()} mode="date" display="default" onChange={onDateChange} />}
@@ -367,23 +380,23 @@ export default function CameraScreen({ onLogout }) {
         // Method Selection Menu
         return (
             <View style={styles.containerLight}>
-                {renderHeader('New Guest')}
+                {renderHeader(t('new_guest.title'))}
                 <View style={styles.menuContainer}>
-                    <Text style={styles.subtext}>Choose a method to scan document</Text>
+                    <Text style={styles.subtext}>{t('new_guest.method_title')}</Text>
 
                     <TouchableOpacity style={styles.menuButton} onPress={() => setMode('camera')}>
                         <Feather name="camera" size={24} color="white" style={{ marginBottom: 8 }} />
-                        <Text style={styles.menuButtonText}>Scan with Camera</Text>
+                        <Text style={styles.menuButtonText}>{t('new_guest.scan_camera')}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.menuButton} onPress={pickFile}>
                         <Feather name="upload" size={24} color="white" style={{ marginBottom: 8 }} />
-                        <Text style={styles.menuButtonText}>Upload File</Text>
+                        <Text style={styles.menuButtonText}>{t('new_guest.upload_file')}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={[styles.menuButton, styles.menuButtonSecondary]} onPress={initManualEntry}>
                         <Feather name="edit" size={24} color="#64748b" style={{ marginBottom: 8 }} />
-                        <Text style={[styles.menuButtonText, styles.menuButtonTextSecondary]}>Enter Manually</Text>
+                        <Text style={[styles.menuButtonText, styles.menuButtonTextSecondary]}>{t('new_guest.enter_manual')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -392,20 +405,20 @@ export default function CameraScreen({ onLogout }) {
 
     const renderGuestsList = () => (
         <View style={styles.containerLight}>
-            {renderHeader('All Guests')}
+            {renderHeader(t('nav.guests'))}
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Feather name="users" size={48} color="#cbd5e1" />
-                <Text style={{ marginTop: 16, color: '#64748b' }}>Guest list under construction</Text>
+                <Text style={{ marginTop: 16, color: '#64748b' }}>{t('common.under_construction')}</Text>
             </View>
         </View>
     );
 
     const renderLedger = () => (
         <View style={styles.containerLight}>
-            {renderHeader('Ledger')}
+            {renderHeader(t('nav.ledger'))}
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Feather name="file-text" size={48} color="#cbd5e1" />
-                <Text style={{ marginTop: 16, color: '#64748b' }}>Ledger module under construction</Text>
+                <Text style={{ marginTop: 16, color: '#64748b' }}>{t('common.under_construction')}</Text>
             </View>
         </View>
     );

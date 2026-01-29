@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { UserPlus, Search, Filter, MoreVertical, Loader2, Send, Eye, X, Building, Calendar, User, FileText } from 'lucide-react';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const GuestList = () => {
+    const { t } = useTranslation();
     const [guests, setGuests] = useState([]);
     const [properties, setProperties] = useState([]); // New state
     const [loading, setLoading] = useState(true);
@@ -49,10 +51,10 @@ const GuestList = () => {
 
             // Refetch to get updated status and details
             fetchGuests();
-            alert('Guest successfully submitted to police database!');
+            alert(t('guest.submit_success'));
         } catch (error) {
             console.error('Submission failed', error);
-            alert('Failed to submit guest. Check console for details.');
+            alert(t('guest.submit_fail'));
             fetchGuests(); // Revert/update status
         }
     };
@@ -85,10 +87,10 @@ const GuestList = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700">
-                        Guest Registry
+                        {t('guest.list_title')}
                     </h1>
                     <p className="mt-2 text-slate-500">
-                        Manage all registered guests and their reporting status.
+                        {t('guest.list_subtitle')}
                     </p>
                 </div>
                 <div className="flex-none">
@@ -97,7 +99,7 @@ const GuestList = () => {
                         className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 hover:shadow-blue-500/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
                         <UserPlus className="h-4 w-4 mr-2" />
-                        Add New Guest
+                        {t('guest.add_button')}
                     </button>
                 </div>
             </div>
@@ -111,7 +113,7 @@ const GuestList = () => {
                     <input
                         type="text"
                         className="block w-full rounded-xl border-slate-200/60 bg-white/50 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 placeholder-slate-400 backdrop-blur-sm transition-all"
-                        placeholder="Search by name or passport..."
+                        placeholder={t('guest.search_placeholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -124,10 +126,10 @@ const GuestList = () => {
                     <table className="min-w-full divide-y divide-slate-100/50">
                         <thead className="bg-slate-50/50">
                             <tr>
-                                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 sm:pl-6">Guest Details</th>
-                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Property</th>
-                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Nationality</th>
-                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Arrival</th>
+                                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 sm:pl-6">{t('guest.personal_details')}</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">{t('guest.property')}</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">{t('guest.nationality')}</th>
+                                <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">{t('guest.arrival')}</th>
                                 <th scope="col" className="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
                                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                                     <span className="sr-only">Actions</span>
@@ -170,7 +172,7 @@ const GuestList = () => {
                                                 )}>
                                                     {guest.submission_status === 'sent' && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></div>}
                                                     {guest.submission_status === 'error' && <div className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></div>}
-                                                    {guest.submission_status || 'pending'}
+                                                    {t(`guest.status.${guest.submission_status || 'pending'}`)}
                                                 </span>
                                             </td>
                                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
@@ -204,9 +206,9 @@ const GuestList = () => {
                                             <div className="bg-slate-100 p-4 rounded-full mb-3">
                                                 <Search className="h-6 w-6 text-slate-400" />
                                             </div>
-                                            <p className="text-sm font-medium text-slate-900">No guests found</p>
+                                            <p className="text-sm font-medium text-slate-900">{t('guest.no_guests')}</p>
                                             <p className="text-sm text-slate-500 mt-1">
-                                                Try adjusting your search or add a new guest.
+                                                {t('guest.no_guests_sub')}
                                             </p>
                                         </div>
                                     </td>
@@ -223,8 +225,8 @@ const GuestList = () => {
                     <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
                         <div className="flex justify-between items-center p-6 border-b border-slate-100 sticky top-0 bg-white z-10">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-900">Guest Details</h3>
-                                <p className="text-sm text-slate-500">Full record information</p>
+                                <h3 className="text-xl font-bold text-slate-900">{t('guest.details_modal.title')}</h3>
+                                <p className="text-sm text-slate-500">{t('guest.details_modal.subtitle')}</p>
                             </div>
                             <button
                                 onClick={() => setSelectedGuest(null)}
@@ -254,7 +256,7 @@ const GuestList = () => {
                                             selectedGuest.submission_status === 'error' ? "bg-red-100 text-red-800 border border-red-200/50" :
                                                 "bg-amber-100 text-amber-800 border border-amber-200/50"
                                     )}>
-                                        {selectedGuest.submission_status || 'Pending'}
+                                        {t(`guest.status.${selectedGuest.submission_status || 'pending'}`)}
                                     </span>
                                 </div>
                             </div>
@@ -262,57 +264,57 @@ const GuestList = () => {
                             {/* Details Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
-                                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">Personal Information</h5>
+                                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">{t('guest.details_modal.personal_info')}</h5>
 
                                     <div>
-                                        <label className="text-xs text-slate-500 block">Full Name</label>
+                                        <label className="text-xs text-slate-500 block">{t('guest.first_name')} {t('guest.last_name')}</label>
                                         <div className="text-sm font-medium text-slate-900">{selectedGuest.first_name} {selectedGuest.last_name}</div>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-slate-500 block">Date of Birth</label>
+                                        <label className="text-xs text-slate-500 block">{t('guest.dob')}</label>
                                         <div className="text-sm font-medium text-slate-900">{selectedGuest.date_of_birth || '-'}</div>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-slate-500 block">Nationality</label>
+                                        <label className="text-xs text-slate-500 block">{t('guest.nationality')}</label>
                                         <div className="text-sm font-medium text-slate-900">{selectedGuest.nationality_iso3}</div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">Document Details</h5>
+                                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">{t('guest.details_modal.doc_details')}</h5>
 
                                     <div>
-                                        <label className="text-xs text-slate-500 block">Document Type</label>
-                                        <div className="text-sm font-medium text-slate-900">{selectedGuest.document_type === 'P' ? 'Passport' : 'Identity Card'}</div>
+                                        <label className="text-xs text-slate-500 block">{t('guest.doc_type')}</label>
+                                        <div className="text-sm font-medium text-slate-900">{selectedGuest.document_type === 'P' ? t('guest.passport') : t('guest.id_card')}</div>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-slate-500 block">Document Number</label>
+                                        <label className="text-xs text-slate-500 block">{t('guest.doc_number')}</label>
                                         <div className="text-sm font-medium text-slate-900">{selectedGuest.document_number}</div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-4 md:col-span-2">
-                                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">Stay Information</h5>
+                                    <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">{t('guest.details_modal.stay_info')}</h5>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                                                <label className="text-xs text-slate-500 font-medium">Arrival</label>
+                                                <label className="text-xs text-slate-500 font-medium">{t('guest.arrival')}</label>
                                             </div>
                                             <div className="text-sm font-bold text-slate-900">{new Date(selectedGuest.arrival_date).toLocaleDateString()}</div>
                                         </div>
                                         <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                                                <label className="text-xs text-slate-500 font-medium">Departure</label>
+                                                <label className="text-xs text-slate-500 font-medium">{t('guest.departure')}</label>
                                             </div>
                                             <div className="text-sm font-bold text-slate-900">{new Date(selectedGuest.departure_date).toLocaleDateString()}</div>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="text-xs text-slate-500 block">Purpose of Stay</label>
+                                        <label className="text-xs text-slate-500 block">{t('guest.details_modal.purpose')}</label>
                                         <div className="text-sm font-medium text-slate-900 capitalize">{selectedGuest.purpose_of_stay || 'Tourism'}</div>
                                     </div>
                                 </div>
@@ -324,7 +326,7 @@ const GuestList = () => {
                                 onClick={() => setSelectedGuest(null)}
                                 className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                             >
-                                Close
+                                {t('guest.details_modal.close')}
                             </button>
                             {(selectedGuest.submission_status === 'pending' || selectedGuest.submission_status === 'error') && (
                                 <button
@@ -335,7 +337,7 @@ const GuestList = () => {
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm flex items-center"
                                 >
                                     <Send className="w-4 h-4 mr-2" />
-                                    Submit Report
+                                    {t('guest.details_modal.submit_report')}
                                 </button>
                             )}
                         </div>

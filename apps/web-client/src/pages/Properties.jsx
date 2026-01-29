@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Trash2, Building, Home, Loader2, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
 
 const Properties = () => {
+    const { t } = useTranslation();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -25,14 +27,14 @@ const Properties = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this property? This might affect existing bookings.')) return;
+        if (!window.confirm(t('properties.delete_confirm'))) return;
 
         try {
             await api.delete(`/properties/${id}`);
             setProperties(properties.filter(p => p.id !== id));
         } catch (error) {
             console.error('Failed to delete property', error);
-            alert('Failed to delete property.');
+            alert(t('common.error'));
         }
     };
 
@@ -46,7 +48,7 @@ const Properties = () => {
             setFormData({ name: '', type: 'Apartment' });
         } catch (error) {
             console.error('Failed to create property', error);
-            alert('Failed to create property.');
+            alert(t('common.error'));
         } finally {
             setSaving(false);
         }
@@ -66,10 +68,10 @@ const Properties = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700">
-                        Properties
+                        {t('properties.title')}
                     </h1>
                     <p className="mt-2 text-slate-500">
-                        Manage your accommodation units.
+                        {t('properties.subtitle')}
                     </p>
                 </div>
                 <button
@@ -77,7 +79,7 @@ const Properties = () => {
                     className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Property
+                    {t('properties.add_button')}
                 </button>
             </div>
 
@@ -115,7 +117,7 @@ const Properties = () => {
                                 className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                             >
                                 <Plus className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
-                                New Property
+                                {t('properties.add_button')}
                             </button>
                         </div>
                     </div>
@@ -127,7 +129,7 @@ const Properties = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-slate-900">Add New Property</h3>
+                            <h3 className="text-xl font-bold text-slate-900">{t('properties.add_button')}</h3>
                             <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
                                 <X className="w-5 h-5" />
                             </button>
@@ -135,7 +137,7 @@ const Properties = () => {
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Property Name</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">{t('properties.name')}</label>
                                 <input
                                     type="text"
                                     required
@@ -146,7 +148,7 @@ const Properties = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">{t('properties.type')}</label>
                                 <select
                                     value={formData.type}
                                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
@@ -166,7 +168,7 @@ const Properties = () => {
                                 disabled={saving}
                                 className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 mt-6"
                             >
-                                {saving ? <Loader2 className="animate-spin w-5 h-5" /> : 'Create Property'}
+                                {saving ? <Loader2 className="animate-spin w-5 h-5" /> : t('properties.create')}
                             </button>
                         </form>
                     </div>

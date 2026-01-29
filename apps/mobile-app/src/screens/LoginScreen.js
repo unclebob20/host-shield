@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../config';
 
 export default function LoginScreen({ onLoginSuccess }) {
+    const { t, i18n } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Please enter email and password');
+            Alert.alert(t('alerts.error'), t('alerts.fill_required'));
             return;
         }
 
@@ -28,11 +30,11 @@ export default function LoginScreen({ onLoginSuccess }) {
                 await SecureStore.setItemAsync('userToken', token);
                 onLoginSuccess(token);
             } else {
-                Alert.alert('Login Failed', 'Unknown error');
+                Alert.alert(t('auth.login_failed'), 'Unknown error');
             }
         } catch (error) {
             console.error(error);
-            Alert.alert('Login Failed', error.response?.data?.error || 'Network Error. Check IP in config.js');
+            Alert.alert(t('auth.login_failed'), error.response?.data?.error || 'Network Error. Check IP in config.js');
         } finally {
             setLoading(false);
         }
@@ -47,15 +49,23 @@ export default function LoginScreen({ onLoginSuccess }) {
                     style={styles.keyboardView}
                 >
                     <View style={styles.headerContainer}>
-                        <Text style={styles.title}>HostShield</Text>
+                        <Text style={styles.title}>{t('app.title')}</Text>
                         <Text style={styles.subtitle}>
-                            Automated guest reporting and digital ledger for modern hosts.
+                            {t('app.subtitle')}
                         </Text>
+                        <View style={{ flexDirection: 'row', marginTop: 16 }}>
+                            <TouchableOpacity onPress={() => i18n.changeLanguage('en')} style={{ padding: 8, marginHorizontal: 8, opacity: i18n.language === 'en' ? 1 : 0.5 }}>
+                                <Text style={{ fontSize: 24 }}>🇬🇧</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => i18n.changeLanguage('sk')} style={{ padding: 8, marginHorizontal: 8, opacity: i18n.language === 'sk' ? 1 : 0.5 }}>
+                                <Text style={{ fontSize: 24 }}>🇸🇰</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     <View style={styles.formContainer}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Email address</Text>
+                            <Text style={styles.label}>{t('auth.email')}</Text>
                             <TextInput
                                 placeholder="name@example.com"
                                 placeholderTextColor="#64748b"
@@ -68,9 +78,9 @@ export default function LoginScreen({ onLoginSuccess }) {
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Password</Text>
+                            <Text style={styles.label}>{t('auth.password')}</Text>
                             <TextInput
-                                placeholder="Enter your password"
+                                placeholder={t('auth.password')}
                                 placeholderTextColor="#64748b"
                                 value={password}
                                 onChangeText={setPassword}
@@ -87,22 +97,22 @@ export default function LoginScreen({ onLoginSuccess }) {
                             {loading ? (
                                 <ActivityIndicator color="#ffffff" />
                             ) : (
-                                <Text style={styles.buttonText}>Sign in</Text>
+                                <Text style={styles.buttonText}>{t('auth.sign_in')}</Text>
                             )}
                         </TouchableOpacity>
 
                         <View style={styles.footer}>
                             <View style={styles.dividerContainer}>
                                 <View style={styles.dividerLine} />
-                                <Text style={styles.dividerText}>Don't have an account?</Text>
+                                <Text style={styles.dividerText}>{t('auth.no_account')}</Text>
                                 <View style={styles.dividerLine} />
                             </View>
 
                             <TouchableOpacity
                                 style={styles.secondaryButton}
-                                onPress={() => Alert.alert('Registration', 'Please use the web portal to create a new account.')}
+                                onPress={() => Alert.alert(t('auth.reg_alert'), t('auth.reg_msg'))}
                             >
-                                <Text style={styles.secondaryButtonText}>Create new account</Text>
+                                <Text style={styles.secondaryButtonText}>{t('auth.create_account')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

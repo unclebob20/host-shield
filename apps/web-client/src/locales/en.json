@@ -1,0 +1,146 @@
+{
+    "app": {
+        "title": "HostShield"
+    },
+    "nav": {
+        "overview": "Overview",
+        "new_guest": "New Guest",
+        "calendar": "Calendar",
+        "guests": "Guests",
+        "properties": "Properties",
+        "ledger": "Ledger",
+        "logout": "Logout"
+    },
+    "common": {
+        "loading": "Loading...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "error": "Error",
+        "success": "Success",
+        "back": "Back"
+    },
+    "guest": {
+        "register_new": "Register New Guest",
+        "register_desc": "Scan a document or manually enter details to register a guest.",
+        "upload_doc": "Upload Document",
+        "manual_entry": "Or manually enter details",
+        "skip_upload": "Skip Upload & Enter Manually",
+        "review_confirm": "Review & Confirm",
+        "upload_diff": "Upload different document",
+        "uploaded_doc": "Uploaded Document",
+        "confidence": "Extraction Confidence",
+        "personal_details": "Personal Details",
+        "first_name": "First name",
+        "last_name": "Last name",
+        "dob": "Date of Birth",
+        "nationality": "Nationality (ISO3)",
+        "identity_doc": "Identity Document",
+        "doc_type": "Document Type",
+        "doc_number": "Document Number",
+        "passport": "Passport",
+        "id_card": "Identity Card",
+        "stay_exp": "Stay Experience",
+        "property": "Property / Object",
+        "arrival": "Arrival Date",
+        "departure": "Departure Date",
+        "save_register": "Save & Register Guest",
+        "discard_confirm": "Discard changes?",
+        "list_title": "Guest Registry",
+        "list_subtitle": "Manage all registered guests and their reporting status.",
+        "add_button": "Add New Guest",
+        "search_placeholder": "Search by name or passport...",
+        "status": {
+            "pending": "Pending",
+            "sending": "Sending",
+            "sent": "Sent",
+            "error": "Error"
+        },
+        "details_modal": {
+            "title": "Guest Details",
+            "subtitle": "Full record information",
+            "personal_info": "Personal Information",
+            "doc_details": "Document Details",
+            "stay_info": "Stay Information",
+            "purpose": "Purpose of Stay",
+            "close": "Close",
+            "submit_report": "Submit Report"
+        },
+        "submit_success": "Guest successfully submitted to police database!",
+        "submit_fail": "Failed to submit guest. Check console for details.",
+        "no_guests": "No guests found",
+        "no_guests_sub": "Try adjusting your search or add a new guest."
+    },
+    "properties": {
+        "title": "Properties",
+        "subtitle": "Manage your accommodation units.",
+        "add_button": "Add Property",
+        "name": "Property Name",
+        "type": "Type",
+        "create": "Create Property",
+        "delete_confirm": "Are you sure you want to delete this property?"
+    },
+    "calendar": {
+        "title": "Occupancy Calendar",
+        "subtitle": "Manage availability across your properties",
+        "add_booking": "Add Booking",
+        "legend": {
+            "reported": "Reported to Police",
+            "pending": "Pending Report",
+            "error": "Reporting Error",
+            "confirmed": "Confirmed (Local)"
+        }
+    },
+    "ledger": {
+        "title": "Guest Ledger",
+        "subtitle": "Generate and export the official \"Kniha ubytovaných\" for compliance.",
+        "select_period": "Select Period",
+        "select_period_desc": "Choose the date range for your report. The export will include all guests who were stayed during this period.",
+        "start_date": "Start Date",
+        "end_date": "End Date",
+        "preview": "Preview Data",
+        "export_pdf": "Export PDF",
+        "error_gen": "Error generating report",
+        "preview_title": "Preview",
+        "records": "Records",
+        "no_records": "No guests found in this period.",
+        "cols": {
+            "name": "Name",
+            "nationality": "Nationality",
+            "arrival": "Arrival",
+            "departure": "Departure"
+        }
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "welcome": "Welcome back! Here's an overview of your guests and recent activity.",
+        "view_all": "View All Guests",
+        "export": "Export Report",
+        "total_guests": "Total Guests",
+        "pending_report": "Pending Report",
+        "compliance_rate": "Compliance Rate",
+        "guest_occupancy": "Guest Occupancy",
+        "this_week": "This Week",
+        "recent_arrivals": "Recent Arrivals",
+        "no_activity": "No scanning activity yet."
+    },
+    "scanner": {
+        "tab_upload": "Upload",
+        "tab_scanner": "Scanner",
+        "upload_title": "Upload File",
+        "drag_drop": "Drag & drop or select a PDF, JPG, or PNG file.",
+        "select_file": "Select File",
+        "system_scanner": "System Scanner",
+        "connect_desc": "Connect to a USB/Network scanner via local bridge.",
+        "find_scanners": "Find Scanners",
+        "searching": "Searching...",
+        "bridge_req": "Requires a TWAIN/WIA bridge service running on localhost.",
+        "select_scanner": "Select Scanner",
+        "select_device_ph": "Select a device...",
+        "scan_btn": "Scan Document",
+        "processing": "Processing Document...",
+        "extracting": "Extracting data and verifying identity",
+        "error_invalid": "Please upload a valid image (JPEG, PNG) or PDF.",
+        "error_size": "File size must be less than 5MB.",
+        "error_scan_fail": "Failed to scan document."
+    }
+}
