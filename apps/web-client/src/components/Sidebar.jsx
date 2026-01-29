@@ -34,9 +34,17 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="flex items-center justify-between h-20 px-6 border-b border-white/10">
-                    <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
-                        HostShield
-                    </span>
+                    <div className="flex items-center gap-2">
+                        {/* Logo Icon */}
+                        <img
+                            src="/logo-icon.png"
+                            alt="HostShield"
+                            className="h-10 w-auto object-contain mix-blend-multiply"
+                        />
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-violet-600">
+                            HostShield
+                        </span>
+                    </div>
                     <button
                         onClick={() => setIsOpen(false)}
                         className="lg:hidden p-2 rounded-full hover:bg-black/5 text-slate-500 transition-colors"
