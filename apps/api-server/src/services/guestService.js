@@ -21,7 +21,8 @@ async function createGuest(hostId, guestData) {
         document_expiry_date,
         arrival_date,
         departure_date,
-        purpose_of_stay
+        purpose_of_stay,
+        objectId // Came from frontend
     } = guestData;
 
     const { rows } = await query(
@@ -36,8 +37,9 @@ async function createGuest(hostId, guestData) {
       document_expiry_date,
       arrival_date, 
       departure_date, 
-      purpose_of_stay
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      purpose_of_stay,
+      object_id
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
     RETURNING *`,
         [
             hostId,
@@ -50,7 +52,8 @@ async function createGuest(hostId, guestData) {
             document_expiry_date,
             arrival_date,
             departure_date,
-            purpose_of_stay || 'turistika'
+            purpose_of_stay || 'turistika',
+            objectId || null
         ]
     );
 

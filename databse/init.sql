@@ -34,6 +34,7 @@ CREATE TABLE guest_register (
     arrival_date DATE NOT NULL,
     departure_date DATE NOT NULL,
     purpose_of_stay VARCHAR(100) DEFAULT 'turistika',
+    object_id INTEGER,
     
     -- Compliance & Reporting Status
     -- Maps to Slovensko.digital API submission tracking

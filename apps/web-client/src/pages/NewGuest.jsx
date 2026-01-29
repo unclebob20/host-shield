@@ -12,8 +12,21 @@ const NewGuest = () => {
     const [fileType, setFileType] = useState(null);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
+    const [objects, setObjects] = useState([]);
 
-    const handleScanComplete = (data, file) => {
+    useEffect(() => {
+        const fetchProperties = async () => {
+            try {
+                const response = await api.get('/properties');
+                setObjects(response.data.properties || []);
+            } catch (error) {
+                console.error('Failed to fetch properties', error);
+            }
+        };
+        fetchProperties();
+    }, []);
+
+    const handleScanComplete = (data, file) => { // ... (rest of logic)
         setScannedData(data);
         setFormData({
             ...data,
@@ -275,6 +288,23 @@ const NewGuest = () => {
                                         Stay Experience
                                     </h4>
                                     <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
+                                        <div className="sm:col-span-2">
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Property / Object</label>
+                                            <select
+                                                name="objectId"
+                                                value={formData.objectId || ''}
+                                                onChange={handleChange}
+                                                className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
+                                            >
+                                                <option value="">Select a property...</option>
+                                                {objects.map(obj => (
+                                                    <option key={obj.id} value={obj.id}>
+                                                        {obj.name} ({obj.type})
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
                                         <div className="sm:col-span-1">
                                             <label className="block text-sm font-medium text-slate-700 mb-1">Arrival Date</label>
                                             <input

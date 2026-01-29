@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import NewGuest from './pages/NewGuest';
 import GuestList from './pages/GuestList';
 import Ledger from './pages/Ledger';
+import Calendar from './pages/Calendar';
+import Properties from './pages/Properties';
 import Layout from './components/Layout';
 import { Loader2 } from 'lucide-react';
 
@@ -101,6 +103,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute>
+                <Calendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/properties"
+            element={
+              <ProtectedRoute>
+                <Properties />
               </ProtectedRoute>
             }
           />
