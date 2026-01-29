@@ -1,11 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { useState, useEffect } from 'react';
+import './src/i18n';
+import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import LoginScreen from './src/screens/LoginScreen';
 import CameraScreen from './src/screens/CameraScreen';
 
 export default function App() {
+  const { t } = useTranslation();
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +37,7 @@ export default function App() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading App...</Text>
+        <Text>{t('common.loading')}</Text>
       </View>
     );
   }

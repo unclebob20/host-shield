@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Import
 import Scanner from '../components/Scanner';
 import api from '../lib/api';
 import { Check, Loader2, ArrowLeft, ScanLine } from 'lucide-react';
 
 const NewGuest = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation(); // Destructure
     const [scannedData, setScannedData] = useState(null);
     const [formData, setFormData] = useState({});
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -26,7 +28,7 @@ const NewGuest = () => {
         fetchProperties();
     }, []);
 
-    const handleScanComplete = (data, file) => { // ... (rest of logic)
+    const handleScanComplete = (data, file) => {
         setScannedData(data);
         setFormData({
             ...data,
@@ -62,11 +64,11 @@ const NewGuest = () => {
                     navigate('/guests');
                 }, 500);
             } else {
-                setError(response.data.error || 'Failed to save guest.');
+                setError(response.data.error || t('common.error'));
             }
         } catch (err) {
             console.error('Save Error:', err);
-            setError(err.response?.data?.error || 'Failed to save guest data. Please check connection.');
+            setError(err.response?.data?.error || t('common.error'));
         } finally {
             setSaving(false);
         }
@@ -81,13 +83,13 @@ const NewGuest = () => {
                     className="flex items-center text-sm text-slate-500 hover:text-blue-600 mb-4 transition-colors"
                 >
                     <ArrowLeft className="w-4 h-4 mr-1" />
-                    Back to Registry
+                    {t('common.back')}
                 </button>
                 <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700">
-                    Register New Guest
+                    {t('guest.register_new')}
                 </h1>
                 <p className="mt-2 text-slate-500">
-                    Scan a document or manually enter details to register a guest.
+                    {t('guest.register_desc')}
                 </p>
             </div>
 
@@ -99,7 +101,7 @@ const NewGuest = () => {
 
                     <h2 className="text-xl font-semibold text-slate-900 mb-6 flex items-center">
                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 text-sm font-bold mr-3">1</span>
-                        Upload Document
+                        {t('guest.upload_doc')}
                     </h2>
 
                     <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-slate-200/50">
@@ -112,7 +114,7 @@ const NewGuest = () => {
                                 <div className="w-full border-t border-slate-200" />
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="bg-white/80 backdrop-blur px-2 text-slate-400 rounded-full">Or manually enter details</span>
+                                <span className="bg-white/80 backdrop-blur px-2 text-slate-400 rounded-full">{t('guest.manual_entry')}</span>
                             </div>
                         </div>
                         <button
@@ -135,7 +137,7 @@ const NewGuest = () => {
                             }}
                             className="text-slate-600 hover:text-blue-600 font-medium text-sm focus:outline-none hover:underline transition-colors"
                         >
-                            Skip Upload & Enter Manually
+                            {t('guest.skip_upload')}
                         </button>
                     </div>
                 </div>
@@ -144,7 +146,7 @@ const NewGuest = () => {
                     <div className="px-6 py-5 border-b border-slate-200/60 flex justify-between items-center bg-white/30 backdrop-blur-sm">
                         <h3 className="text-lg font-medium text-slate-900 flex items-center">
                             <span className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold mr-3">2</span>
-                            Review & Confirm
+                            {t('guest.review_confirm')}
                         </h3>
                         <button
                             onClick={() => {
@@ -155,14 +157,14 @@ const NewGuest = () => {
                             }}
                             className="text-sm text-slate-500 hover:text-blue-600 transition-colors"
                         >
-                            Upload different document
+                            {t('guest.upload_diff')}
                         </button>
                     </div>
 
                     <div className="md:flex">
                         {/* Image Preview Sidebar */}
                         <div className="md:w-1/3 bg-slate-50/50 p-6 border-r border-slate-200/60">
-                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Uploaded Document</h4>
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{t('guest.uploaded_doc')}</h4>
                             {previewUrl && (
                                 <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white">
                                     {fileType === 'application/pdf' ? (
@@ -174,7 +176,7 @@ const NewGuest = () => {
                             )}
 
                             <div className="mt-6 p-4 rounded-xl bg-white/60 border border-slate-100">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Extraction Confidence</h4>
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{t('guest.confidence')}</h4>
                                 <div className="flex items-center">
                                     <div className="flex-1 bg-slate-200 rounded-full h-2">
                                         <div className="bg-emerald-500 h-2 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: '92%' }}></div>
@@ -200,11 +202,11 @@ const NewGuest = () => {
                                 {/* Personal Details Section */}
                                 <div>
                                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/60 pb-2 mb-4">
-                                        Personal Details
+                                        {t('guest.personal_details')}
                                     </h4>
                                     <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">First name</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.first_name')}</label>
                                             <input
                                                 type="text"
                                                 name="first_name"
@@ -215,7 +217,7 @@ const NewGuest = () => {
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Last name</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.last_name')}</label>
                                             <input
                                                 type="text"
                                                 name="last_name"
@@ -226,7 +228,7 @@ const NewGuest = () => {
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.dob')}</label>
                                             <input
                                                 type="date"
                                                 name="date_of_birth"
@@ -237,7 +239,7 @@ const NewGuest = () => {
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Nationality (ISO3)</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.nationality')}</label>
                                             <input
                                                 type="text"
                                                 name="nationality_iso3"
@@ -253,24 +255,24 @@ const NewGuest = () => {
                                 {/* Identity Document Section */}
                                 <div>
                                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/60 pb-2 mb-4">
-                                        Identity Document
+                                        {t('guest.identity_doc')}
                                     </h4>
                                     <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Document Type</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.doc_type')}</label>
                                             <select
                                                 name="document_type"
                                                 value={formData.document_type || 'P'}
                                                 onChange={handleChange}
                                                 className="block w-full rounded-xl border-slate-200/60 bg-white/50 px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-blue-500 sm:text-sm shadow-sm transition-all"
                                             >
-                                                <option value="P">Passport (P)</option>
-                                                <option value="ID">Identity Card (I)</option>
+                                                <option value="P">{t('guest.passport')} (P)</option>
+                                                <option value="ID">{t('guest.id_card')} (I)</option>
                                             </select>
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Document Number</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.doc_number')}</label>
                                             <input
                                                 type="text"
                                                 name="document_number"
@@ -285,11 +287,11 @@ const NewGuest = () => {
                                 {/* Stay Experience Section */}
                                 <div>
                                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/60 pb-2 mb-4">
-                                        Stay Experience
+                                        {t('guest.stay_exp')}
                                     </h4>
                                     <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
                                         <div className="sm:col-span-2">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Property / Object</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.property')}</label>
                                             <select
                                                 name="objectId"
                                                 value={formData.objectId || ''}
@@ -306,7 +308,7 @@ const NewGuest = () => {
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Arrival Date</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.arrival')}</label>
                                             <input
                                                 type="date"
                                                 name="arrival_date"
@@ -317,7 +319,7 @@ const NewGuest = () => {
                                         </div>
 
                                         <div className="sm:col-span-1">
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Departure Date</label>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">{t('guest.departure')}</label>
                                             <input
                                                 type="date"
                                                 name="departure_date"
@@ -333,14 +335,14 @@ const NewGuest = () => {
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            if (window.confirm("Discard changes?")) {
+                                            if (window.confirm(t('guest.discard_confirm'))) {
                                                 setScannedData(null);
                                                 setFileType(null);
                                             }
                                         }}
                                         className="bg-white py-2.5 px-5 border border-slate-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-3 transition-colors"
                                     >
-                                        Cancel
+                                        {t('common.cancel')}
                                     </button>
                                     <button
                                         type="submit"
@@ -354,7 +356,7 @@ const NewGuest = () => {
                                             </>
                                         ) : (
                                             <>
-                                                Save & Register Guest
+                                                {t('guest.save_register')}
                                                 <Check className="ml-2 -mr-1 h-4 w-4" />
                                             </>
                                         )}

@@ -1,0 +1,146 @@
+{
+    "app": {
+        "title": "HostShield"
+    },
+    "nav": {
+        "overview": "Prehľad",
+        "new_guest": "Nový hosť",
+        "calendar": "Kalendár",
+        "guests": "Hostia",
+        "properties": "Objekty",
+        "ledger": "Kniha hostí",
+        "logout": "Odhlásiť sa"
+    },
+    "common": {
+        "loading": "Načítavam...",
+        "save": "Uložiť",
+        "cancel": "Zrušiť",
+        "error": "Chyba",
+        "success": "Úspech",
+        "back": "Späť"
+    },
+    "guest": {
+        "register_new": "Registrovať nového hosťa",
+        "register_desc": "Naskenujte doklad alebo manuálne zadajte údaje pre registráciu hosťa.",
+        "upload_doc": "Nahrať doklad",
+        "manual_entry": "Alebo zadať manuálne",
+        "skip_upload": "Preskočiť nahrávanie a zadať manuálne",
+        "review_confirm": "Skontrolovať a potvrdiť",
+        "upload_diff": "Nahrať iný doklad",
+        "uploaded_doc": "Nahraný doklad",
+        "confidence": "Presnosť extrakcie",
+        "personal_details": "Osobné údaje",
+        "first_name": "Meno",
+        "last_name": "Priezvisko",
+        "dob": "Dátum narodenia",
+        "nationality": "Štátna príslušnosť (ISO3)",
+        "identity_doc": "Doklad totožnosti",
+        "doc_type": "Typ dokladu",
+        "doc_number": "Číslo dokladu",
+        "passport": "Cestovný pas",
+        "id_card": "Občiansky preukaz",
+        "stay_exp": "Pobyt",
+        "property": "Objekt / Ubytovanie",
+        "arrival": "Dátum príchodu",
+        "departure": "Dátum odchodu",
+        "save_register": "Uložiť a registrovať hosťa",
+        "discard_confirm": "Zahodiť zmeny?",
+        "list_title": "Zoznam hostí",
+        "list_subtitle": "Spravujte všetkých registrovaných hostí a ich stav hlásenia.",
+        "add_button": "Pridať nového hosťa",
+        "search_placeholder": "Hľadať podľa mena alebo pasu...",
+        "status": {
+            "pending": "Čaká",
+            "sending": "Odosiela sa",
+            "sent": "Odoslané",
+            "error": "Chyba"
+        },
+        "details_modal": {
+            "title": "Detail hosťa",
+            "subtitle": "Kompletné informácie o zázname",
+            "personal_info": "Osobné údaje",
+            "doc_details": "Údaje o doklade",
+            "stay_info": "Informácie o pobyte",
+            "purpose": "Účel pobytu",
+            "close": "Zavrieť",
+            "submit_report": "Odoslať hlásenie"
+        },
+        "submit_success": "Hosť bol úspešne nahlásený do systému cudzineckej polície!",
+        "submit_fail": "Nepodarilo sa odoslať hosťa. Skontrolujte konzolu pre detaily.",
+        "no_guests": "Nenašli sa žiadni hostia",
+        "no_guests_sub": "Skúste zmeniť vyhľadávanie alebo pridajte nového hosťa."
+    },
+    "properties": {
+        "title": "Objekty",
+        "subtitle": "Spravujte svoje ubytovacie jednotky.",
+        "add_button": "Pridať objekt",
+        "name": "Názov objektu",
+        "type": "Typ",
+        "create": "Vytvoriť objekt",
+        "delete_confirm": "Ste si istí, že chcete odstrániť tento objekt?"
+    },
+    "calendar": {
+        "title": "Kalendár obsadenosti",
+        "subtitle": "Spravujte dostupnosť naprieč vašimi objektmi",
+        "add_booking": "Pridať rezerváciu",
+        "legend": {
+            "reported": "Nahlásené polícii",
+            "pending": "Čaká na nahlásenie",
+            "error": "Chyba hlásenia",
+            "confirmed": "Potvrdené (Lokálne)"
+        }
+    },
+    "ledger": {
+        "title": "Kniha ubytovaných",
+        "subtitle": "Generujte a exportujte oficiálnu Knihu ubytovaných pre, účely kontroly.",
+        "select_period": "Vyberte obdobie",
+        "select_period_desc": "Zvoľte rozsah dátumov pre report. Export bude obsahovať všetkých hostí ubytovaných v tomto období.",
+        "start_date": "Dátum od",
+        "end_date": "Dátum do",
+        "preview": "Náhľad dát",
+        "export_pdf": "Exportovať PDF",
+        "error_gen": "Chyba pri generovaní reportu",
+        "preview_title": "Náhľad",
+        "records": "Záznamov",
+        "no_records": "V tomto období sa nenašli žiadni hostia.",
+        "cols": {
+            "name": "Meno",
+            "nationality": "Národnosť",
+            "arrival": "Príchod",
+            "departure": "Odchod"
+        }
+    },
+    "dashboard": {
+        "title": "Prehľad",
+        "welcome": "Vitajte späť! Tu je prehľad vašich hostí a nedávnej aktivity.",
+        "view_all": "Všetci hostia",
+        "export": "Exportovať report",
+        "total_guests": "Celkom hostí",
+        "pending_report": "Čaká na hlásenie",
+        "compliance_rate": "Miera dodržiavania",
+        "guest_occupancy": "Obsadenosť hosťami",
+        "this_week": "Tento týždeň",
+        "recent_arrivals": "Nedávne príchody",
+        "no_activity": "Zatiaľ žiadna aktivita."
+    },
+    "scanner": {
+        "tab_upload": "Nahrať",
+        "tab_scanner": "Skener",
+        "upload_title": "Nahrať súbor",
+        "drag_drop": "Presuňte sem alebo vyberte PDF, JPG alebo PNG súbor.",
+        "select_file": "Vybrať súbor",
+        "system_scanner": "Systémový skener",
+        "connect_desc": "Pripojte sa k USB/Sieťovému skeneru cez lokálny most.",
+        "find_scanners": "Nájsť skenery",
+        "searching": "Hľadám...",
+        "bridge_req": "Vyžaduje bežiacu službu TWAIN/WIA bridge na localhost.",
+        "select_scanner": "Vybrať skener",
+        "select_device_ph": "Vyberte zariadenie...",
+        "scan_btn": "Skenovať dokument",
+        "processing": "Spracovávam dokument...",
+        "extracting": "Extrahujem údaje a overujem identitu",
+        "error_invalid": "Prosím nahrajte platný obrázok (JPEG, PNG) alebo PDF.",
+        "error_size": "Veľkosť súboru musí byť menšia ako 5MB.",
+        "error_scan_fail": "Nepodarilo sa naskenovať dokument."
+    }
+}

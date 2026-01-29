@@ -4,8 +4,10 @@ import { Users, AlertTriangle, FileCheck, Clock, TrendingUp, ShieldCheck } from 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../lib/api';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const Dashboard = () => {
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalGuests: 0,
@@ -52,9 +54,9 @@ const Dashboard = () => {
     }, []);
 
     const cards = [
-        { name: 'Total Guests', value: stats.totalGuests, icon: Users, color: 'text-blue-500', gradient: 'from-blue-500/20 to-blue-600/5' },
-        { name: 'Pending Report', value: stats.pendingSubmissions, icon: AlertTriangle, color: 'text-amber-500', gradient: 'from-amber-500/20 to-amber-600/5' },
-        { name: 'Compliance Rate', value: `${stats.totalGuests ? Math.round(((stats.totalGuests - stats.pendingSubmissions) / stats.totalGuests) * 100) : 100}%`, icon: ShieldCheck, color: 'text-emerald-500', gradient: 'from-emerald-500/20 to-emerald-600/5' },
+        { name: t('dashboard.total_guests'), value: stats.totalGuests, icon: Users, color: 'text-blue-500', gradient: 'from-blue-500/20 to-blue-600/5' },
+        { name: t('dashboard.pending_report'), value: stats.pendingSubmissions, icon: AlertTriangle, color: 'text-amber-500', gradient: 'from-amber-500/20 to-amber-600/5' },
+        { name: t('dashboard.compliance_rate'), value: `${stats.totalGuests ? Math.round(((stats.totalGuests - stats.pendingSubmissions) / stats.totalGuests) * 100) : 100}%`, icon: ShieldCheck, color: 'text-emerald-500', gradient: 'from-emerald-500/20 to-emerald-600/5' },
     ];
 
     if (loading) {
@@ -71,23 +73,23 @@ const Dashboard = () => {
             <div className="glass-card rounded-2xl p-8 relative overflow-hidden flex items-center justify-between">
                 <div className="relative z-10 max-w-xl">
                     <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">
-                        Dashboard
+                        {t('dashboard.title')}
                     </h1>
                     <p className="text-lg text-slate-600">
-                        Welcome back! Here's an overview of your guests and recent activity.
+                        {t('dashboard.welcome')}
                     </p>
                     <div className="mt-6 flex gap-3">
                         <button
                             onClick={() => navigate('/guests')}
                             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30"
                         >
-                            View All Guests
+                            {t('dashboard.view_all')}
                         </button>
                         <button
                             onClick={() => navigate('/ledger')}
                             className="inline-flex items-center px-4 py-2 bg-white text-slate-700 border border-slate-200 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
                         >
-                            Export Report
+                            {t('dashboard.export')}
                         </button>
                     </div>
                 </div>
@@ -131,9 +133,9 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-slate-900 flex items-center">
                             <TrendingUp className="w-5 h-5 mr-2 text-blue-500" />
-                            Guest Occupancy
+                            {t('dashboard.guest_occupancy')}
                         </h2>
-                        <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">This Week</span>
+                        <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{t('dashboard.this_week')}</span>
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -177,7 +179,7 @@ const Dashboard = () => {
                 <div className="glass-card rounded-2xl p-6">
                     <h2 className="text-lg font-bold text-slate-900 mb-6 flex items-center">
                         <Clock className="w-5 h-5 mr-2 text-blue-500" />
-                        Recent Arrivals
+                        {t('dashboard.recent_arrivals')}
                     </h2>
                     <div className="flow-root">
                         <ul className="-my-5">
@@ -201,7 +203,7 @@ const Dashboard = () => {
                                                 </p>
                                                 <p className="text-xs text-slate-500 truncate flex items-center mt-0.5">
                                                     <span className="mr-1">{guest.nationality_iso3}</span>
-                                                    • Arrived {new Date(guest.arrival_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                    • Arrived {new Date(guest.arrival_date).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })}
                                                 </p>
                                             </div>
                                             <div>
@@ -211,7 +213,7 @@ const Dashboard = () => {
                                                         guest.submission_status === 'error' ? "bg-red-100 text-red-800" :
                                                             "bg-amber-100 text-amber-800"
                                                 )}>
-                                                    {guest.submission_status || 'pending'}
+                                                    {t(`guest.status.${guest.submission_status || 'pending'}`)}
                                                 </span>
                                             </div>
                                         </div>
@@ -219,7 +221,7 @@ const Dashboard = () => {
                                 ))
                             ) : (
                                 <li className="py-4 text-center text-slate-500 text-sm">
-                                    No scanning activity yet.
+                                    {t('dashboard.no_activity')}
                                 </li>
                             )}
                         </ul>

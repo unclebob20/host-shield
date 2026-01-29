@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { FileDown, FileText, Calendar, Loader2, AlertCircle } from 'lucide-react';
 import api from '../lib/api';
+import { useTranslation } from 'react-i18next';
 
 const Ledger = () => {
+    const { t, i18n } = useTranslation();
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 
@@ -37,7 +39,7 @@ const Ledger = () => {
             setPreviewData(response.data);
         } catch (err) {
             console.error('Preview error:', err);
-            setError(err.response?.data?.error || 'Failed to generate preview');
+            setError(err.response?.data?.error || t('ledger.error_gen'));
         } finally {
             setLoading(false);
         }
@@ -65,7 +67,7 @@ const Ledger = () => {
             link.remove();
         } catch (err) {
             console.error('Export error:', err);
-            setError(err.response?.data?.error || 'Failed to export PDF');
+            setError(err.response?.data?.error || t('ledger.error_gen'));
         } finally {
             setExporting(false);
         }
@@ -76,10 +78,10 @@ const Ledger = () => {
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700">
-                    Guest Ledger
+                    {t('ledger.title')}
                 </h1>
                 <p className="mt-2 text-slate-500">
-                    Generate and export the official "Kniha ubytovaných" for compliance.
+                    {t('ledger.subtitle')}
                 </p>
             </div>
 
@@ -88,10 +90,10 @@ const Ledger = () => {
                 <div className="flex items-start justify-between mb-6">
                     <div>
                         <h3 className="text-lg font-semibold text-slate-900">
-                            Select Period
+                            {t('ledger.select_period')}
                         </h3>
                         <p className="text-sm text-slate-500 mt-1 max-w-xl">
-                            Choose the date range for your report. The export will include all guests who were stayed during this period.
+                            {t('ledger.select_period_desc')}
                         </p>
                     </div>
                 </div>
@@ -99,7 +101,7 @@ const Ledger = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
                     <div>
                         <label htmlFor="start-date" className="block text-sm font-medium text-slate-700 mb-1">
-                            Start Date
+                            {t('ledger.start_date')}
                         </label>
                         <div className="relative rounded-xl shadow-sm">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -117,7 +119,7 @@ const Ledger = () => {
 
                     <div>
                         <label htmlFor="end-date" className="block text-sm font-medium text-slate-700 mb-1">
-                            End Date
+                            {t('ledger.end_date')}
                         </label>
                         <div className="relative rounded-xl shadow-sm">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -141,7 +143,7 @@ const Ledger = () => {
                             className="flex-1 inline-flex justify-center items-center px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white/80 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
                         >
                             {loading ? <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" /> : <FileText className="-ml-1 mr-2 h-4 w-4 text-slate-500" />}
-                            Preview Data
+                            {t('ledger.preview')}
                         </button>
 
                         <button
@@ -151,7 +153,7 @@ const Ledger = () => {
                             className="flex-1 inline-flex justify-center items-center px-4 py-2.5 border border-transparent shadow-lg shadow-blue-500/20 text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all"
                         >
                             {exporting ? <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" /> : <FileDown className="-ml-1 mr-2 h-4 w-4" />}
-                            Export PDF
+                            {t('ledger.export_pdf')}
                         </button>
                     </div>
                 </div>
@@ -164,7 +166,7 @@ const Ledger = () => {
                             <AlertCircle className="h-5 w-5 text-red-500" aria-hidden="true" />
                         </div>
                         <div className="ml-3">
-                            <h3 className="text-sm font-medium text-red-800">Error generating report</h3>
+                            <h3 className="text-sm font-medium text-red-800">{t('ledger.error_gen')}</h3>
                             <div className="mt-2 text-sm text-red-700">
                                 <p>{error}</p>
                             </div>
@@ -176,7 +178,7 @@ const Ledger = () => {
             {previewData && (
                 <div className="flex flex-col animate-fade-in">
                     <h3 className="text-lg font-semibold text-slate-900 mb-4 px-1">
-                        Preview ({previewData.rowCount} Records)
+                        {t('ledger.preview_title')} ({previewData.rowCount} {t('ledger.records')})
                     </h3>
                     <div className="glass-card rounded-2xl overflow-hidden">
                         <div className="overflow-x-auto">
@@ -184,16 +186,16 @@ const Ledger = () => {
                                 <thead className="bg-slate-50/50">
                                     <tr>
                                         <th scope="col" className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                            Name
+                                            {t('ledger.cols.name')}
                                         </th>
                                         <th scope="col" className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                            Nationality
+                                            {t('ledger.cols.nationality')}
                                         </th>
                                         <th scope="col" className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                            Arrival
+                                            {t('ledger.cols.arrival')}
                                         </th>
                                         <th scope="col" className="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                            Departure
+                                            {t('ledger.cols.departure')}
                                         </th>
                                     </tr>
                                 </thead>
@@ -209,17 +211,17 @@ const Ledger = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                                                {new Date(guest.arrival_date).toLocaleDateString()}
+                                                {new Date(guest.arrival_date).toLocaleDateString(i18n.language)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                                                {new Date(guest.departure_date).toLocaleDateString()}
+                                                {new Date(guest.departure_date).toLocaleDateString(i18n.language)}
                                             </td>
                                         </tr>
                                     ))}
                                     {previewData.entries.length === 0 && (
                                         <tr>
                                             <td colSpan="4" className="px-6 py-12 whitespace-nowrap text-sm text-slate-500 text-center">
-                                                No guests found in this period.
+                                                {t('ledger.no_records')}
                                             </td>
                                         </tr>
                                     )}

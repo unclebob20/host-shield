@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Building, User, Calendar as CalendarIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
 
 const Calendar = () => {
+    const { t, i18n } = useTranslation();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [objects, setObjects] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -95,9 +97,9 @@ const Calendar = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                        Occupancy Calendar
+                        {t('calendar.title')}
                     </h1>
-                    <p className="text-slate-500 mt-1">Manage availability across your properties</p>
+                    <p className="text-slate-500 mt-1">{t('calendar.subtitle')}</p>
                 </div>
 
                 <div className="flex items-center gap-4 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
@@ -108,7 +110,7 @@ const Calendar = () => {
                         <ChevronLeft className="w-5 h-5" />
                     </button>
                     <span className="text-lg font-semibold text-slate-800 w-32 text-center select-none">
-                        {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                        {currentDate.toLocaleString(i18n.language, { month: 'long', year: 'numeric' })}
                     </span>
                     <button
                         onClick={() => changeMonth(1)}
@@ -121,7 +123,7 @@ const Calendar = () => {
 
                     <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm">
                         <Plus className="w-4 h-4" />
-                        <span className="hidden sm:inline">Add Booking</span>
+                        <span className="hidden sm:inline">{t('calendar.add_booking')}</span>
                     </button>
                 </div>
             </div>
@@ -134,7 +136,7 @@ const Calendar = () => {
                         <div className="flex border-b border-slate-200/60 bg-slate-50/50">
                             {/* Objects Column Header */}
                             <div className="w-64 flex-shrink-0 p-4 border-r border-slate-200/60 font-semibold text-slate-600 sticky left-0 bg-slate-50/95 backdrop-blur z-20">
-                                Property / Object
+                                {t('guest.property')}
                             </div>
 
                             {/* Days Header */}
@@ -149,7 +151,7 @@ const Calendar = () => {
                                         className={`flex-1 min-w-[40px] text-center py-3 border-r border-slate-100 last:border-r-0 flex flex-col items-center justify-center ${isWeekend ? 'bg-slate-100/50' : ''}`}
                                     >
                                         <span className={`text-xs font-medium mb-1 ${isToday ? 'text-blue-600' : 'text-slate-400'}`}>
-                                            {date.toLocaleString('default', { weekday: 'narrow' })}
+                                            {date.toLocaleString(i18n.language, { weekday: 'narrow' })}
                                         </span>
                                         <span className={`text-sm font-semibold w-8 h-8 flex items-center justify-center rounded-full ${isToday ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700'}`}>
                                             {day}
@@ -210,19 +212,19 @@ const Calendar = () => {
             <div className="mt-6 flex flex-wrap gap-4 text-sm text-slate-600">
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span>Reported to Police</span>
+                    <span>{t('calendar.legend.reported')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <span>Pending Report</span>
+                    <span>{t('calendar.legend.pending')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <span>Reporting Error</span>
+                    <span>{t('calendar.legend.error')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span>Confirmed (Local)</span>
+                    <span>{t('calendar.legend.confirmed')}</span>
                 </div>
             </div>
         </div>

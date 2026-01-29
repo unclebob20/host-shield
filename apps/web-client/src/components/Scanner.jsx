@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Upload, Loader2, FileText, AlertCircle, RefreshCw, Printer } from 'lucide-react';
 import api from '../lib/api';
 
 const Scanner = ({ onScanComplete }) => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('upload'); // upload, device
     const [isDragging, setIsDragging] = useState(false);
     const [isScanning, setIsScanning] = useState(false);
@@ -103,11 +105,11 @@ const Scanner = ({ onScanComplete }) => {
     const processFile = async (file) => {
         const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
         if (!validTypes.includes(file.type)) {
-            setError('Please upload a valid image (JPEG, PNG) or PDF.');
+            setError(t('scanner.error_invalid'));
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            setError('File size must be less than 5MB.');
+            setError(t('scanner.error_size'));
             return;
         }
 
@@ -125,7 +127,7 @@ const Scanner = ({ onScanComplete }) => {
             if (response.data.success) {
                 onScanComplete(response.data.data, file);
             } else {
-                setError(response.data.error || 'Failed to scan document.');
+                setError(response.data.error || t('scanner.error_scan_fail'));
             }
         } catch (err) {
             console.error('OCR Error:', err);
@@ -141,8 +143,8 @@ const Scanner = ({ onScanComplete }) => {
             return (
                 <div className="flex flex-col items-center py-12">
                     <Loader2 className="h-12 w-12 text-blue-500 animate-spin mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900">Processing Document...</h3>
-                    <p className="text-sm text-gray-500 mt-2">Extracting data and verifying identity</p>
+                    <h3 className="text-lg font-medium text-gray-900">{t('scanner.processing')}</h3>
+                    <p className="text-sm text-gray-500 mt-2">{t('scanner.extracting')}</p>
                 </div>
             );
         }
@@ -154,9 +156,9 @@ const Scanner = ({ onScanComplete }) => {
                         <div className="p-4 bg-purple-50 rounded-full mb-4">
                             <Printer className="h-10 w-10 text-purple-600" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900">System Scanner</h3>
+                        <h3 className="text-lg font-medium text-gray-900">{t('scanner.system_scanner')}</h3>
                         <p className="text-sm text-gray-500 mt-2 mb-6 text-center">
-                            Connect to a USB/Network scanner via local bridge.
+                            {t('scanner.connect_desc')}
                         </p>
 
                         {!availableDevices.length ? (
@@ -169,29 +171,29 @@ const Scanner = ({ onScanComplete }) => {
                                     {isSearchingDevices ? (
                                         <>
                                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            Searching...
+                                            {t('scanner.searching')}
                                         </>
                                     ) : (
                                         <>
                                             <RefreshCw className="w-4 h-4 mr-2" />
-                                            Find Scanners
+                                            {t('scanner.find_scanners')}
                                         </>
                                     )}
                                 </button>
                                 <p className="text-xs text-slate-400 mt-3 italic">
-                                    Requires a TWAIN/WIA bridge service running on localhost.
+                                    {t('scanner.bridge_req')}
                                 </p>
                             </div>
                         ) : (
                             <div className="w-full space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Select Scanner</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('scanner.select_scanner')}</label>
                                     <select
                                         className="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm"
                                         value={selectedDevice}
                                         onChange={(e) => setSelectedDevice(e.target.value)}
                                     >
-                                        <option value="">Select a device...</option>
+                                        <option value="">{t('scanner.select_device_ph')}</option>
                                         {availableDevices.map(d => (
                                             <option key={d.id} value={d.id}>{d.name}</option>
                                         ))}
@@ -203,7 +205,7 @@ const Scanner = ({ onScanComplete }) => {
                                     className="w-full px-6 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <Printer className="w-4 h-4 mr-2" />
-                                    Scan Document
+                                    {t('scanner.scan_btn')}
                                 </button>
                             </div>
                         )}
@@ -217,9 +219,9 @@ const Scanner = ({ onScanComplete }) => {
                         <div className="p-4 bg-blue-50 rounded-full mb-4">
                             <Upload className="h-10 w-10 text-blue-600" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900">Upload File</h3>
+                        <h3 className="text-lg font-medium text-gray-900">{t('scanner.upload_title')}</h3>
                         <p className="text-sm text-gray-500 mt-2 mb-6 text-center max-w-xs">
-                            Drag & drop or select a PDF, JPG, or PNG file.
+                            {t('scanner.drag_drop')}
                         </p>
                         <input
                             type="file"
@@ -233,7 +235,7 @@ const Scanner = ({ onScanComplete }) => {
                             className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm flex items-center"
                         >
                             <FileText className="w-4 h-4 mr-2" />
-                            Select File
+                            {t('scanner.select_file')}
                         </button>
                     </div>
                 );
@@ -251,7 +253,7 @@ const Scanner = ({ onScanComplete }) => {
                 >
                     <div className="flex items-center justify-center gap-2">
                         <Upload className="w-4 h-4" />
-                        <span>Upload</span>
+                        <span>{t('scanner.tab_upload')}</span>
                     </div>
                 </button>
                 <button
@@ -261,7 +263,7 @@ const Scanner = ({ onScanComplete }) => {
                 >
                     <div className="flex items-center justify-center gap-2">
                         <Printer className="w-4 h-4" />
-                        <span>Scanner</span>
+                        <span>{t('scanner.tab_scanner')}</span>
                     </div>
                 </button>
             </div>
