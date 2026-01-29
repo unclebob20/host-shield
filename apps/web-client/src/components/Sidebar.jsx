@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Users, FileText, Settings, LogOut, X, PlusCircle } from 'lucide-react';
+import { Home, Users, FileText, Settings, LogOut, X, PlusCircle, Calendar, Building } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
 
@@ -10,7 +10,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     const navItems = [
         { icon: Home, label: 'Overview', to: '/' },
         { icon: PlusCircle, label: 'New Guest', to: '/guests/new' },
+        { icon: Calendar, label: 'Calendar', to: '/calendar' },
         { icon: Users, label: 'Guests', to: '/guests' },
+        { icon: Building, label: 'Properties', to: '/properties' },
         { icon: FileText, label: 'Ledger', to: '/ledger' },
         // { icon: Settings, label: 'Settings', to: '/settings' },
     ];

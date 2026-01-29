@@ -8,6 +8,7 @@ const guestRoutes = require('./routes/guestRoutes');
 const ledgerRoutes = require('./routes/ledgerRoutes');
 const hostRoutes = require('./routes/hostRoutes');
 const ocrRoutes = require('./routes/ocrRoutes');
+const propertyRoutes = require('./routes/propertyRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +32,7 @@ app.use('/api/ocr', ocrRoutes);
 // STEP 6: Connected the guest routes to the /api/guests path
 app.use('/api/guests', guestRoutes);
 app.use('/api/ledger', ledgerRoutes);
+app.use('/api/properties', propertyRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
