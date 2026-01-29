@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from '../config';
@@ -25,7 +25,6 @@ export default function LoginScreen({ onLoginSuccess }) {
 
             if (response.data.success) {
                 const token = response.data.accessToken;
-                // Save token securely
                 await SecureStore.setItemAsync('userToken', token);
                 onLoginSuccess(token);
             } else {
@@ -41,32 +40,74 @@ export default function LoginScreen({ onLoginSuccess }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Host Shield</Text>
-            <Text style={styles.subtitle}>Mobile Scanner</Text>
+            <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+            <SafeAreaView style={styles.safeArea}>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    style={styles.keyboardView}
+                >
+                    <View style={styles.headerContainer}>
+                        <Text style={styles.title}>HostShield</Text>
+                        <Text style={styles.subtitle}>
+                            Automated guest reporting and digital ledger for modern hosts.
+                        </Text>
+                    </View>
 
-            <View style={styles.form}>
-                <TextInput
-                    placeholder="Email Address"
-                    value={email}
-                    onChangeText={setEmail}
-                    style={styles.input}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                />
-                <TextInput
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    style={styles.input}
-                    secureTextEntry
-                />
+                    <View style={styles.formContainer}>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Email address</Text>
+                            <TextInput
+                                placeholder="name@example.com"
+                                placeholderTextColor="#64748b"
+                                value={email}
+                                onChangeText={setEmail}
+                                style={styles.input}
+                                autoCapitalize="none"
+                                keyboardType="email-address"
+                            />
+                        </View>
 
-                {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
-                ) : (
-                    <Button title="Login" onPress={handleLogin} />
-                )}
-            </View>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Password</Text>
+                            <TextInput
+                                placeholder="Enter your password"
+                                placeholderTextColor="#64748b"
+                                value={password}
+                                onChangeText={setPassword}
+                                style={styles.input}
+                                secureTextEntry
+                            />
+                        </View>
+
+                        <TouchableOpacity
+                            style={[styles.button, loading && styles.buttonDisabled]}
+                            onPress={handleLogin}
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <ActivityIndicator color="#ffffff" />
+                            ) : (
+                                <Text style={styles.buttonText}>Sign in</Text>
+                            )}
+                        </TouchableOpacity>
+
+                        <View style={styles.footer}>
+                            <View style={styles.dividerContainer}>
+                                <View style={styles.dividerLine} />
+                                <Text style={styles.dividerText}>Don't have an account?</Text>
+                                <View style={styles.dividerLine} />
+                            </View>
+
+                            <TouchableOpacity
+                                style={styles.secondaryButton}
+                                onPress={() => Alert.alert('Registration', 'Please use the web portal to create a new account.')}
+                            >
+                                <Text style={styles.secondaryButtonText}>Create new account</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
         </View>
     );
 }
@@ -74,31 +115,113 @@ export default function LoginScreen({ onLoginSuccess }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
-        alignItems: 'center',
+        backgroundColor: '#0f172a', // Slate 900
+    },
+    safeArea: {
+        flex: 1,
+    },
+    keyboardView: {
+        flex: 1,
         justifyContent: 'center',
-        padding: 20,
+        paddingHorizontal: 24,
+    },
+    headerContainer: {
+        marginBottom: 48,
+        alignItems: 'center',
     },
     title: {
-        fontSize: 32,
+        fontSize: 42,
         fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#333',
+        color: '#ffffff',
+        marginBottom: 12,
+        letterSpacing: -1,
+        textAlign: 'center',
     },
     subtitle: {
-        fontSize: 18,
-        color: '#666',
-        marginBottom: 40,
+        fontSize: 16,
+        color: '#94a3b8', // Slate 400
+        textAlign: 'center',
+        maxWidth: 300,
+        lineHeight: 24,
     },
-    form: {
+    formContainer: {
         width: '100%',
     },
+    inputGroup: {
+        marginBottom: 20,
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#e2e8f0', // Slate 200
+        marginBottom: 8,
+    },
     input: {
-        backgroundColor: '#fff',
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 15,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
         borderWidth: 1,
-        borderColor: '#ddd',
-    }
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        fontSize: 16,
+        color: '#ffffff',
+    },
+    button: {
+        backgroundColor: '#2563eb', // Blue 600
+        borderRadius: 12,
+        paddingVertical: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 12,
+        shadowColor: '#2563eb',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
+    },
+    buttonDisabled: {
+        opacity: 0.7,
+    },
+    buttonText: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    footer: {
+        marginTop: 40,
+        alignItems: 'center',
+    },
+    dividerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 24,
+        width: '100%',
+    },
+    dividerLine: {
+        flex: 1,
+        height: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    dividerText: {
+        color: '#64748b', // Slate 500
+        fontSize: 14,
+        paddingHorizontal: 16,
+    },
+    secondaryButton: {
+        width: '100%',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: 12,
+        paddingVertical: 16,
+        alignItems: 'center',
+    },
+    secondaryButtonText: {
+        color: '#ffffff',
+        fontSize: 15,
+        fontWeight: '500',
+    },
 });
