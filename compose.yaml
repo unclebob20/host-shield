@@ -4,8 +4,8 @@ services:
     image: postgres:15-alpine
     container_name: hostshield_db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
       POSTGRES_DB: hostshield
     volumes:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -24,8 +24,8 @@ services:
     image: postgres:15-alpine
     container_name: hostshield_gov_db
     environment:
-      POSTGRES_USER: gov_user
-      POSTGRES_PASSWORD: gov_password
+      POSTGRES_USER: ${GOV_DB_USER:-gov_user}
+      POSTGRES_PASSWORD: ${GOV_DB_PASSWORD:-gov_password}
       POSTGRES_DB: gov_api_production
     ports:
       - "5433:5432"
@@ -45,7 +45,7 @@ services:
       - SECRET_KEY_BASE=a_random_string_of_at_least_32_chars
       - RAILS_LOG_TO_STDOUT=true
       - REDIS_URL=redis://hostshield_gov_redis:6379/1
-      - DATABASE_URL=postgres://gov_user:gov_password@gov-db:5432/gov_api_production
+      - DATABASE_URL=postgres://${GOV_DB_USER:-gov_user}:${GOV_DB_PASSWORD:-gov_password}@gov-db:5432/gov_api_production
     volumes:
       # Removed the SQLite override
       - ./security/gov_fake_public.pem:/app/security/api_token_production.public.pem:ro
@@ -69,7 +69,7 @@ services:
     build: ./apps/api-server
     container_name: hostshield_api
     environment:
-      - DATABASE_URL=postgresql://user:password@hostshield_db:5432/hostshield
+      - DATABASE_URL=postgresql://${DB_USER:-user}:${DB_PASSWORD:-password}@hostshield_db:5432/hostshield
       - MRZ_READER_URL=http://hostshield_mrz:8000
       - BRIDGE_BASE_URL=http://hostshield_gov_api:3000/api
 
