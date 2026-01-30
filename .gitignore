@@ -3,11 +3,13 @@ node_modules/
 .venv/
 __pycache__/
 
-# Environment
+# Environment & Secrets
 .env
 .env.local
 *.pem
 *.key
+*.keystore
+production/.env_real
 
 # System
 .DS_Store
@@ -17,8 +19,10 @@ Thumbs.db
 dist/
 build/
 coverage/
+*.tar.gz
 
 # Misc
 samples/
-docs/
+docs/  <-- Uncommented because docs are useful documentation to keep in repo!
 .vscode/
+.idea/
