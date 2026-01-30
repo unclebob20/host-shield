@@ -10,15 +10,14 @@ const Home = () => {
         <div className="overflow-hidden">
             {/* Hero Section */}
             <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-40 overflow-hidden">
-                <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/50 via-slate-50 to-white"></div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-900 mb-8 font-display">
+                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-700 mb-8 font-display">
                         {t('marketing.home.hero_title_1')} <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">
                             {t('marketing.home.hero_title_2')}
                         </span>
                     </h1>
-                    <p className="max-w-2xl mx-auto text-xl text-slate-600 mb-10 leading-relaxed">
+                    <p className="max-w-2xl mx-auto text-xl text-slate-500 mb-10 leading-relaxed">
                         {t('marketing.home.hero_subtitle')}
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -39,7 +38,7 @@ const Home = () => {
             </section>
 
             {/* Feature Highlights */}
-            <section className="py-24 bg-white">
+            <section className="py-24">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid md:grid-cols-3 gap-12 text-center">
                         <div className="p-8 rounded-3xl bg-slate-50 hover:bg-indigo-50/50 transition-colors">

@@ -6,7 +6,7 @@ const Contact = () => {
     const { t } = useTranslation();
 
     return (
-        <div className="bg-white py-24">
+        <div className="py-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h1 className="text-4xl font-bold font-display text-slate-900 mb-6">{t('marketing.contact.title')}</h1>
