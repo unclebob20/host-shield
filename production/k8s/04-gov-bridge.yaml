@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gov-bridge
+  namespace: hostshield
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: gov-bridge
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gov-bridge
+  namespace: hostshield
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gov-bridge
+  template:
+    metadata:
+      labels:
+        app: gov-bridge
+    spec:
+      containers:
+        - name: gov-bridge
+          image: ghcr.io/slovensko-digital/slovensko-sk-api:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: RAILS_ENV
+              value: "production"
+            - name: UPVS_ENV
+              value: "prod"
+            - name: RAILS_LOG_TO_STDOUT
+              value: "true"
+            - name: API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hostshield-secrets
+                  key: GOV_API_TOKEN
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: hostshield-secrets
+                  key: GOV_SECRET_KEY_BASE
+            - name: REDIS_URL
+              value: "redis://redis:6379/1"
+            # In a real K8s setup, you might want a separate Postgres DB for this
+            # For simplicity, using a separate DB on the same Postgres cluster is common
+            - name: DATABASE_URL
+              value: "postgres://hostshield_user:$(DB_PASSWORD)@postgres:5432/gov_api_production"
+          envFrom:
+            - secretRef:
+                name: hostshield-secrets
+          volumeMounts:
+            - name: hostshield-certs
+              mountPath: /app/security/api_token_production.public.pem
+              subPath: gov_production.public.pem
+              readOnly: true
+            - name: hostshield-certs
+              mountPath: /app/security/sts/production.keystore
+              subPath: production.keystore
+              readOnly: true
+      volumes:
+        - name: hostshield-certs
+          secret:
+            secretName: hostshield-certs

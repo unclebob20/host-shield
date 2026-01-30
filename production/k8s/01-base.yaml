@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hostshield
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hostshield-secrets
+  namespace: hostshield
+type: Opaque
+stringData:
+  # Database Credentials
+  DB_PASSWORD: "CHANGE_ME_SECURE_PASSWORD"
+  GOV_DB_PASSWORD: "CHANGE_ME_SECURE_GOV_PASSWORD"
+  
+  # API Server Keys
+  JWT_SECRET: "CHANGE_ME_LONG_RANDOM_STRING"
+  
+  # Gov Bridge Secrets
+  GOV_API_TOKEN: "YOUR_CERTIFICATE_SUBJECT_CN"
+  GOV_SECRET_KEY_BASE: "CHANGE_ME_LONG_RANDOM_SECRET_KEY_MIN_32_CHARS"
+  
+  # Note: Actual SSL certificates / Keystores should be mounted as a separate Secret
+  # created via: kubectl create secret generic hostshield-certs --from-file=./security/...
