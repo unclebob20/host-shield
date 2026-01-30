@@ -5,7 +5,7 @@ services:
     build:
       context: ../apps/web-client
       dockerfile: ../../production/web-client.dockerfile
-    container_name: hostshield_web_prod
+    image: hostshield-web:prod
     restart: always
     ports:
       - "80:80"
@@ -80,13 +80,13 @@ services:
   # 6. MRZ Reader Microservice
   mrz-reader:
     build: ../apps/api-server/src/services/mrz-reader
-    container_name: hostshield_mrz_prod
+    image: hostshield-mrz:prod
     restart: always
 
   # 7. Main API Server
   api-server:
     build: ../apps/api-server
-    container_name: hostshield_api_prod
+    image: hostshield-api:prod
     restart: always
     environment:
       - NODE_ENV=production
@@ -100,10 +100,8 @@ services:
     volumes:
       - ../security/gov_private.key:/app/security/gov_private.key:ro
     depends_on:
-      db:
-        condition: service_healthy
-      mrz-reader:
-        condition: service_started
+      - db
+      - mrz-reader
 
 volumes:
   db_data:
