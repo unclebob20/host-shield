@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-server
+  namespace: hostshield
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: api-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+  namespace: hostshield
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: api-server
+          image: ghcr.io/unclebob20/host-shield/api-server:latest # REPLACE with your registry
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: DATABASE_URL
+              value: "postgres://hostshield_user:$(DB_PASSWORD)@postgres:5432/hostshield"
+            - name: MRZ_READER_URL
+              value: "http://mrz-reader:8000"
+            - name: BRIDGE_BASE_URL
+              value: "http://gov-bridge:3000/api"
+            - name: BRIDGE_API_SUBJECT
+              valueFrom:
+                secretKeyRef:
+                  name: hostshield-secrets
+                  key: GOV_API_TOKEN
+            - name: BRIDGE_PRIVATE_KEY_PATH
+              value: "/app/security/gov_private.key"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hostshield-secrets
+                  key: JWT_SECRET
+          envFrom:
+            - secretRef:
+                name: hostshield-secrets
+          volumeMounts:
+            - name: hostshield-certs
+              mountPath: /app/security/gov_private.key
+              subPath: gov_private.key
+              readOnly: true
+      volumes:
+        - name: hostshield-certs
+          secret:
+            secretName: hostshield-certs

@@ -10,6 +10,11 @@ import Ledger from './pages/Ledger';
 import Calendar from './pages/Calendar';
 import Properties from './pages/Properties';
 import Layout from './components/Layout';
+import MarketingLayout from './components/marketing/MarketingLayout';
+import Home from './pages/marketing/Home';
+import Product from './pages/marketing/Product';
+import Prices from './pages/marketing/Prices';
+import Contact from './pages/marketing/Contact';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = ({ children }) => {
@@ -47,7 +52,7 @@ const PublicRoute = ({ children }) => {
   }
 
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
@@ -58,6 +63,41 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Public Marketing Routes */}
+          <Route
+            path="/"
+            element={
+              <MarketingLayout>
+                <Home />
+              </MarketingLayout>
+            }
+          />
+          <Route
+            path="/product"
+            element={
+              <MarketingLayout>
+                <Product />
+              </MarketingLayout>
+            }
+          />
+          <Route
+            path="/prices"
+            element={
+              <MarketingLayout>
+                <Prices />
+              </MarketingLayout>
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <MarketingLayout>
+                <Contact />
+              </MarketingLayout>
+            }
+          />
+
+          {/* Auth Routes */}
           <Route
             path="/login"
             element={
@@ -72,6 +112,16 @@ function App() {
               <PublicRoute>
                 <Register />
               </PublicRoute>
+            }
+          />
+
+          {/* Protected App Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
             }
           />
           <Route
@@ -95,14 +145,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <Ledger />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
               </ProtectedRoute>
             }
           />

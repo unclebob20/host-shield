@@ -9,7 +9,8 @@
         "guests": "Guests",
         "properties": "Properties",
         "ledger": "Ledger",
-        "logout": "Logout"
+        "logout": "Logout",
+        "home_page": "Home Page"
     },
     "common": {
         "loading": "Loading...",
@@ -142,5 +143,148 @@
         "error_invalid": "Please upload a valid image (JPEG, PNG) or PDF.",
         "error_size": "File size must be less than 5MB.",
         "error_scan_fail": "Failed to scan document."
+    },
+    "auth": {
+        "login": {
+            "title": "Welcome back",
+            "subtitle": "Sign in to your account",
+            "email_label": "Email address",
+            "email_placeholder": "name@example.com",
+            "password_label": "Password",
+            "password_placeholder": "Enter your password",
+            "submit": "Sign in",
+            "loading": "Signing in...",
+            "no_account": "Don't have an account?",
+            "create_account": "Create new account",
+            "back_home": "Back to Home",
+            "hero_title": "HostShield",
+            "hero_subtitle": "Automated guest reporting and digital ledger for modern hosts in Slovakia.",
+            "error_generic": "Failed to login"
+        },
+        "register": {
+            "title": "Create your account",
+            "subtitle": "Join HostShield and start managing guests",
+            "full_name": "Full Name",
+            "full_name_placeholder": "John Doe",
+            "email_label": "Email address",
+            "email_placeholder": "name@example.com",
+            "password_label": "Password",
+            "password_placeholder": "Create a password",
+            "police_id": "Police Provider ID (Optional)",
+            "police_id_placeholder": "Assigned by Foreign Police",
+            "submit": "Register",
+            "loading": "Creating account...",
+            "has_account": "Already have an account?",
+            "sign_in": "Sign in",
+            "error_generic": "Failed to register"
+        }
+    },
+    "marketing": {
+        "nav": {
+            "home": "Home",
+            "product": "Product",
+            "prices": "Prices",
+            "contact": "Contact Us",
+            "sign_in": "Sign In",
+            "get_started": "Get Started",
+            "dashboard": "Dashboard"
+        },
+        "footer": {
+            "rights": "All rights reserved.",
+            "desc": "Secure guest management for modern hospitality."
+        },
+        "home": {
+            "hero_title_1": "Guest Management",
+            "hero_title_2": "Simplified & Secure",
+            "hero_subtitle": "Automate guest registration, ensure police reporting compliance, and streamline your check-in process with HostShield. The ultimate tool for modern hosts.",
+            "cta_primary": "Start Free Trial",
+            "cta_secondary": "Learn More",
+            "feat_ocr_title": "Instant ID Scanning",
+            "feat_ocr_desc": "Snap a photo of any ID or Passport. Our advanced OCR technology extracts details instantly and accurately.",
+            "feat_police_title": "Police Reporting",
+            "feat_police_desc": "Automatically generate and submit mandatory guest reports to local authorities. Stay 100% compliant effortlessly.",
+            "feat_sec_title": "Bank-Grade Security",
+            "feat_sec_desc": "Your guest data is encrypted and stored securely. We prioritize privacy and data protection above all else.",
+            "mobile_title": "Designed for Hosts on the Go",
+            "mobile_desc": "Manage your properties from anywhere. HostShield is fully responsive and optimized for mobile devices.",
+            "mobile_list_1": "Works on iOS and Android",
+            "mobile_list_2": "Offline capabilities",
+            "mobile_list_3": "Real-time sync"
+        },
+        "product": {
+            "hero_title": "Complete Guest Management Solution",
+            "hero_subtitle": "Replace paperwork with automation. HostShield handles the boring parts of hosting so you can focus on your guests.",
+            "ocr_title": "Scan & Extract in Seconds",
+            "ocr_desc_1": "No more typing out names and dates. Use your phone's camera to scan MRZ codes on passports and ID cards.",
+            "ocr_list": [
+                "Full Name",
+                "Date of Birth",
+                "Document Number",
+                "Nationality",
+                "Expiry Date",
+                "Sex"
+            ],
+            "comp_title": "Mandatory Reporting Made Easy",
+            "comp_desc_1": "In many jurisdictions, hosting guests requires submitting reports to the police or immigration authorities. HostShield automates this completely.",
+            "comp_desc_2": "We generate the exact format required by local authorities and can even submit the files digitally where supported.",
+            "priv_title": "Privacy First Design",
+            "priv_desc_1": "We understand the sensitivity of guest data. HostShield is built with privacy by design principles.",
+            "priv_desc_2": "You retain full control over your data."
+        },
+        "prices": {
+            "title": "Simple, Transparent Pricing",
+            "subtitle": "Choose the plan that fits your hosting needs. No hidden fees. Cancel anytime.",
+            "period": "/month",
+            "plans": {
+                "starter": {
+                    "name": "Starter",
+                    "desc": "Perfect for single property hosts.",
+                    "cta": "Get Started Free"
+                },
+                "professional": {
+                    "name": "Professional",
+                    "desc": "For serious hosts and small agencies.",
+                    "cta": "Start Free Trial"
+                },
+                "business": {
+                    "name": "Business",
+                    "desc": "Scale your hospitality business.",
+                    "cta": "Contact Sales"
+                }
+            },
+            "features": {
+                "prop_1": "Up to 1 Property",
+                "scan_10": "Up to 10 Scan Check-ins / month",
+                "basic_rpt": "Basic Police Reporting export",
+                "mobile": "Mobile App Access",
+                "prop_5": "Up to 5 Properties",
+                "scan_unlim": "Unlimited Scan Check-ins",
+                "auto_police": "Automated Police Submissions",
+                "multi_user": "Multi-user Access",
+                "priority": "Priority Support",
+                "prop_unlim": "Unlimited Properties",
+                "api": "API Access",
+                "custom": "Custom Integration Support",
+                "account_mgr": "Dedicated Account Manager",
+                "white_label": "White-label Reports"
+            },
+            "most_popular": "Most Popular"
+        },
+        "contact": {
+            "title": "Get in Touch",
+            "subtitle": "Have questions about HostShield? Our team is here to help you get set up and compliant.",
+            "email_support": "Email Support",
+            "email_desc": "For general inquiries and technical support.",
+            "live_chat": "Live Chat",
+            "chat_desc": "Chat with our sales team during business hours.",
+            "office": "Office",
+            "form": {
+                "name": "Full Name",
+                "email": "Email Address",
+                "message": "Message",
+                "submit": "Send Message",
+                "response_time": "We'll get back to you within 24 hours."
+            }
+        }
     }
 }
