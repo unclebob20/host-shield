@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Loader2, Lock, Mail } from 'lucide-react';
+import { Loader2, Lock, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,9 +20,9 @@ const Login = () => {
 
         try {
             await login(email, password);
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to login');
+            setError(err.response?.data?.error || t('auth.login.error_generic'));
         } finally {
             setIsLoading(false);
         }
@@ -39,13 +41,20 @@ const Login = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/50 to-transparent sm:w-3/4 lg:w-1/2"></div>
             </div>
 
+            {/* Back to Home Link */}
+            <div className="absolute top-6 left-6 z-30">
+                <Link to="/" className="text-white/80 hover:text-white flex items-center gap-2 transition-colors">
+                    <span className="text-sm font-medium">← {t('auth.login.back_home')}</span>
+                </Link>
+            </div>
+
             {/* Bottom Centered Branding */}
             <div className="absolute bottom-[15%] left-0 right-0 z-20 flex flex-col items-center text-center px-4 pointer-events-none">
                 <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-4 drop-shadow-2xl">
-                    HostShield
+                    {t('auth.login.hero_title')}
                 </h1>
                 <p className="text-xl md:text-2xl text-slate-200 max-w-3xl font-light drop-shadow-lg">
-                    Automated guest reporting and digital ledger for modern hosts in Slovakia.
+                    {t('auth.login.hero_subtitle')}
                 </p>
             </div>
 
@@ -55,10 +64,10 @@ const Login = () => {
                     {/* Sign In Header */}
                     <div>
                         <h2 className="text-3xl font-bold tracking-tight text-white mb-2">
-                            Welcome back
+                            {t('auth.login.title')}
                         </h2>
                         <p className="text-sm text-slate-400">
-                            Sign in to your account
+                            {t('auth.login.subtitle')}
                         </p>
                     </div>
 
@@ -73,7 +82,7 @@ const Login = () => {
                         <div className="space-y-5">
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-1.5">
-                                    Email address
+                                    {t('auth.login.email_label')}
                                 </label>
                                 <div className="relative">
                                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -88,14 +97,14 @@ const Login = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className="block w-full rounded-lg border border-white/10 bg-white/5 py-3 pl-10 text-white placeholder-slate-400 focus:border-blue-500 focus:bg-white/10 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors"
-                                        placeholder="name@example.com"
+                                        placeholder={t('auth.login.email_placeholder')}
                                     />
                                 </div>
                             </div>
 
                             <div>
                                 <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-1.5">
-                                    Password
+                                    {t('auth.login.password_label')}
                                 </label>
                                 <div className="relative">
                                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -110,7 +119,7 @@ const Login = () => {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className="block w-full rounded-lg border border-white/10 bg-white/5 py-3 pl-10 text-white placeholder-slate-400 focus:border-blue-500 focus:bg-white/10 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors"
-                                        placeholder="Enter your password"
+                                        placeholder={t('auth.login.password_placeholder')}
                                     />
                                 </div>
                             </div>
@@ -122,7 +131,14 @@ const Login = () => {
                                 disabled={isLoading}
                                 className="flex w-full justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 transition-all"
                             >
-                                {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Sign in'}
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                                        {t('auth.login.loading')}
+                                    </>
+                                ) : (
+                                    t('auth.login.submit')
+                                )}
                             </button>
                         </div>
                     </form>
@@ -134,7 +150,7 @@ const Login = () => {
                         </div>
                         <div className="relative flex justify-center">
                             <span className="bg-transparent px-2 text-sm text-slate-400">
-                                Don't have an account?
+                                {t('auth.login.no_account')}
                             </span>
                         </div>
                     </div>
@@ -143,7 +159,7 @@ const Login = () => {
                             to="/register"
                             className="flex w-full justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all"
                         >
-                            Create new account
+                            {t('auth.login.create_account')}
                         </Link>
                     </div>
                 </div>

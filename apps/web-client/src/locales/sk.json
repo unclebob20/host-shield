@@ -9,7 +9,8 @@
         "guests": "Hostia",
         "properties": "Objekty",
         "ledger": "Kniha hostí",
-        "logout": "Odhlásiť sa"
+        "logout": "Odhlásiť sa",
+        "home_page": "Domovská stránka"
     },
     "common": {
         "loading": "Načítavam...",
@@ -92,7 +93,7 @@
     },
     "ledger": {
         "title": "Kniha ubytovaných",
-        "subtitle": "Generujte a exportujte oficiálnu Knihu ubytovaných pre, účely kontroly.",
+        "subtitle": "Generujte a exportujte oficiálnu Knihu ubytovaných pre účely kontroly.",
         "select_period": "Vyberte obdobie",
         "select_period_desc": "Zvoľte rozsah dátumov pre report. Export bude obsahovať všetkých hostí ubytovaných v tomto období.",
         "start_date": "Dátum od",
@@ -142,5 +143,148 @@
         "error_invalid": "Prosím nahrajte platný obrázok (JPEG, PNG) alebo PDF.",
         "error_size": "Veľkosť súboru musí byť menšia ako 5MB.",
         "error_scan_fail": "Nepodarilo sa naskenovať dokument."
+    },
+    "auth": {
+        "login": {
+            "title": "Vitajte späť",
+            "subtitle": "Prihláste sa do svojho účtu",
+            "email_label": "Emailová adresa",
+            "email_placeholder": "meno@priklad.sk",
+            "password_label": "Heslo",
+            "password_placeholder": "Zadajte vaše heslo",
+            "submit": "Prihlásiť sa",
+            "loading": "Prihlasujem...",
+            "no_account": "Nemáte ešte účet?",
+            "create_account": "Vytvoriť nový účet",
+            "back_home": "Späť na domov",
+            "hero_title": "HostShield",
+            "hero_subtitle": "Automatizované hlásenie hostí a digitálna kniha ubytovaných pre moderných hostiteľov na Slovensku.",
+            "error_generic": "Prihlásenie zlyhalo"
+        },
+        "register": {
+            "title": "Vytvorte si účet",
+            "subtitle": "Pridajte sa k HostShield a začnite spravovať hostí",
+            "full_name": "Celé meno",
+            "full_name_placeholder": "Ján Novák",
+            "email_label": "Emailová adresa",
+            "email_placeholder": "meno@priklad.sk",
+            "password_label": "Heslo",
+            "password_placeholder": "Vytvorte heslo",
+            "police_id": "ID ubytovateľa (Voliteľné)",
+            "police_id_placeholder": "Pridelené Cudzineckou políciou",
+            "submit": "Registrovať",
+            "loading": "Vytváram účet...",
+            "has_account": "Už máte účet?",
+            "sign_in": "Prihlásiť sa",
+            "error_generic": "Registrácia zlyhala"
+        }
+    },
+    "marketing": {
+        "nav": {
+            "home": "Domov",
+            "product": "Produkt",
+            "prices": "Cenník",
+            "contact": "Kontakt",
+            "sign_in": "Prihlásiť",
+            "get_started": "Začať zdarma",
+            "dashboard": "Prehľad"
+        },
+        "footer": {
+            "rights": "Všetky práva vyhradené.",
+            "desc": "Bezpečná správa hostí pre moderné ubytovanie."
+        },
+        "home": {
+            "hero_title_1": "Správa hostí",
+            "hero_title_2": "Jednoducho a bezpečne",
+            "hero_subtitle": "Automatizujte registráciu hostí, zaistite súlad s políciou a zrýchlite check-in proces s HostShield. Dokonalý nástroj pre moderných hostiteľov.",
+            "cta_primary": "Vyskúšať zadarmo",
+            "cta_secondary": "Viac informácií",
+            "feat_ocr_title": "Okamžité skenovanie ID",
+            "feat_ocr_desc": "Ofoťte akýkoľvek občiansky alebo pas. Naša pokročilá OCR technológia okamžite a presne extrahuje údaje.",
+            "feat_police_title": "Hlásenie polícii",
+            "feat_police_desc": "Automaticky generujte a odosielajte povinné hlásenia cudzineckej polícii. Dodržiavajte zákony na 100% bez námahy.",
+            "feat_sec_title": "Banková bezpečnosť",
+            "feat_sec_desc": "Vaše dáta sú šifrované a bezpečne uložené. Súkromie a ochrana údajov sú pre nás prioritou.",
+            "mobile_title": "Pre hostiteľov v pohybe",
+            "mobile_desc": "Spravujte svoje objekty odkiaľkoľvek. HostShield je plne responzívny a optimalizovaný pre mobily.",
+            "mobile_list_1": "Funguje na iOS a Android",
+            "mobile_list_2": "Offline podpora",
+            "mobile_list_3": "Synchronizácia v reálnom čase"
+        },
+        "product": {
+            "hero_title": "Kompletné riešenie správy hostí",
+            "hero_subtitle": "Nahraďte papierovanie automatizáciou. HostShield rieši nudné časti hostingu, aby ste sa mohli venovať hosťom.",
+            "ocr_title": "Skenovanie a extrakcia za sekundy",
+            "ocr_desc_1": "Už žiadne prepisovanie mien a dátumov. Použite kameru telefónu na skenovanie MRZ kódov.",
+            "ocr_list": [
+                "Celé meno",
+                "Dátum narodenia",
+                "Číslo dokladu",
+                "Národnosť",
+                "Dátum platnosti",
+                "Pohlavie"
+            ],
+            "comp_title": "Povinné hlásenia jednoducho",
+            "comp_desc_1": "V mnohých jurisdikciách si ubytovanie vyžaduje hlásenie polícii. HostShield to plne automatizuje.",
+            "comp_desc_2": "Generujeme presný formát požadovaný úradmi a kde je to možné, odosielame súbory digitálne.",
+            "priv_title": "Dizajn zameraný na súkromie",
+            "priv_desc_1": "Chápeme citlivosť údajov hostí. HostShield je postavený na princípoch Privacy by Design.",
+            "priv_desc_2": "Máte plnú kontrolu nad svojimi dátami."
+        },
+        "prices": {
+            "title": "Jednoduchý, transparentný cenník",
+            "subtitle": "Vyberte si plán, ktorý vyhovuje vašim potrebám. Žiadne skryté poplatky. Zrušenie kedykoľvek.",
+            "period": "/mesiac",
+            "plans": {
+                "starter": {
+                    "name": "Štart",
+                    "desc": "Ideálne pre jednotlivých hostiteľov.",
+                    "cta": "Začať zadarmo"
+                },
+                "professional": {
+                    "name": "Profesionál",
+                    "desc": "Pre serióznych hostiteľov.",
+                    "cta": "Vyskúšať zadarmo"
+                },
+                "business": {
+                    "name": "Biznis",
+                    "desc": "Škálovanie vášho podnikania.",
+                    "cta": "Kontaktovať obchod"
+                }
+            },
+            "features": {
+                "prop_1": "Až 1 Objekt",
+                "scan_10": "Až 10 Skenov / mesiac",
+                "basic_rpt": "Základný export pre políciu",
+                "mobile": "Prístup k mobilnej appke",
+                "prop_5": "Až 5 Objektov",
+                "scan_unlim": "Neobmedzené skenovanie",
+                "auto_police": "Automatické odosielanie polícii",
+                "multi_user": "Viacpoužívateľský prístup",
+                "priority": "Prioritná podpora",
+                "prop_unlim": "Neobmedzené objekty",
+                "api": "API Prístup",
+                "custom": "Podpora vlastnej integrácie",
+                "account_mgr": "Dedikovaný manažér",
+                "white_label": "White-label reporty"
+            },
+            "most_popular": "Najobľúbenejšie"
+        },
+        "contact": {
+            "title": "Kontaktujte nás",
+            "subtitle": "Máte otázky o HostShield? Náš tím je tu, aby vám pomohol.",
+            "email_support": "Emailová podpora",
+            "email_desc": "Pre všeobecné otázky a technickú pomoc.",
+            "live_chat": "Live Chat",
+            "chat_desc": "Chatujte s naším tímom počas pracovných hodín.",
+            "office": "Kancelária",
+            "form": {
+                "name": "Celé meno",
+                "email": "Emailová adresa",
+                "message": "Správa",
+                "submit": "Odoslať správu",
+                "response_time": "Odpovieme vám do 24 hodín."
+            }
+        }
     }
 }

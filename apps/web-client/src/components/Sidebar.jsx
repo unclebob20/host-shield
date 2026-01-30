@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Users, FileText, Settings, LogOut, X, PlusCircle, Calendar, Building } from 'lucide-react';
+import { Home, Users, FileText, Settings, LogOut, X, PlusCircle, Calendar, Building, ExternalLink } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
 
@@ -11,7 +11,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     const { t, i18n } = useTranslation();
 
     const navItems = [
-        { icon: Home, label: t('nav.overview'), to: '/' },
+        { icon: Home, label: t('nav.overview'), to: '/dashboard' },
         { icon: PlusCircle, label: t('nav.new_guest'), to: '/guests/new' },
         { icon: Calendar, label: t('nav.calendar'), to: '/calendar' },
         { icon: Users, label: t('nav.guests'), to: '/guests' },
@@ -84,6 +84,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     </nav>
 
                     <div className="pt-4 border-t border-white/10 space-y-2">
+                        {/* Public Site Link */}
+                        <NavLink
+                            to="/"
+                            className="flex items-center px-4 py-3.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-white/50 hover:text-slate-900 hover:shadow-sm hover:translate-x-1 transition-all duration-200 group"
+                        >
+                            <ExternalLink className="w-5 h-5 mr-3 text-slate-400 group-hover:text-primary transition-colors" />
+                            {t('nav.home_page') || 'Home Page'}
+                        </NavLink>
                         {/* Language Switcher */}
                         <div className="flex items-center justify-between px-4 py-2">
                             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Language</span>
