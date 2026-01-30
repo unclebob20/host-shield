@@ -254,7 +254,7 @@
             },
             "features": {
                 "prop_1": "Až 1 Objekt",
-                "scan_10": "Až 10 Skenov / mesiac",
+                "scan_5": "Až 5 Skenov / mesiac",
                 "basic_rpt": "Základný export pre políciu",
                 "mobile": "Prístup k mobilnej appke",
                 "prop_5": "Až 5 Objektov",

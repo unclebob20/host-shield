@@ -14,7 +14,7 @@ const Prices = () => {
             description: t('marketing.prices.plans.starter.desc'),
             features: [
                 t('marketing.prices.features.prop_1'),
-                t('marketing.prices.features.scan_10'),
+                t('marketing.prices.features.scan_5'),
                 t('marketing.prices.features.basic_rpt'),
                 t('marketing.prices.features.mobile')
             ],
