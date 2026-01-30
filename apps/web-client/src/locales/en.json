@@ -254,7 +254,7 @@
             },
             "features": {
                 "prop_1": "Up to 1 Property",
-                "scan_10": "Up to 10 Scan Check-ins / month",
+                "scan_5": "Up to 5 Scan Check-ins / month",
                 "basic_rpt": "Basic Police Reporting export",
                 "mobile": "Mobile App Access",
                 "prop_5": "Up to 5 Properties",
