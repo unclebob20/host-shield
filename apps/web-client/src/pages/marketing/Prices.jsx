@@ -54,7 +54,7 @@ const Prices = () => {
     ];
 
     return (
-        <div className="bg-slate-50 py-24">
+        <div className="py-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h1 className="text-4xl font-bold font-display text-slate-900 mb-6">{t('marketing.prices.title')}</h1>
@@ -90,8 +90,8 @@ const Prices = () => {
                             <Link
                                 to="/register"
                                 className={`w-full py-3 text-center rounded-xl font-semibold transition-colors ${plan.popular
-                                        ? 'bg-primary text-white hover:bg-blue-700'
-                                        : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+                                    ? 'bg-primary text-white hover:bg-blue-700'
+                                    : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
                                     }`}
                             >
                                 {plan.cta}
