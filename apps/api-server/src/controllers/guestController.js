@@ -47,9 +47,13 @@ exports.registerGuest = async (req, res) => {
       await GuestService.updateGuestStatus(guestId, 'sent', 'mock-submission-id'); // Bridge doesn't return ID yet, mocking it
     } catch (bridgeError) {
       console.error('GovBridge submission failed:', bridgeError.message);
+      if (bridgeError.response) {
+        console.error('GovBridge response data:', bridgeError.response.data);
+        console.error('GovBridge status:', bridgeError.response.status);
+      }
       // Update status on failure
       await GuestService.updateGuestStatus(guestId, 'error');
-      throw bridgeError; // Re-throw to be caught by outer catch
+      throw new Error(`GovBridge: ${bridgeError.message}`); // Re-throw with context
     }
 
     res.status(200).json({
@@ -60,6 +64,7 @@ exports.registerGuest = async (req, res) => {
     });
 
   } catch (error) {
+    console.error('Register Guest - Outer Error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

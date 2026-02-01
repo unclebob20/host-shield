@@ -6,6 +6,7 @@ __pycache__/
 # Environment & Secrets
 .env
 .env.local
+.env.production
 *.pem
 *.key
 *.keystore

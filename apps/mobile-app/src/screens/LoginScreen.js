@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, StatusBar, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../config';
+import BackgroundWrapper from '../components/BackgroundWrapper';
+import GradientText from '../components/GradientText';
 
 export default function LoginScreen({ onLoginSuccess }) {
     const { t, i18n } = useTranslation();
@@ -34,22 +37,29 @@ export default function LoginScreen({ onLoginSuccess }) {
             }
         } catch (error) {
             console.error(error);
-            Alert.alert(t('auth.login_failed'), error.response?.data?.error || 'Network Error. Check IP in config.js');
+            Alert.alert(t('auth.login_failed'), error.response?.data?.error || 'Network Error');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+        <BackgroundWrapper>
+            <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
             <SafeAreaView style={styles.safeArea}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     style={styles.keyboardView}
                 >
                     <View style={styles.headerContainer}>
-                        <Text style={styles.title}>{t('app.title')}</Text>
+                        <View style={styles.logoRow}>
+                            <Image
+                                source={require('../../assets/logo.png')}
+                                style={styles.logo}
+                                resizeMode="contain"
+                            />
+                            <GradientText style={styles.title}>{t('app.title')}</GradientText>
+                        </View>
                         <Text style={styles.subtitle}>
                             {t('app.subtitle')}
                         </Text>
@@ -68,7 +78,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                             <Text style={styles.label}>{t('auth.email')}</Text>
                             <TextInput
                                 placeholder="name@example.com"
-                                placeholderTextColor="#64748b"
+                                placeholderTextColor="#94a3b8"
                                 value={email}
                                 onChangeText={setEmail}
                                 style={styles.input}
@@ -81,7 +91,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                             <Text style={styles.label}>{t('auth.password')}</Text>
                             <TextInput
                                 placeholder={t('auth.password')}
-                                placeholderTextColor="#64748b"
+                                placeholderTextColor="#94a3b8"
                                 value={password}
                                 onChangeText={setPassword}
                                 style={styles.input}
@@ -118,14 +128,14 @@ export default function LoginScreen({ onLoginSuccess }) {
                     </View>
                 </KeyboardAvoidingView>
             </SafeAreaView>
-        </View>
+        </BackgroundWrapper>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0f172a', // Slate 900
+        // backgroundColor handled by wrapper
     },
     safeArea: {
         flex: 1,
@@ -136,20 +146,28 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
     },
     headerContainer: {
-        marginBottom: 48,
+        marginBottom: 32,
         alignItems: 'center',
     },
-    title: {
-        fontSize: 42,
-        fontWeight: 'bold',
-        color: '#ffffff',
+    logoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: 12,
+    },
+    logo: {
+        width: 80,
+        height: 80,
+        marginRight: 16,
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
         letterSpacing: -1,
-        textAlign: 'center',
     },
     subtitle: {
         fontSize: 16,
-        color: '#94a3b8', // Slate 400
+        color: '#64748b', // Slate 500
         textAlign: 'center',
         maxWidth: 300,
         lineHeight: 24,
@@ -163,18 +181,18 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '500',
-        color: '#e2e8f0', // Slate 200
+        color: '#475569', // Slate 600
         marginBottom: 8,
     },
     input: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backgroundColor: '#ffffff',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColor: '#cbd5e1',
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 14,
         fontSize: 16,
-        color: '#ffffff',
+        color: '#0f172a',
     },
     button: {
         backgroundColor: '#2563eb', // Blue 600
@@ -213,7 +231,7 @@ const styles = StyleSheet.create({
     dividerLine: {
         flex: 1,
         height: 1,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: '#e2e8f0',
     },
     dividerText: {
         color: '#64748b', // Slate 500
@@ -222,15 +240,15 @@ const styles = StyleSheet.create({
     },
     secondaryButton: {
         width: '100%',
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backgroundColor: '#ffffff',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColor: '#cbd5e1',
         borderRadius: 12,
         paddingVertical: 16,
         alignItems: 'center',
     },
     secondaryButtonText: {
-        color: '#ffffff',
+        color: '#64748b',
         fontSize: 15,
         fontWeight: '500',
     },

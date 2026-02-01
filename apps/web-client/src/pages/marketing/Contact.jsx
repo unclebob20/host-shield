@@ -25,7 +25,7 @@ const Contact = () => {
                             <div>
                                 <h3 className="text-lg font-semibold text-slate-900 mb-1">{t('marketing.contact.email_support')}</h3>
                                 <p className="text-slate-600 mb-2">{t('marketing.contact.email_desc')}</p>
-                                <a href="mailto:support@hostshield.com" className="text-primary font-medium hover:underline">support@hostshield.com</a>
+                                <a href="mailto:admin@hostshield.org" className="text-primary font-medium hover:underline">admin@hostshield.org</a>
                             </div>
                         </div>
 
