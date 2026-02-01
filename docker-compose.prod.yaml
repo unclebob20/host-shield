@@ -1,0 +1,114 @@
+services:
+  # 1. Reverse Proxy & Web Client Content
+  # Serves the React App and proxies /api requests to the backend
+  web-proxy:
+    build:
+      context: ./apps/web-client
+      dockerfile: ../../production/web-client.dockerfile
+    image: hostshield-web:prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443" # Requires SSL cert volumes/config in nginx.conf
+    volumes:
+      - ./production/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Uncomment for Let's Encrypt / SSL
+      # - ./certbot/conf:/etc/letsencrypt
+      # - ./certbot/www:/var/www/certbot
+    depends_on:
+      - api-server
+
+  # 2. Database
+  db:
+    image: postgres:15-alpine
+    container_name: hostshield_db_prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: hostshield
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-user} -d hostshield" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Redis (Cache for GovBridge & Queues)
+  redis:
+    image: redis:7-alpine
+    container_name: hostshield_redis_prod
+    restart: always
+    volumes:
+      - redis_data:/data
+
+  # 4. Gov-Db (Dedicated DB for Gov Bridge if required separate)
+  gov-db:
+    image: postgres:15-alpine
+    container_name: hostshield_gov_db_prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${GOV_DB_USER:-gov}
+      POSTGRES_PASSWORD: ${GOV_DB_PASSWORD}
+      POSTGRES_DB: gov_api_production
+    volumes:
+      - gov_db_data:/var/lib/postgresql/data
+
+  # 5. Gov-Bridge (Slovensko.digital)
+  gov-bridge:
+    # platform: linux/amd64 # Only needed if running on ARM server, most VPS are x86
+    image: ghcr.io/slovensko-digital/slovensko-sk-api:latest
+    container_name: hostshield_gov_api_prod
+    restart: always
+    depends_on:
+      - redis
+      - gov-db
+    environment:
+      # - API_TOKEN=boris_hostshield_test  # Temporarily disabled for testing
+      - RAILS_ENV=production
+      - UPVS_ENV=test
+      - SECRET_KEY_BASE=${GOV_SECRET_KEY_BASE}
+      - REDIS_URL=redis://redis:6379/1
+      - DATABASE_URL=postgres://${GOV_DB_USER:-gov}:${GOV_DB_PASSWORD}@gov-db:5432/gov_api_production
+    volumes:
+      # Certificates MUST be provided in production
+      - ./security/gov_fake_public.pem:/app/security/api_token_production.public.pem:ro
+      # FIX: Use existing fake keystore since we don't have a real one for test
+      - ./security/gov_fake_sts.keystore:/app/security/sts/production.keystore:ro
+      # Subject-specific keystore for token validation
+      - ./security/boris_hostshield_test_test.keystore:/app/security/sts/boris_hostshield_test_test.keystore:ro
+
+  # 6. MRZ Reader Microservice
+  mrz-reader:
+    build: ./apps/api-server/src/services/mrz-reader
+    image: hostshield-mrz:prod
+    restart: always
+
+  # 7. Main API Server
+  api-server:
+    build: ./apps/api-server
+    image: hostshield-api:prod
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://${DB_USER:-user}:${DB_PASSWORD}@db:5432/hostshield
+      - MRZ_READER_URL=http://mrz-reader:8000
+      - BRIDGE_BASE_URL=http://gov-bridge:3000/api
+      - BRIDGE_API_SUBJECT=${GOV_API_TOKEN}
+      - BRIDGE_PRIVATE_KEY_PATH=/app/security/gov_fake_private.key
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - ./security:/app/security:ro
+    depends_on:
+      - db
+      - mrz-reader
+
+volumes:
+  db_data:
+  gov_db_data:
+  redis_data:

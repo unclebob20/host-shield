@@ -10,8 +10,15 @@ class GovBridgeService {
     this.baseUrl = process.env.BRIDGE_BASE_URL || 'http://localhost:3001/api';
     // Back-compat: if you provide BRIDGE_API_TOKEN (a pre-built JWT), we'll use it.
     this.apiToken = process.env.BRIDGE_API_TOKEN || null;
-    this.apiSubject = process.env.BRIDGE_API_SUBJECT || 'host_shield_test';
+    // HARDCODED for debugging - must match API_TOKEN in gov-bridge
+    this.apiSubject = 'boris_hostshield_test';
     this.privateKeyPath = process.env.BRIDGE_PRIVATE_KEY_PATH || null;
+
+    console.log('GovBridgeService Config:', {
+      baseUrl: this.baseUrl,
+      apiSubject: this.apiSubject,
+      privateKeyPath: this.privateKeyPath
+    });
   }
 
   generateXml(guest) {
@@ -31,7 +38,6 @@ class GovBridgeService {
         }
       }
     };
-
     // We MUST include the XML declaration at the top
     return create({ version: '1.0', encoding: 'UTF-8' }, xmlObj).end({ prettyPrint: false });
   }
@@ -42,20 +48,34 @@ class GovBridgeService {
       throw new Error('Missing BRIDGE_API_TOKEN or BRIDGE_PRIVATE_KEY_PATH');
     }
 
+    // Safety check: Ensure it's a file, not a directory (common Docker volume issue)
+    if (fs.existsSync(this.privateKeyPath) && fs.lstatSync(this.privateKeyPath).isDirectory()) {
+      throw new Error(`Configuration Error: ${this.privateKeyPath} is a directory. Please check your Docker volume mounts.`);
+    }
+
     const privateKey = fs.readFileSync(this.privateKeyPath, 'utf8');
     const now = Math.floor(Date.now() / 1000);
     // 32+ chars, [0-9a-z\-_]
     const jti = crypto.randomUUID().replace(/-/g, '');
 
-    return jwt.sign(
-      {
-        sub: this.apiSubject,
-        exp: now + 240, // Max 5 minutes allowed by GovBridge logic
-        jti
-      },
+    const payload = {
+      sub: this.apiSubject,
+      exp: now + 240, // Max 5 minutes allowed by GovBridge logic
+      jti
+    };
+
+    const token = jwt.sign(
+      payload,
       privateKey,
       { algorithm: 'RS256' }
     );
+
+    console.log('Generating GovBridge JWT:', {
+      payload,
+      tokenSub: jwt.decode(token).sub
+    });
+
+    return token;
   }
 
   async sendToGov(guestData) {

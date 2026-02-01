@@ -56,7 +56,27 @@
         "dob": "Dátum narodenia",
         "arrival": "Príchod",
         "departure": "Odchod",
-        "select_date": "Vybrať dátum"
+        "select_date": "Vybrať dátum",
+        "select_date_range": "Vybrať obdobie"
+    },
+    "status": {
+        "draft": "Koncept",
+        "pending": "Čaká",
+        "sent": "Odoslané",
+        "error": "Chyba",
+        "sending": "Odosielam..."
+    },
+    "guest_details": {
+        "title": "Detail hosťa",
+        "subtitle": "Kompletné informácie",
+        "personal": "Osobné údaje",
+        "documents": "Dokumenty",
+        "stay": "Údaje o pobyte",
+        "close": "Zavrieť",
+        "submit": "Odoslať polícii"
+    },
+    "ledger": {
+        "generate": "Zobraziť knihu"
     },
     "alerts": {
         "error": "Chyba",

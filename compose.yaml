@@ -75,7 +75,7 @@ services:
 
       - BRIDGE_PRIVATE_KEY_PATH=/app/security/gov_fake_private.key
     volumes:
-      - ./security/gov_fake_private.key:/app/security/gov_fake_private.key:ro
+      - ./security:/app/security:ro
     ports:
       - "3000:3000"
     depends_on:

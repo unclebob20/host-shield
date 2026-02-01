@@ -1,6 +1,7 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState, useRef, useEffect } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Alert, ActivityIndicator, ScrollView, TextInput, KeyboardAvoidingView, Platform, BackHandler, SafeAreaView, StatusBar, Dimensions } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Alert, ActivityIndicator, ScrollView, TextInput, KeyboardAvoidingView, Platform, BackHandler, StatusBar, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,6 +10,8 @@ import { API_URL } from '../config';
 import * as SecureStore from 'expo-secure-store';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import BackgroundWrapper from '../components/BackgroundWrapper';
+import GradientText from '../components/GradientText';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -193,7 +196,12 @@ export default function CameraScreen({ onLogout }) {
                 <TouchableOpacity style={styles.sidebarBackdrop} onPress={() => setIsSidebarOpen(false)} />
                 <View style={styles.sidebarContent}>
                     <View style={styles.sidebarHeader}>
-                        <Text style={styles.sidebarBrand}>HostShield</Text>
+                        <Image
+                            source={require('../../assets/logo.png')}
+                            style={styles.sidebarLogo}
+                            resizeMode="contain"
+                        />
+                        <GradientText style={styles.sidebarBrand}>HostShield</GradientText>
                     </View>
 
                     {/* Language Switcher */}
@@ -221,11 +229,6 @@ export default function CameraScreen({ onLogout }) {
                             <Feather name="users" size={20} color={currentScreen === 'guests' ? '#2563eb' : '#64748b'} />
                             <Text style={[styles.navText, currentScreen === 'guests' && styles.navTextActive]}>{t('nav.guests')}</Text>
                         </TouchableOpacity>
-
-                        <TouchableOpacity style={[styles.navItem, currentScreen === 'ledger' && styles.navItemActive]} onPress={() => { setCurrentScreen('ledger'); setIsSidebarOpen(false); }}>
-                            <Feather name="file-text" size={20} color={currentScreen === 'ledger' ? '#2563eb' : '#64748b'} />
-                            <Text style={[styles.navText, currentScreen === 'ledger' && styles.navTextActive]}>{t('nav.ledger')}</Text>
-                        </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity style={styles.logoutItem} onPress={onLogout}>
@@ -235,6 +238,102 @@ export default function CameraScreen({ onLogout }) {
                 </View>
             </View>
         );
+    };
+
+    const [dashboardStats, setDashboardStats] = useState({
+        arrivalsToday: 0,
+        activeGuests: 0,
+        recentActivity: []
+    });
+    const [guestList, setGuestList] = useState([]);
+    const [selectedGuest, setSelectedGuest] = useState(null);
+
+    // Helper to shorten ISO dates
+
+    // Helper to shorten ISO dates
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        return dateString.split('T')[0];
+    };
+
+    useEffect(() => {
+        if (currentScreen === 'overview') fetchDashboardData();
+        if (currentScreen === 'guests') fetchGuests();
+    }, [currentScreen]);
+
+    const fetchGuests = async () => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            const response = await axios.get(`${API_URL}/guests`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.data.success) {
+                setGuestList(response.data.guests.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+            }
+        } catch (error) {
+            console.error('Failed to fetch guests', error);
+        }
+    };
+
+    const submitGuest = async (guestId) => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            // Optimistic update
+            setGuestList(prev => prev.map(g => g.id === guestId ? { ...g, submission_status: 'sending' } : g));
+            if (selectedGuest && selectedGuest.id === guestId) {
+                setSelectedGuest(prev => ({ ...prev, submission_status: 'sending' }));
+            }
+
+            const response = await axios.post(`${API_URL}/guests/register`, { guestId }, { headers: { 'Authorization': `Bearer ${token}` } });
+
+            if (response.data.success) {
+                Alert.alert(t('login.success'), t('alerts.save_success')); // Reuse success message or add new
+                fetchGuests();
+                if (selectedGuest && selectedGuest.id === guestId) {
+                    setSelectedGuest(prev => ({ ...prev, submission_status: 'sent' }));
+                }
+            }
+        } catch (error) {
+            Alert.alert(t('alerts.error'), error.response?.data?.error || "Submission failed");
+            fetchGuests();
+            if (selectedGuest && selectedGuest.id === guestId) {
+                setSelectedGuest(prev => ({ ...prev, submission_status: 'error' }));
+            }
+        }
+    };
+
+    const fetchDashboardData = async () => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            const response = await axios.get(`${API_URL}/guests`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.data.success) {
+                const guests = response.data.guests;
+                const today = new Date().toISOString().split('T')[0];
+
+                // Arrivals Today
+                const arrivals = guests.filter(g => g.arrival_date && g.arrival_date.startsWith(today)).length;
+
+                // Active Guests (simple logic: not departed yet)
+                const active = guests.filter(g => {
+                    if (!g.departure_date) return true;
+                    return g.departure_date >= today;
+                }).length;
+
+                // Recent Activity (sort by created_at desc)
+                const recent = [...guests]
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    .slice(0, 3);
+
+                setDashboardStats({
+                    arrivalsToday: arrivals,
+                    activeGuests: active,
+                    recentActivity: recent
+                });
+            }
+        } catch (error) {
+            console.error('Failed to fetch dashboard stats', error);
+        }
     };
 
     const renderDashboard = () => (
@@ -251,14 +350,14 @@ export default function CameraScreen({ onLogout }) {
                         <View style={[styles.statIcon, { backgroundColor: '#dbeafe' }]}>
                             <Feather name="log-in" size={20} color="#2563eb" />
                         </View>
-                        <Text style={styles.statValue}>12</Text>
+                        <Text style={styles.statValue}>{dashboardStats.arrivalsToday}</Text>
                         <Text style={styles.statLabel}>{t('dashboard.arrivals_today')}</Text>
                     </View>
                     <View style={styles.statCard}>
                         <View style={[styles.statIcon, { backgroundColor: '#dcfce7' }]}>
                             <Feather name="user-check" size={20} color="#16a34a" />
                         </View>
-                        <Text style={styles.statValue}>45</Text>
+                        <Text style={styles.statValue}>{dashboardStats.activeGuests}</Text>
                         <Text style={styles.statLabel}>{t('dashboard.active_guests')}</Text>
                     </View>
                 </View>
@@ -275,16 +374,21 @@ export default function CameraScreen({ onLogout }) {
 
                 <Text style={styles.sectionTitle}>{t('dashboard.recent_activity')}</Text>
                 <View style={styles.activityList}>
-                    {[1, 2, 3].map((i) => (
-                        <View key={i} style={styles.activityItem}>
-                            <View style={styles.avatarPlaceholder}><Text style={styles.avatarText}>JD</Text></View>
-                            <View>
-                                <Text style={styles.activityName}>John Doe</Text>
-                                <Text style={styles.activityDetail}>{t('dashboard.checked_in')} • Room 10{i}</Text>
+                    {dashboardStats.recentActivity.length > 0 ? (
+                        dashboardStats.recentActivity.map((guest, i) => (
+                            <View key={guest.id || i} style={styles.activityItem}>
+                                <View style={styles.avatarPlaceholder}><Text style={styles.avatarText}>{guest.first_name?.[0]}{guest.last_name?.[0]}</Text></View>
+                                <View>
+                                    <Text style={styles.activityName}>{guest.first_name} {guest.last_name}</Text>
+                                    <Text style={styles.activityDetail}>{new Date(guest.created_at).toLocaleDateString()} • {guest.nationality_iso3}</Text>
+                                </View>
                             </View>
-                            <Text style={styles.activityTime}>{i * 10}m {t('dashboard.ago')}</Text>
+                        ))
+                    ) : (
+                        <View style={{ padding: 16 }}>
+                            <Text style={{ color: '#94a3b8', textAlign: 'center' }}>No recent guests</Text>
                         </View>
-                    ))}
+                    )}
                 </View>
             </ScrollView>
         </View>
@@ -403,45 +507,128 @@ export default function CameraScreen({ onLogout }) {
         );
     };
 
+    const renderGuestDetails = () => {
+        if (!selectedGuest) return null;
+        return (
+            <BackgroundWrapper>
+                <SafeAreaView style={styles.containerLight}>
+                    <View style={styles.headerBar}>
+                        <TouchableOpacity onPress={() => setSelectedGuest(null)} style={styles.burgerButton}>
+                            <Feather name="arrow-left" size={24} color="#0f172a" />
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitle}>{t('guest_details.title')}</Text>
+                        <View style={{ width: 40 }} />
+                    </View>
+                    <ScrollView contentContainerStyle={styles.contentContainer}>
+                        <View style={styles.welcomeCard}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                                <View style={[styles.avatarPlaceholder, { width: 60, height: 60, borderRadius: 30 }]}>
+                                    <Text style={{ fontSize: 24, color: '#64748b', fontWeight: 'bold' }}>{selectedGuest.first_name?.[0]}{selectedGuest.last_name?.[0]}</Text>
+                                </View>
+                                <View style={{ marginLeft: 16 }}>
+                                    <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0f172a' }}>{selectedGuest.first_name} {selectedGuest.last_name}</Text>
+                                    <View style={{ backgroundColor: selectedGuest.submission_status === 'sent' ? '#dcfce7' : '#f1f5f9', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, marginTop: 4 }}>
+                                        <Text style={{ fontSize: 12, color: selectedGuest.submission_status === 'sent' ? '#166534' : '#64748b', fontWeight: '600' }}>
+                                            {t(`status.${selectedGuest.submission_status || 'draft'}`)}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+
+                        <Text style={styles.sectionTitle}>{t('guest_details.personal')}</Text>
+                        <View style={styles.statCard}>
+                            <View style={styles.formGroup}><Text style={styles.label}>{t('form.nationality')}</Text><Text style={styles.input}>{selectedGuest.nationality_iso3}</Text></View>
+                            <View style={styles.formGroup}><Text style={styles.label}>{t('form.dob')}</Text><Text style={styles.input}>{formatDate(selectedGuest.date_of_birth)}</Text></View>
+                        </View>
+
+                        <Text style={[styles.sectionTitle, { marginTop: 24 }]}>{t('guest_details.documents')}</Text>
+                        <View style={styles.statCard}>
+                            <View style={styles.formGroup}><Text style={styles.label}>{t('form.doc_number')}</Text><Text style={styles.input}>{selectedGuest.document_number}</Text></View>
+                            <View style={styles.formGroup}><Text style={styles.label}>Type</Text><Text style={styles.input}>{selectedGuest.document_type}</Text></View>
+                        </View>
+
+                        <Text style={[styles.sectionTitle, { marginTop: 24 }]}>{t('guest_details.stay')}</Text>
+                        <View style={styles.statCard}>
+                            <View style={styles.row}>
+                                <View style={{ flex: 1, marginRight: 8 }}><Text style={styles.label}>{t('form.arrival')}</Text><Text style={styles.input}>{formatDate(selectedGuest.arrival_date)}</Text></View>
+                                <View style={{ flex: 1, marginLeft: 8 }}><Text style={styles.label}>{t('form.departure')}</Text><Text style={styles.input}>{formatDate(selectedGuest.departure_date)}</Text></View>
+                            </View>
+                        </View>
+
+                        <TouchableOpacity style={[styles.secondaryButton, { marginTop: 32 }]} onPress={() => setSelectedGuest(null)}>
+                            <Text style={styles.secondaryButtonText}>{t('guest_details.close')}</Text>
+                        </TouchableOpacity>
+
+                        {(selectedGuest.submission_status === 'pending' || selectedGuest.submission_status === 'draft' || selectedGuest.submission_status === 'error' || !selectedGuest.submission_status) && (
+                            <TouchableOpacity style={[styles.primaryButton, { marginTop: 16, backgroundColor: '#2563eb' }]} onPress={() => submitGuest(selectedGuest.id)}>
+                                <Feather name="send" size={20} color="white" style={{ marginRight: 8 }} />
+                                <Text style={styles.primaryButtonText}>{t('guest_details.submit')}</Text>
+                            </TouchableOpacity>
+                        )}
+                    </ScrollView>
+                </SafeAreaView>
+            </BackgroundWrapper>
+        );
+    };
+
     const renderGuestsList = () => (
         <View style={styles.containerLight}>
             {renderHeader(t('nav.guests'))}
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Feather name="users" size={48} color="#cbd5e1" />
-                <Text style={{ marginTop: 16, color: '#64748b' }}>{t('common.under_construction')}</Text>
-            </View>
+            <ScrollView contentContainerStyle={styles.contentContainer}>
+                {guestList.length > 0 ? (
+                    guestList.map((guest, i) => (
+                        <TouchableOpacity key={guest.id || i} style={styles.activityItem} onPress={() => setSelectedGuest(guest)}>
+                            <View style={styles.avatarPlaceholder}><Text style={styles.avatarText}>{guest.first_name?.[0]}{guest.last_name?.[0]}</Text></View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.activityName}>{guest.first_name} {guest.last_name}</Text>
+                                <Text style={styles.activityDetail}>{guest.document_number} • {guest.nationality_iso3}</Text>
+                                <Text style={styles.activityDetail}>{formatDate(guest.arrival_date)} ➔ {formatDate(guest.departure_date)}</Text>
+                            </View>
+                            <View style={{ alignItems: 'flex-end' }}>
+                                <View style={{ backgroundColor: guest.submission_status === 'sent' ? '#dcfce7' : '#f1f5f9', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
+                                    <Text style={{ fontSize: 10, color: guest.submission_status === 'sent' ? '#166534' : '#64748b' }}>{t(`status.${guest.submission_status || 'draft'}`)}</Text>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    ))
+                ) : (
+                    <View style={{ padding: 20, alignItems: 'center' }}>
+                        <Feather name="users" size={48} color="#cbd5e1" />
+                        <Text style={{ marginTop: 16, color: '#64748b' }}>{t('common.no_data')}</Text>
+                    </View>
+                )}
+            </ScrollView>
         </View>
     );
 
-    const renderLedger = () => (
-        <View style={styles.containerLight}>
-            {renderHeader(t('nav.ledger'))}
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Feather name="file-text" size={48} color="#cbd5e1" />
-                <Text style={{ marginTop: 16, color: '#64748b' }}>{t('common.under_construction')}</Text>
-            </View>
-        </View>
-    );
 
     // --- Main Render ---
     return (
-        <SafeAreaView style={styles.containerLight}>
-            <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+        <BackgroundWrapper>
+            <SafeAreaView style={styles.containerLight}>
+                <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
 
-            <View style={{ flex: 1 }}>
-                {currentScreen === 'overview' && renderDashboard()}
-                {currentScreen === 'new_guest' && renderNewGuest()}
-                {currentScreen === 'guests' && renderGuestsList()}
-                {currentScreen === 'ledger' && renderLedger()}
-            </View>
+                <View style={{ flex: 1 }}>
+                    {!selectedGuest ? (
+                        <>
+                            {currentScreen === 'overview' && renderDashboard()}
+                            {currentScreen === 'new_guest' && renderNewGuest()}
+                            {currentScreen === 'guests' && renderGuestsList()}
+                        </>
+                    ) : (
+                        renderGuestDetails()
+                    )}
+                </View>
 
-            {renderSidebar()}
-        </SafeAreaView>
+                {renderSidebar()}
+            </SafeAreaView>
+        </BackgroundWrapper>
     );
 }
 
 const styles = StyleSheet.create({
-    containerLight: { flex: 1, backgroundColor: '#f8fafc' },
+    containerLight: { flex: 1, backgroundColor: 'transparent' },
     containerDark: { flex: 1, backgroundColor: '#0f172a', justifyContent: 'center', alignItems: 'center' },
     containerBlack: { flex: 1, backgroundColor: '#000' },
 
@@ -455,7 +642,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderBottomWidth: 1,
         borderBottomColor: '#e2e8f0',
-        backgroundColor: '#f8fafc',
+        // backgroundColor: '#f8fafc', // Remove opaque bg
         zIndex: 50, // Ensure it's on top
     },
     headerTitle: {
@@ -496,12 +683,20 @@ const styles = StyleSheet.create({
     },
     sidebarHeader: {
         marginBottom: 40,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    sidebarLogo: {
+        width: 40,
+        height: 40,
+        marginRight: 12,
+        marginBottom: 0, // Reset margin
     },
     sidebarBrand: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#2563eb'
     },
     navItems: {
         flex: 1

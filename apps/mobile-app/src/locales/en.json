@@ -56,7 +56,27 @@
         "dob": "Date of Birth",
         "arrival": "Arrival",
         "departure": "Departure",
-        "select_date": "Select Date"
+        "select_date": "Select Date",
+        "select_date_range": "Select Date Range"
+    },
+    "status": {
+        "draft": "Draft",
+        "pending": "Pending",
+        "sent": "Submitted",
+        "error": "Error",
+        "sending": "Sending..."
+    },
+    "guest_details": {
+        "title": "Guest Details",
+        "subtitle": "Full information",
+        "personal": "Personal Information",
+        "documents": "Documents",
+        "stay": "Stay Details",
+        "close": "Close",
+        "submit": "Submit to Police"
+    },
+    "ledger": {
+        "generate": "Generate View"
     },
     "alerts": {
         "error": "Error",
