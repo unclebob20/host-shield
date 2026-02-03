@@ -17,6 +17,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         { icon: Users, label: t('nav.guests'), to: '/guests' },
         { icon: Building, label: t('nav.properties'), to: '/properties' },
         { icon: FileText, label: t('nav.ledger'), to: '/ledger' },
+        { icon: Settings, label: t('nav.settings'), to: '/profile' },
     ];
 
     const toggleLanguage = () => {

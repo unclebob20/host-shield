@@ -9,6 +9,7 @@ import GuestList from './pages/GuestList';
 import Ledger from './pages/Ledger';
 import Calendar from './pages/Calendar';
 import Properties from './pages/Properties';
+import Profile from './pages/Profile';
 import Layout from './components/Layout';
 import MarketingLayout from './components/marketing/MarketingLayout';
 import Home from './pages/marketing/Home';
@@ -161,6 +162,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Properties />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

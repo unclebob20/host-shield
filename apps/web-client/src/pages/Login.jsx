@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Loader2, Lock, Mail } from 'lucide-react';
+import { Loader2, Lock, Mail, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Login = () => {
@@ -11,7 +11,12 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'en' ? 'sk' : 'en';
+        i18n.changeLanguage(newLang);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -46,6 +51,17 @@ const Login = () => {
                 <Link to="/" className="text-white/80 hover:text-white flex items-center gap-2 transition-colors">
                     <span className="text-sm font-medium">← {t('auth.login.back_home')}</span>
                 </Link>
+            </div>
+
+            {/* Language Switcher */}
+            <div className="absolute top-6 right-6 z-30">
+                <button
+                    onClick={toggleLanguage}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
+                >
+                    <Languages className="h-4 w-4" />
+                    <span className="text-sm font-medium">{i18n.language === 'en' ? 'SK' : 'EN'}</span>
+                </button>
             </div>
 
             {/* Bottom Centered Branding */}
