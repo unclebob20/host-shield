@@ -11,6 +11,7 @@ __pycache__/
 *.key
 *.keystore
 production/.env_real
+security/hosts/
 
 # System
 .DS_Store
@@ -24,6 +25,5 @@ coverage/
 
 # Misc
 samples/
-docs/  <-- Uncommented because docs are useful documentation to keep in repo!
 .vscode/
 .idea/

@@ -9,6 +9,7 @@ const ledgerRoutes = require('./routes/ledgerRoutes');
 const hostRoutes = require('./routes/hostRoutes');
 const ocrRoutes = require('./routes/ocrRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
+const credentialsRoutes = require('./routes/credentials');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +34,8 @@ app.use('/api/ocr', ocrRoutes);
 app.use('/api/guests', guestRoutes);
 app.use('/api/ledger', ledgerRoutes);
 app.use('/api/properties', propertyRoutes);
+// Government credentials management
+app.use('/api/hosts', credentialsRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {

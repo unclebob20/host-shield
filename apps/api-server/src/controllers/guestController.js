@@ -39,11 +39,50 @@ exports.registerGuest = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Guest not found' });
     }
 
-    // 2. Submit to Gov Bridge
+    // 2. Fetch host's government credentials via property relationship
+    // Guest -> Property -> Host -> Credentials
+    const hostCredentials = await query(
+      `SELECT h.gov_ico, h.gov_api_subject, h.gov_private_key_path, h.gov_credentials_verified,
+              h.gov_private_key_iv, h.gov_private_key_auth_tag
+       FROM hosts h
+       JOIN properties p ON p.host_id = h.id
+       JOIN guest_register g ON g.property_id = p.id
+       WHERE g.id = $1 AND h.id = $2`,
+      [guestId, hostId]
+    );
+
+    if (!hostCredentials.rows || hostCredentials.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Host credentials not found. Please configure your government credentials first.'
+      });
+    }
+
+    const credentials = hostCredentials.rows[0];
+
+    // Check if credentials are verified
+    if (!credentials.gov_credentials_verified) {
+      return res.status(400).json({
+        success: false,
+        error: 'Government credentials not verified. Please verify your credentials before submitting guests.'
+      });
+    }
+
+    // Prepare credentials object for GovBridgeService (with encryption metadata)
+    const govCredentials = {
+      apiSubject: credentials.gov_api_subject,
+      privateKeyPath: credentials.gov_private_key_path,
+      privateKeyMetadata: {
+        iv: credentials.gov_private_key_iv,
+        authTag: credentials.gov_private_key_auth_tag
+      }
+    };
+
+    // 3. Submit to Gov Bridge with host's credentials
     let result;
     try {
-      result = await GovBridgeService.sendToGov(guest);
-      // 3. Update status on success
+      result = await GovBridgeService.sendToGov(guest, govCredentials);
+      // 4. Update status on success
       await GuestService.updateGuestStatus(guestId, 'sent', 'mock-submission-id'); // Bridge doesn't return ID yet, mocking it
     } catch (bridgeError) {
       console.error('GovBridge submission failed:', bridgeError.message);
