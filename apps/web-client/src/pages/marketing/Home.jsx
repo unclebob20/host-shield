@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Scan, FileText, Smartphone, CheckCircle } from 'lucide-react';
+import { Shield, Scan, FileText, Smartphone, CheckCircle, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Home = () => {
@@ -33,6 +33,26 @@ const Home = () => {
                         >
                             {t('marketing.home.cta_secondary')}
                         </Link>
+                    </div>
+
+                    {/* Scroll Down Indicator */}
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                        <button
+                            onClick={() => {
+                                const featuresSection = document.querySelector('section:nth-of-type(2)');
+                                featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className="flex flex-col items-center gap-2 text-slate-400 hover:text-blue-500 transition-colors group"
+                            aria-label="Scroll down"
+                        >
+                            <span className="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                {t('marketing.home.scroll_down') || 'Scroll Down'}
+                            </span>
+                            <div className="w-8 h-12 border-2 border-slate-300 rounded-full flex items-start justify-center p-2 group-hover:border-blue-500 transition-colors">
+                                <div className="w-1.5 h-1.5 bg-slate-400 rounded-full group-hover:bg-blue-500 transition-colors animate-scroll-down"></div>
+                            </div>
+                            <ChevronDown className="w-6 h-6" />
+                        </button>
                     </div>
                 </div>
             </section>
