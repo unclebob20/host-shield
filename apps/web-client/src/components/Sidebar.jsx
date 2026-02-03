@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Users, FileText, Settings, LogOut, X, PlusCircle, Calendar, Building, ExternalLink } from 'lucide-react';
+import { Home, Users, FileText, Settings, LogOut, X, PlusCircle, Calendar, Building, ExternalLink, HelpCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
 
@@ -18,6 +18,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         { icon: Building, label: t('nav.properties'), to: '/properties' },
         { icon: FileText, label: t('nav.ledger'), to: '/ledger' },
         { icon: Settings, label: t('nav.settings'), to: '/profile' },
+        { icon: HelpCircle, label: t('nav.help'), to: '/help' },
     ];
 
     const toggleLanguage = () => {
