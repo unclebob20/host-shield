@@ -3,6 +3,7 @@ const { create } = require('xmlbuilder2');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const encryptionService = require('./encryptionService');
 
 class GovBridgeService {
   constructor() {
@@ -28,13 +29,11 @@ class GovBridgeService {
         'Guest': {
           'FirstName': guest.first_name || guest.firstName,
           'Surname': guest.last_name || guest.lastName,
-          'BirthDate': guest.date_of_birth || guest.dob,
+          'DateOfBirth': guest.date_of_birth || guest.dateOfBirth,
           'Nationality': guest.nationality_iso3 || guest.countryCode || guest.nationality,
-          'PassportNumber': guest.document_number || guest.passportNumber,
-          'StayDetails': {
-            'ArrivalDate': guest.arrival_date || guest.arrivalDate,
-            'DepartureDate': guest.departure_date || guest.departureDate
-          }
+          'DocumentNumber': guest.document_number || guest.passportNumber,
+          'ArrivalDate': guest.arrival_date || guest.arrivalDate,
+          'DepartureDate': guest.departure_date || guest.departureDate
         }
       }
     };
@@ -42,24 +41,47 @@ class GovBridgeService {
     return create({ version: '1.0', encoding: 'UTF-8' }, xmlObj).end({ prettyPrint: false });
   }
 
-  getApiJwt() {
+  /**
+   * Generate a JWT token for API authentication
+   * @param {Object} credentials - Host's government credentials
+   * @param {string} credentials.apiSubject - Subject identifier (usually ICO)
+   * @param {string} credentials.privateKeyPath - Path to private key file
+   * @param {Object} credentials.privateKeyMetadata - Decryption metadata (iv, authTag)
+   * @returns {Promise<string>} JWT token
+   */
+  async getApiJwt(credentials) {
+    // Use provided credentials or fall back to environment defaults (for testing)
+    const apiSubject = credentials?.apiSubject || this.apiSubject;
+    const privateKeyPath = credentials?.privateKeyPath || this.privateKeyPath;
+    const privateKeyMetadata = credentials?.privateKeyMetadata || {};
+
     if (this.apiToken) return this.apiToken;
-    if (!this.privateKeyPath) {
-      throw new Error('Missing BRIDGE_API_TOKEN or BRIDGE_PRIVATE_KEY_PATH');
+    if (!privateKeyPath) {
+      throw new Error('Missing BRIDGE_API_TOKEN or privateKeyPath in credentials');
     }
 
     // Safety check: Ensure it's a file, not a directory (common Docker volume issue)
-    if (fs.existsSync(this.privateKeyPath) && fs.lstatSync(this.privateKeyPath).isDirectory()) {
-      throw new Error(`Configuration Error: ${this.privateKeyPath} is a directory. Please check your Docker volume mounts.`);
+    if (fs.existsSync(privateKeyPath) && fs.lstatSync(privateKeyPath).isDirectory()) {
+      throw new Error(`Configuration Error: ${privateKeyPath} is a directory. Please check your Docker volume mounts.`);
     }
 
-    const privateKey = fs.readFileSync(this.privateKeyPath, 'utf8');
+    // Decrypt private key if encryption metadata exists
+    let privateKey;
+    if (privateKeyMetadata.iv && privateKeyMetadata.authTag) {
+      console.log('🔓 Decrypting private key file...');
+      const decrypted = await encryptionService.decryptFile(privateKeyPath, privateKeyMetadata);
+      privateKey = decrypted.toString('utf8');
+    } else {
+      // No encryption metadata - read as plain text (backward compatibility)
+      privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+    }
+
     const now = Math.floor(Date.now() / 1000);
     // 32+ chars, [0-9a-z\-_]
     const jti = crypto.randomUUID().replace(/-/g, '');
 
     const payload = {
-      sub: this.apiSubject,
+      sub: apiSubject,
       exp: now + 240, // Max 5 minutes allowed by GovBridge logic
       jti
     };
@@ -78,9 +100,17 @@ class GovBridgeService {
     return token;
   }
 
-  async sendToGov(guestData) {
+  /**
+   * Submit guest data to GovBridge for validation
+   * @param {Object} guestData - Guest information
+   * @param {Object} credentials - Host's government credentials (optional, uses defaults if not provided)
+   * @param {string} credentials.apiSubject - Subject identifier (usually ICO)
+   * @param {string} credentials.privateKeyPath - Path to private key file
+   * @returns {Promise<Object>} Validation response
+   */
+  async sendToGov(guestData, credentials = null) {
     const xmlString = this.generateXml(guestData);
-    const token = this.getApiJwt();
+    const token = this.getApiJwt(credentials);
 
     try {
       // Validate against a known eForm schema (Sprint 1 "plumbing" closure).

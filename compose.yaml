@@ -72,7 +72,7 @@ services:
       - DATABASE_URL=postgresql://${DB_USER:-user}:${DB_PASSWORD:-password}@hostshield_db:5432/hostshield
       - MRZ_READER_URL=http://hostshield_mrz:8000
       - BRIDGE_BASE_URL=http://hostshield_gov_api:3000/api
-
+      - CREDENTIAL_ENCRYPTION_KEY=${CREDENTIAL_ENCRYPTION_KEY}
       - BRIDGE_PRIVATE_KEY_PATH=/app/security/gov_fake_private.key
     volumes:
       - ./security:/app/security:ro
