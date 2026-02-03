@@ -1,47 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import api from '../lib/api';
 import {
-    Box,
-    Card,
-    CardContent,
-    Typography,
-    Button,
-    TextField,
-    Alert,
-    CircularProgress,
-    Chip,
-    Stack,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-} from '@mui/material';
-import {
-    CheckCircle as CheckCircleIcon,
-    Error as ErrorIcon,
-    Upload as UploadIcon,
-    Delete as DeleteIcon,
-    VerifiedUser as VerifiedUserIcon,
-} from '@mui/icons-material';
-import api from '../services/api';
+    Upload,
+    CheckCircle,
+    AlertCircle,
+    Trash2,
+    Shield,
+    Key as KeyIcon,
+    FileText,
+    Loader2
+} from 'lucide-react';
 
 const CredentialsManagement = () => {
+    const { user } = useAuth();
+    const { t } = useTranslation();
     const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [verifying, setVerifying] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     // Upload form state
     const [ico, setIco] = useState('');
     const [apiSubject, setApiSubject] = useState('');
     const [keystoreFile, setKeystoreFile] = useState(null);
     const [privateKeyFile, setPrivateKeyFile] = useState(null);
-
-    // Dialog state
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
-    const hostId = localStorage.getItem('hostId'); // Get from auth context
 
     useEffect(() => {
         fetchStatus();
@@ -50,11 +37,11 @@ const CredentialsManagement = () => {
     const fetchStatus = async () => {
         try {
             setLoading(true);
-            const response = await api.get(`/hosts/${hostId}/credentials/status`);
+            const response = await api.get(`/hosts/${user.id}/credentials/status`);
             setStatus(response.data.credentials);
             setError(null);
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to fetch credential status');
+            setError(err.response?.data?.error || t('credentials.fetch_error'));
         } finally {
             setLoading(false);
         }
@@ -78,13 +65,13 @@ const CredentialsManagement = () => {
             formData.append('keystore', keystoreFile);
             formData.append('privateKey', privateKeyFile);
 
-            await api.post(`/hosts/${hostId}/credentials`, formData, {
+            await api.post(`/hosts/${user.id}/credentials`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            setSuccess('Credentials uploaded successfully! Please verify them.');
+            setSuccess(t('credentials.upload_success'));
             setIco('');
             setApiSubject('');
             setKeystoreFile(null);
@@ -96,7 +83,7 @@ const CredentialsManagement = () => {
 
             await fetchStatus();
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to upload credentials');
+            setError(err.response?.data?.error || t('credentials.upload_error'));
         } finally {
             setUploading(false);
         }
@@ -107,12 +94,12 @@ const CredentialsManagement = () => {
             setVerifying(true);
             setError(null);
 
-            const response = await api.post(`/hosts/${hostId}/credentials/verify`);
+            const response = await api.post(`/hosts/${user.id}/credentials/verify`);
 
-            setSuccess(response.data.message);
+            setSuccess(response.data.message || t('credentials.verify_success'));
             await fetchStatus();
         } catch (err) {
-            setError(err.response?.data?.error || 'Verification failed');
+            setError(err.response?.data?.error || err.response?.data?.details || t('credentials.verify_error'));
         } finally {
             setVerifying(false);
         }
@@ -121,13 +108,13 @@ const CredentialsManagement = () => {
     const handleDelete = async () => {
         try {
             setLoading(true);
-            await api.delete(`/hosts/${hostId}/credentials`);
+            await api.delete(`/hosts/${user.id}/credentials`);
 
-            setSuccess('Credentials deleted successfully');
-            setDeleteDialogOpen(false);
+            setSuccess(t('credentials.delete_success'));
+            setShowDeleteDialog(false);
             await fetchStatus();
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to delete credentials');
+            setError(err.response?.data?.error || t('credentials.delete_error'));
         } finally {
             setLoading(false);
         }
@@ -135,201 +122,236 @@ const CredentialsManagement = () => {
 
     if (loading && !status) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-                <CircularProgress />
-            </Box>
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            </div>
         );
     }
 
     return (
-        <Box sx={{ maxWidth: 800, margin: '0 auto', p: 3 }}>
-            <Typography variant="h4" gutterBottom>
-                Government Credentials
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-                Configure your Slovak eID credentials for police guest reporting
-            </Typography>
-
+        <div className="space-y-6">
+            {/* Alerts */}
             {error && (
-                <Alert severity="error" onClose={() => setError(null)} sx={{ mb: 2 }}>
-                    {error}
-                </Alert>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                        <p className="text-sm text-red-800">{error}</p>
+                    </div>
+                    <button onClick={() => setError(null)} className="text-red-600 hover:text-red-800">
+                        ×
+                    </button>
+                </div>
             )}
 
             {success && (
-                <Alert severity="success" onClose={() => setSuccess(null)} sx={{ mb: 2 }}>
-                    {success}
-                </Alert>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                        <p className="text-sm text-green-800">{success}</p>
+                    </div>
+                    <button onClick={() => setSuccess(null)} className="text-green-600 hover:text-green-800">
+                        ×
+                    </button>
+                </div>
             )}
 
-            {/* Status Card */}
+            {/* Current Credentials Status */}
             {status?.configured && (
-                <Card sx={{ mb: 3 }}>
-                    <CardContent>
-                        <Stack direction="row" spacing={2} alignItems="center" mb={2}>
-                            <Typography variant="h6">Current Credentials</Typography>
-                            {status.verified ? (
-                                <Chip
-                                    icon={<CheckCircleIcon />}
-                                    label="Verified"
-                                    color="success"
-                                    size="small"
-                                />
-                            ) : (
-                                <Chip
-                                    icon={<ErrorIcon />}
-                                    label="Not Verified"
-                                    color="warning"
-                                    size="small"
-                                />
-                            )}
-                        </Stack>
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900">{t('credentials.current_title')}</h3>
+                        {status.verified ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <CheckCircle className="h-4 w-4" />
+                                {t('credentials.verified')}
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                <AlertCircle className="h-4 w-4" />
+                                {t('credentials.not_verified')}
+                            </span>
+                        )}
+                    </div>
 
-                        <Stack spacing={1}>
-                            <Typography variant="body2">
-                                <strong>ICO:</strong> {status.ico}
-                            </Typography>
-                            <Typography variant="body2">
-                                <strong>API Subject:</strong> {status.apiSubject}
-                            </Typography>
-                            {status.verifiedAt && (
-                                <Typography variant="body2" color="text.secondary">
-                                    Verified: {new Date(status.verifiedAt).toLocaleString()}
-                                </Typography>
-                            )}
-                        </Stack>
+                    <div className="space-y-3 mb-6">
+                        <div className="flex items-center gap-2 text-sm">
+                            <KeyIcon className="h-4 w-4 text-gray-400" />
+                            <span className="font-medium text-gray-700">{t('credentials.ico')}:</span>
+                            <span className="text-gray-900">{status.ico}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm">
+                            <FileText className="h-4 w-4 text-gray-400" />
+                            <span className="font-medium text-gray-700">{t('credentials.api_subject')}:</span>
+                            <span className="text-gray-900">{status.apiSubject}</span>
+                        </div>
+                        {status.verifiedAt && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Shield className="h-4 w-4 text-gray-400" />
+                                <span>{t('credentials.verified_at')}: {new Date(status.verifiedAt).toLocaleString()}</span>
+                            </div>
+                        )}
+                    </div>
 
-                        <Stack direction="row" spacing={2} mt={3}>
-                            {!status.verified && (
-                                <Button
-                                    variant="contained"
-                                    startIcon={verifying ? <CircularProgress size={20} /> : <VerifiedUserIcon />}
-                                    onClick={handleVerify}
-                                    disabled={verifying}
-                                >
-                                    Verify Credentials
-                                </Button>
-                            )}
-                            <Button
-                                variant="outlined"
-                                color="error"
-                                startIcon={<DeleteIcon />}
-                                onClick={() => setDeleteDialogOpen(true)}
+                    <div className="flex gap-3">
+                        {!status.verified && (
+                            <button
+                                onClick={handleVerify}
+                                disabled={verifying}
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                Delete Credentials
-                            </Button>
-                        </Stack>
-                    </CardContent>
-                </Card>
+                                {verifying ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        {t('credentials.verifying')}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Shield className="h-4 w-4" />
+                                        {t('credentials.verify_btn')}
+                                    </>
+                                )}
+                            </button>
+                        )}
+                        <button
+                            onClick={() => setShowDeleteDialog(true)}
+                            className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors"
+                        >
+                            <Trash2 className="h-4 w-4" />
+                            {t('credentials.delete_btn')}
+                        </button>
+                    </div>
+                </div>
             )}
 
             {/* Upload Form */}
             {!status?.configured && (
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" gutterBottom>
-                            Upload Credentials
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" paragraph>
-                            Upload your Slovak eID credentials to enable police guest reporting
-                        </Typography>
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('credentials.upload_title')}</h3>
+                    <p className="text-sm text-gray-600 mb-6">
+                        {t('credentials.upload_desc')}
+                    </p>
 
-                        <Box component="form" onSubmit={handleUpload} sx={{ mt: 2 }}>
-                            <Stack spacing={3}>
-                                <TextField
-                                    label="ICO Number"
-                                    value={ico}
-                                    onChange={(e) => setIco(e.target.value)}
-                                    required
-                                    fullWidth
-                                    helperText="Your organization's ICO (identification number)"
-                                />
+                    <form onSubmit={handleUpload} className="space-y-4">
+                        <div>
+                            <label htmlFor="ico" className="block text-sm font-medium text-gray-700 mb-1">
+                                {t('credentials.ico_label')}
+                            </label>
+                            <input
+                                id="ico"
+                                type="text"
+                                value={ico}
+                                onChange={(e) => setIco(e.target.value)}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder={t('credentials.ico_placeholder')}
+                            />
+                            <p className="mt-1 text-xs text-gray-500">{t('credentials.ico_help')}</p>
+                        </div>
 
-                                <TextField
-                                    label="API Subject"
-                                    value={apiSubject}
-                                    onChange={(e) => setApiSubject(e.target.value)}
-                                    required
-                                    fullWidth
-                                    helperText="Usually the same as your ICO"
-                                />
+                        <div>
+                            <label htmlFor="apiSubject" className="block text-sm font-medium text-gray-700 mb-1">
+                                {t('credentials.api_subject_label')}
+                            </label>
+                            <input
+                                id="apiSubject"
+                                type="text"
+                                value={apiSubject}
+                                onChange={(e) => setApiSubject(e.target.value)}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder={t('credentials.api_subject_placeholder')}
+                            />
+                            <p className="mt-1 text-xs text-gray-500">{t('credentials.api_subject_help')}</p>
+                        </div>
 
-                                <Box>
-                                    <Typography variant="body2" gutterBottom>
-                                        Keystore File (.keystore, .jks)
-                                    </Typography>
-                                    <input
-                                        id="keystore-input"
-                                        type="file"
-                                        accept=".keystore,.jks"
-                                        onChange={(e) => setKeystoreFile(e.target.files[0])}
-                                        required
-                                    />
-                                </Box>
+                        <div>
+                            <label htmlFor="keystore-input" className="block text-sm font-medium text-gray-700 mb-1">
+                                {t('credentials.keystore_label')}
+                            </label>
+                            <input
+                                id="keystore-input"
+                                type="file"
+                                accept=".keystore,.jks"
+                                onChange={(e) => setKeystoreFile(e.target.files[0])}
+                                required
+                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            />
+                        </div>
 
-                                <Box>
-                                    <Typography variant="body2" gutterBottom>
-                                        Private Key File (.key, .pem)
-                                    </Typography>
-                                    <input
-                                        id="privatekey-input"
-                                        type="file"
-                                        accept=".key,.pem"
-                                        onChange={(e) => setPrivateKeyFile(e.target.files[0])}
-                                        required
-                                    />
-                                </Box>
+                        <div>
+                            <label htmlFor="privatekey-input" className="block text-sm font-medium text-gray-700 mb-1">
+                                {t('credentials.privatekey_label')}
+                            </label>
+                            <input
+                                id="privatekey-input"
+                                type="file"
+                                accept=".key,.pem"
+                                onChange={(e) => setPrivateKeyFile(e.target.files[0])}
+                                required
+                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            />
+                        </div>
 
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    startIcon={uploading ? <CircularProgress size={20} /> : <UploadIcon />}
-                                    disabled={uploading}
-                                >
-                                    Upload Credentials
-                                </Button>
-                            </Stack>
-                        </Box>
-                    </CardContent>
-                </Card>
+                        <button
+                            type="submit"
+                            disabled={uploading}
+                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                        >
+                            {uploading ? (
+                                <>
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    {t('credentials.uploading')}
+                                </>
+                            ) : (
+                                <>
+                                    <Upload className="h-5 w-5" />
+                                    {t('credentials.upload_btn')}
+                                </>
+                            )}
+                        </button>
+                    </form>
+                </div>
             )}
 
             {/* Help Card */}
-            <Card sx={{ mt: 3, bgcolor: 'info.light' }}>
-                <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                        How to Get Credentials
-                    </Typography>
-                    <Typography variant="body2" component="div">
-                        <ol>
-                            <li>Obtain eID credentials from a Slovak certificate authority (Disig, eIDAS Bridge, etc.)</li>
-                            <li>Your ICO number is your organization's identification number</li>
-                            <li>The keystore file contains your public certificate</li>
-                            <li>The private key file is used to sign authentication tokens</li>
-                            <li>After uploading, verify your credentials to enable guest submissions</li>
-                        </ol>
-                    </Typography>
-                </CardContent>
-            </Card>
+            <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
+                <h3 className="text-lg font-semibold text-blue-900 mb-3">{t('credentials.help_title')}</h3>
+                <ol className="space-y-2 text-sm text-blue-800 list-decimal list-inside">
+                    <li>{t('credentials.help_1')}</li>
+                    <li>{t('credentials.help_2')}</li>
+                    <li>{t('credentials.help_3')}</li>
+                    <li>{t('credentials.help_4')}</li>
+                    <li>{t('credentials.help_5')}</li>
+                    <li>{t('credentials.help_6')}</li>
+                </ol>
+            </div>
 
             {/* Delete Confirmation Dialog */}
-            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-                <DialogTitle>Delete Credentials?</DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        Are you sure you want to delete your government credentials?
-                        You will not be able to submit guests to the police until you upload new credentials.
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleDelete} color="error" variant="contained">
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Box>
+            {showDeleteDialog && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('credentials.delete_confirm_title')}</h3>
+                        <p className="text-sm text-gray-600 mb-6">
+                            {t('credentials.delete_confirm_msg')}
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setShowDeleteDialog(false)}
+                                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                {t('credentials.delete_cancel')}
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                            >
+                                {t('credentials.delete_confirm')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 
