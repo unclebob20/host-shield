@@ -1,4 +1,5 @@
 const GovBridgeService = require('../services/govBridgeService');
+const { query } = require('../services/db');
 const { buildGuestStayXml } = require('../services/xmlFactory');
 const GuestService = require('../services/guestService');
 
