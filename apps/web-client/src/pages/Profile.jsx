@@ -3,7 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
 import CredentialsManagement from '../components/CredentialsManagement';
-import { User, Mail, Building2, Calendar, Key, Shield, Edit2, Save, X, Loader2 } from 'lucide-react';
+import SubscriptionManagement from '../components/SubscriptionManagement';
+import { User, Mail, Building2, Calendar, Key, Shield, Edit2, Save, X, Loader2, CreditCard } from 'lucide-react';
 
 const Profile = () => {
     const { user, setUser } = useAuth();
@@ -134,6 +135,21 @@ const Profile = () => {
                             <div className="flex items-center gap-2">
                                 <Shield className="h-5 w-5" />
                                 {t('profile.tab_credentials') || 'Government Credentials'}
+                            </div>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('subscription')}
+                            className={`
+                py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                ${activeTab === 'subscription'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }
+              `}
+                        >
+                            <div className="flex items-center gap-2">
+                                <CreditCard className="h-5 w-5" />
+                                {t('profile.tab_subscription') || 'Subscription'}
                             </div>
                         </button>
                     </nav>
@@ -292,6 +308,12 @@ const Profile = () => {
                 {activeTab === 'credentials' && (
                     <div>
                         <CredentialsManagement />
+                    </div>
+                )}
+
+                {activeTab === 'subscription' && (
+                    <div>
+                        <SubscriptionManagement />
                     </div>
                 )}
             </div>

@@ -10,17 +10,25 @@ const hostRoutes = require('./routes/hostRoutes');
 const ocrRoutes = require('./routes/ocrRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
 const credentialsRoutes = require('./routes/credentials');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
+
+// Payment webhook requires raw body, so we mount it BEFORE express.json()
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
+// For all other routes, use JSON parsing
 app.use(express.json());
 
 // Debug logging
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+    // Skip logging large raw bodies or binary data if needed
+    if (!req.path.includes('webhook')) {
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+    }
     next();
 });
 
@@ -36,6 +44,8 @@ app.use('/api/ledger', ledgerRoutes);
 app.use('/api/properties', propertyRoutes);
 // Government credentials management
 app.use('/api/hosts', credentialsRoutes);
+// Payment routes
+app.use('/api/payments', paymentRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
