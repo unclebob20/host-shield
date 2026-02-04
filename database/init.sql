@@ -45,6 +45,7 @@ CREATE TABLE properties (
     host_id UUID REFERENCES hosts(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     address TEXT,
+    type VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
