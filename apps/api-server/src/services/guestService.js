@@ -26,6 +26,16 @@ async function createGuest(hostId, guestData) {
         propertyId // New UUID
     } = guestData;
 
+    // Fix: Frontend might send UUID in objectId field.
+    // If objectId is a UUID, move it to propertyId.
+    let finalObjectId = objectId;
+    let finalPropertyId = propertyId;
+
+    if (objectId && typeof objectId === 'string' && objectId.length > 30 && !propertyId) {
+        finalPropertyId = objectId;
+        finalObjectId = null;
+    }
+
     const { rows } = await query(
         `INSERT INTO guest_register (
       host_id, 
@@ -55,8 +65,8 @@ async function createGuest(hostId, guestData) {
             arrival_date,
             departure_date,
             purpose_of_stay || 'turistika',
-            objectId || null,
-            propertyId || null
+            finalObjectId || null,
+            finalPropertyId || null
         ]
     );
 
