@@ -10,11 +10,11 @@ services:
     ports:
       - "80:80"
       - "443:443" # Requires SSL cert volumes/config in nginx.conf
-      # volumes:
-      # - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      # Uncomment for Let's Encrypt / SSL
-      # - ./certbot/conf:/etc/letsencrypt
-      # - ./certbot/www:/var/www/certbot
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Let's Encrypt / SSL
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - api-server
 
@@ -99,11 +99,23 @@ services:
       - BRIDGE_API_SUBJECT=${GOV_API_TOKEN}
       - BRIDGE_PRIVATE_KEY_PATH=/app/security/gov_private.key
       - JWT_SECRET=${JWT_SECRET}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - CLIENT_URL=${CLIENT_URL}
     volumes:
       - ../security/gov_private.key:/app/security/gov_private.key:ro
     depends_on:
       - db
       - mrz-reader
+
+  # 8. Certbot (SSL Certificates)
+  certbot:
+    image: certbot/certbot
+    container_name: hostshield_certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
   db_data:
