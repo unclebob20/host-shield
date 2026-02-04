@@ -33,7 +33,7 @@ ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP << 'EOF'
     cp production/nginx/nginx.conf nginx/nginx.conf
 
     # Apply Path Fixes for VPS Structure
-    bash fix_paths.sh
+    bash production/fix_paths.sh
 
     # Rebuild and Restart only changed services
     # (Docker caching will make this fast if code hasn't changed much)

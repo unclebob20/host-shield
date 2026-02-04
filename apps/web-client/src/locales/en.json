@@ -19,6 +19,7 @@
         "subtitle": "Manage your profile and government API credentials",
         "tab_profile": "Profile",
         "tab_credentials": "Government Credentials",
+        "tab_subscription": "Subscription",
         "profile_info": "Profile Information",
         "edit": "Edit",
         "cancel": "Cancel",
@@ -36,6 +37,17 @@
         "not_set": "Not set",
         "update_success": "Profile updated successfully!",
         "update_error": "Failed to update profile"
+    },
+    "subscription": {
+        "upgrade_title": "Upgrade your Plan",
+        "upgrade_subtitle": "Unlock advanced features for your compliance needs.",
+        "checkout_error": "Failed to start checkout process",
+        "active_title": "Subscription Active",
+        "active_desc": "You are currently subscribed to the Professional Plan.",
+        "valid_until": "Valid Until",
+        "status": "Status",
+        "manage_billing": "Manage Billing & Invoices",
+        "manage_desc": "Cancel or update your payment details via Stripe."
     },
     "credentials": {
         "current_title": "Current Credentials",

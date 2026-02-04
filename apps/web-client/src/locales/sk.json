@@ -19,6 +19,7 @@
         "subtitle": "Spravujte svoj profil a prístupové údaje k vládnemu API",
         "tab_profile": "Profil",
         "tab_credentials": "Vládne poverenia",
+        "tab_subscription": "Predplatné",
         "profile_info": "Informácie o profile",
         "edit": "Upraviť",
         "cancel": "Zrušiť",
@@ -36,6 +37,17 @@
         "not_set": "Nenastavené",
         "update_success": "Profil bol úspešne aktualizovaný!",
         "update_error": "Nepodarilo sa aktualizovať profil"
+    },
+    "subscription": {
+        "upgrade_title": "Vylepšite svoj plán",
+        "upgrade_subtitle": "Odomknite pokročilé funkcie pre vaše potreby.",
+        "checkout_error": "Nepodarilo sa spustiť proces platby",
+        "active_title": "Predplatné aktívne",
+        "active_desc": "Máte aktívne predplatné Professional.",
+        "valid_until": "Platné do",
+        "status": "Stav",
+        "manage_billing": "Spravovať fakturáciu a platby",
+        "manage_desc": "Zrušenie alebo aktualizácia platobných údajov cez Stripe."
     },
     "credentials": {
         "current_title": "Aktuálne poverenia",
