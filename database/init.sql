@@ -71,7 +71,8 @@ CREATE TABLE guest_register (
     arrival_date DATE NOT NULL,
     departure_date DATE NOT NULL,
     purpose_of_stay VARCHAR(100) DEFAULT 'turistika',
-    object_id INTEGER, -- Legacy integer ID if needed, or link to properties table in future
+    object_id INTEGER, -- Legacy integer ID (deprecated)
+    property_id UUID REFERENCES properties(id) ON DELETE SET NULL,
     
     -- Compliance & Reporting Status
     -- Maps to Slovensko.digital API submission tracking
