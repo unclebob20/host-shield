@@ -39,6 +39,16 @@ ssh -i $SSH_KEY $SERVER_USER@$SERVER_IP << 'EOF'
     # (Docker caching will make this fast if code hasn't changed much)
     docker compose up -d --build --remove-orphans
     
+    # 3. Running Database Migrations (Idempotent if written with IF NOT EXISTS)
+    echo "🔄 Running database migrations..."
+    if [ -d "database/migrations" ]; then
+        for sql_file in database/migrations/*.sql; do
+            [ -e "$sql_file" ] || continue
+            echo "   Executing $sql_file..."
+            cat "$sql_file" | docker exec -i hostshield_db_prod psql -U hostshield_user -d hostshield
+        done
+    fi
+
     # Prune old images to save disk space
     docker image prune -f
 EOF
