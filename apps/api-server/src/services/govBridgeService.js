@@ -63,44 +63,51 @@ class GovBridgeService {
       throw new Error('Missing BRIDGE_API_TOKEN or privateKeyPath in credentials');
     }
 
-    // Safety check: Ensure it's a file, not a directory (common Docker volume issue)
+    // Safety check: Ensure it's a file, not a directory
     if (fs.existsSync(privateKeyPath) && fs.lstatSync(privateKeyPath).isDirectory()) {
-      throw new Error(`Configuration Error: ${privateKeyPath} is a directory. Please check your Docker volume mounts.`);
+      throw new Error(`Configuration Error: ${privateKeyPath} is a directory. Use a file.`);
     }
 
-    // Decrypt private key if encryption metadata exists
-    let privateKey;
-    if (privateKeyMetadata.iv && privateKeyMetadata.authTag) {
-      console.log('🔓 Decrypting private key file...');
-      const decrypted = await encryptionService.decryptFile(privateKeyPath, privateKeyMetadata);
-      privateKey = decrypted.toString('utf8');
-    } else {
-      // No encryption metadata - read as plain text (backward compatibility)
-      privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+    try {
+      console.log('DEBUG: Metadata IV present?', !!(privateKeyMetadata?.iv));
+
+      // Decrypt private key if encryption metadata exists
+      let privateKey;
+      if (privateKeyMetadata.iv && privateKeyMetadata.authTag) {
+        console.log('🔓 Decrypting private key file...');
+        const decrypted = await encryptionService.decryptFile(privateKeyPath, privateKeyMetadata);
+        privateKey = decrypted.toString('utf8');
+      } else {
+        // No encryption metadata - read as plain text
+        console.log('📖 Reading private key as plain text...');
+        privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+      }
+
+      const now = Math.floor(Date.now() / 1000);
+      const jti = crypto.randomUUID().replace(/-/g, '');
+
+      const payload = {
+        sub: apiSubject,
+        exp: now + 240,
+        jti
+      };
+
+      const token = jwt.sign(
+        payload,
+        privateKey,
+        { algorithm: 'RS256' }
+      );
+
+      console.log('Generating GovBridge JWT:', {
+        payload,
+        tokenSub: jwt.decode(token).sub
+      });
+
+      return token;
+    } catch (error) {
+      console.error('ERROR in getApiJwt:', error);
+      throw error;
     }
-
-    const now = Math.floor(Date.now() / 1000);
-    // 32+ chars, [0-9a-z\-_]
-    const jti = crypto.randomUUID().replace(/-/g, '');
-
-    const payload = {
-      sub: apiSubject,
-      exp: now + 240, // Max 5 minutes allowed by GovBridge logic
-      jti
-    };
-
-    const token = jwt.sign(
-      payload,
-      privateKey,
-      { algorithm: 'RS256' }
-    );
-
-    console.log('Generating GovBridge JWT:', {
-      payload,
-      tokenSub: jwt.decode(token).sub
-    });
-
-    return token;
   }
 
   /**
