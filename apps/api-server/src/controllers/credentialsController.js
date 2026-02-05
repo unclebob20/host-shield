@@ -106,6 +106,8 @@ exports.uploadCredentials = async (req, res) => {
            gov_private_key_path = $6,
            gov_private_key_iv = $7,
            gov_private_key_auth_tag = $8,
+           gov_keystore_data = NULL,
+           gov_private_key_data = NULL,
            gov_credentials_verified = false,
            gov_credentials_verified_at = NULL
        WHERE id = $9`,
@@ -289,6 +291,8 @@ exports.deleteCredentials = async (req, res) => {
            gov_api_subject = NULL,
            gov_keystore_path = NULL,
            gov_private_key_path = NULL,
+           gov_keystore_data = NULL,
+           gov_private_key_data = NULL,
            gov_credentials_verified = false,
            gov_credentials_verified_at = NULL
        WHERE id = $1`,
