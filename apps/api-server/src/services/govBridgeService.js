@@ -81,6 +81,8 @@ class GovBridgeService {
         // No encryption metadata - read as plain text
         console.log('📖 Reading private key as plain text...');
         privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+        console.log(`DEBUG: Key Length: ${privateKey.length}`);
+        console.log(`DEBUG: Key Preview: ${privateKey.substring(0, 100).replace(/\n/g, '\\n')}...`);
       }
 
       const now = Math.floor(Date.now() / 1000);
