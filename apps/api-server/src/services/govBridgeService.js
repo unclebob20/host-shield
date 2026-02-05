@@ -110,7 +110,7 @@ class GovBridgeService {
    */
   async sendToGov(guestData, credentials = null) {
     const xmlString = this.generateXml(guestData);
-    const token = this.getApiJwt(credentials);
+    const token = await this.getApiJwt(credentials);
 
     try {
       // Validate against a known eForm schema (Sprint 1 "plumbing" closure).
