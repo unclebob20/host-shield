@@ -59,8 +59,20 @@ const GuestList = () => {
         }
     };
 
-    const getPropertyDetails = (objectId) => {
-        const obj = properties.find(o => o.id == objectId);
+    const getPropertyDetails = (guest) => {
+        // 1. Server-side joined object (Preferred)
+        if (guest.property && guest.property.name) {
+            return guest.property;
+        }
+
+        // 2. Client-side lookup by propertyId (New)
+        if (guest.propertyId) {
+            const obj = properties.find(o => o.id === guest.propertyId);
+            if (obj) return obj;
+        }
+
+        // 3. Legacy lookup by object_id
+        const obj = properties.find(o => o.id == guest.object_id);
         return obj ? obj : { name: 'Unknown Property', type: 'N/A' };
     };
 
@@ -139,7 +151,7 @@ const GuestList = () => {
                         <tbody className="divide-y divide-slate-100/50 bg-white/40">
                             {filteredGuests.length > 0 ? (
                                 filteredGuests.map((guest) => {
-                                    const property = getPropertyDetails(guest.object_id);
+                                    const property = getPropertyDetails(guest);
                                     return (
                                         <tr key={guest.id} className="hover:bg-slate-50/50 transition-colors">
                                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
@@ -246,7 +258,7 @@ const GuestList = () => {
                                     <h4 className="text-lg font-bold text-slate-900">{selectedGuest.first_name} {selectedGuest.last_name}</h4>
                                     <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
                                         <Building className="w-3.5 h-3.5" />
-                                        <span>{getPropertyDetails(selectedGuest.object_id).name}</span>
+                                        <span>{getPropertyDetails(selectedGuest).name}</span>
                                     </div>
                                 </div>
                                 <div className="ml-auto">

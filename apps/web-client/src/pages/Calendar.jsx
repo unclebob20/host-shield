@@ -40,7 +40,7 @@ const Calendar = () => {
 
                 return {
                     id: guest.id,
-                    objectId: guest.object_id, // Map from snake_case backend
+                    objectId: guest.propertyId || (guest.property && guest.property.id) || guest.object_id,
                     guestName: `${guest.first_name} ${guest.last_name}`,
                     startDate: new Date(guest.arrival_date),
                     endDate: new Date(guest.departure_date),
