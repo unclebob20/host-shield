@@ -68,7 +68,7 @@ services:
       - redis
       - gov-db
     environment:
-      - API_TOKEN=${GOV_API_TOKEN}
+      - API_TOKEN=hostshield
       - RAILS_ENV=production
       - UPVS_ENV=prod
       - SECRET_KEY_BASE=${GOV_SECRET_KEY_BASE}
