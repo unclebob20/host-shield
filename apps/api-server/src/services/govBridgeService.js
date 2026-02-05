@@ -55,8 +55,6 @@ class GovBridgeService {
     const privateKeyPath = credentials?.privateKeyPath || this.privateKeyPath;
     const privateKeyMetadata = credentials?.privateKeyMetadata || {};
 
-    console.log('DEBUG: Generating JWT for subject:', apiSubject);
-    console.log('DEBUG: Private Key Path:', privateKeyPath);
 
     if (this.apiToken) return this.apiToken;
     if (!privateKeyPath) {
@@ -69,17 +67,14 @@ class GovBridgeService {
     }
 
     try {
-      console.log('DEBUG: Metadata IV present?', !!(privateKeyMetadata?.iv));
 
       // Decrypt private key if encryption metadata exists
       let privateKey;
       if (privateKeyMetadata.iv && privateKeyMetadata.authTag) {
-        console.log('🔓 Decrypting private key file...');
         const decrypted = await encryptionService.decryptFile(privateKeyPath, privateKeyMetadata);
         privateKey = decrypted.toString('utf8');
       } else {
         // No encryption metadata - read as plain text
-        console.log('📖 Reading private key as plain text...');
         privateKey = fs.readFileSync(privateKeyPath, 'utf8');
       }
 
@@ -98,10 +93,6 @@ class GovBridgeService {
         { algorithm: 'RS256' }
       );
 
-      console.log('Generating GovBridge JWT:', {
-        payload,
-        tokenSub: jwt.decode(token).sub
-      });
 
       return token;
     } catch (error) {
@@ -139,6 +130,7 @@ class GovBridgeService {
 
       return response.data;
     } catch (error) {
+      console.error('DEBUG: GovBridge Axios Error:', error.response?.data || error.message);
       const status = error.response?.status;
       const data = error.response?.data;
       const msg =
