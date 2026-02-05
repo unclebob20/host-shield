@@ -53,27 +53,45 @@ class GovBridgeService {
     // Use provided credentials or fall back to environment defaults (for testing)
     const apiSubject = credentials?.apiSubject || this.apiSubject;
     const privateKeyPath = credentials?.privateKeyPath || this.privateKeyPath;
+    const privateKeyData = credentials?.privateKeyData; // New: Buffer or String
     const privateKeyMetadata = credentials?.privateKeyMetadata || {};
 
     if (this.apiToken) return this.apiToken;
-    if (!privateKeyPath) {
-      throw new Error('Missing BRIDGE_API_TOKEN or privateKeyPath in credentials');
+
+    if (!privateKeyPath && !privateKeyData) {
+      throw new Error('Missing BRIDGE_API_TOKEN, privateKeyPath, or privateKeyData in credentials');
     }
 
-    // Safety check: Ensure it's a file, not a directory (common Docker volume issue)
-    if (fs.existsSync(privateKeyPath) && fs.lstatSync(privateKeyPath).isDirectory()) {
-      throw new Error(`Configuration Error: ${privateKeyPath} is a directory. Please check your Docker volume mounts.`);
-    }
-
-    // Decrypt private key if encryption metadata exists
     let privateKey;
-    if (privateKeyMetadata.iv && privateKeyMetadata.authTag) {
-      console.log('🔓 Decrypting private key file...');
-      const decrypted = await encryptionService.decryptFile(privateKeyPath, privateKeyMetadata);
-      privateKey = decrypted.toString('utf8');
+
+    if (privateKeyData) {
+      // DB Storage Path
+      if (privateKeyMetadata.iv && privateKeyMetadata.authTag) {
+        console.log('🔓 Decrypting private key from DB...');
+        // encryptionService.decrypt takes Buffers
+        const encrypted = Buffer.isBuffer(privateKeyData) ? privateKeyData : Buffer.from(privateKeyData);
+        const iv = Buffer.from(privateKeyMetadata.iv, 'hex');
+        const authTag = Buffer.from(privateKeyMetadata.authTag, 'hex');
+
+        const decrypted = encryptionService.decrypt(encrypted, iv, authTag);
+        privateKey = decrypted.toString('utf8');
+      } else {
+        // Unencrypted (Test/Dev)
+        privateKey = privateKeyData.toString('utf8');
+      }
     } else {
-      // No encryption metadata - read as plain text (backward compatibility)
-      privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+      // File System Path (Legacy/Fallback)
+      if (fs.existsSync(privateKeyPath) && fs.lstatSync(privateKeyPath).isDirectory()) {
+        throw new Error(`Configuration Error: ${privateKeyPath} is a directory.`);
+      }
+
+      if (privateKeyMetadata.iv && privateKeyMetadata.authTag) {
+        console.log('🔓 Decrypting private key file...');
+        const decrypted = await encryptionService.decryptFile(privateKeyPath, privateKeyMetadata);
+        privateKey = decrypted.toString('utf8');
+      } else {
+        privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+      }
     }
 
     const now = Math.floor(Date.now() / 1000);

@@ -18,7 +18,8 @@ rsync -avz -e "ssh -i $SSH_KEY" \
   --exclude '.git' \
   --exclude '.DS_Store' \
   --exclude '.env' \
-  apps production database \
+  --exclude 'security/hosts' \
+  apps production database security \
   $SERVER_USER@$SERVER_IP:$REMOTE_DIR/
 
 # 2. Remote Build & Restart
