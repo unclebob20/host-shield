@@ -42,6 +42,8 @@ exports.registerGuest = async (req, res) => {
 
     // 2. Fetch host's government credentials via property relationship
     // Guest -> Property -> Host -> Credentials
+    // 2. Fetch host's government credentials via property relationship
+    // Guest -> Property -> Host -> Credentials
     const hostCredentials = await query(
       `SELECT h.gov_ico, h.gov_api_subject, h.gov_private_key_path, h.gov_credentials_verified,
               h.gov_private_key_iv, h.gov_private_key_auth_tag
