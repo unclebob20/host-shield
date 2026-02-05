@@ -76,58 +76,62 @@ exports.uploadCredentials = async (req, res) => {
         const keystoreFile = req.files.keystore[0];
         const privateKeyFile = req.files.privateKey[0];
 
-        // Encrypt buffers in memory (no disk write)
-        console.log('🔐 Encrypting credential buffers...');
+        // Create directory for host credentials
+        const credentialsDir = path.join(__dirname, '../../security/hosts', hostId.toString());
+        await fs.mkdir(credentialsDir, { recursive: true });
 
-        // Use encryptionService.encrypt(buffer) directly
-        const keystoreEnc = encryptionService.encrypt(keystoreFile.buffer);
-        const privateKeyEnc = encryptionService.encrypt(privateKeyFile.buffer);
+        // Define file paths
+        const keystorePath = path.join(credentialsDir, `${ico}_prod.keystore`);
+        const privateKeyPath = path.join(credentialsDir, `${ico}_private.key`);
 
-        // Update database with encrypted blobs
+        // Encrypt and save files
+        console.log('🔐 Encrypting keystore file...');
+        const keystoreMetadata = await encryptionService.encryptFile(keystorePath, keystoreFile.buffer);
+
+        console.log('🔐 Encrypting private key file...');
+        const privateKeyMetadata = await encryptionService.encryptFile(privateKeyPath, privateKeyFile.buffer);
+
+        // Store relative paths in database
+        const relativeKeystorePath = `security/hosts/${hostId}/${ico}_prod.keystore`;
+        const relativePrivateKeyPath = `security/hosts/${hostId}/${ico}_private.key`;
+
+        // Update database with encryption metadata
         await query(
             `UPDATE hosts 
        SET gov_ico = $1, 
            gov_api_subject = $2, 
-           
-           -- DB Storage
-           gov_keystore_data = $3,
+           gov_keystore_path = $3, 
            gov_keystore_iv = $4,
            gov_keystore_auth_tag = $5,
-           
-           gov_private_key_data = $6,
+           gov_private_key_path = $6,
            gov_private_key_iv = $7,
            gov_private_key_auth_tag = $8,
-           
-           -- Clear legacy paths
-           gov_keystore_path = NULL,
-           gov_private_key_path = NULL,
-           
            gov_credentials_verified = false,
            gov_credentials_verified_at = NULL
        WHERE id = $9`,
             [
                 ico,
                 apiSubject,
-                keystoreEnc.encrypted,
-                keystoreEnc.iv ? keystoreEnc.iv.toString('hex') : null,
-                keystoreEnc.authTag ? keystoreEnc.authTag.toString('hex') : null,
-                privateKeyEnc.encrypted,
-                privateKeyEnc.iv ? privateKeyEnc.iv.toString('hex') : null,
-                privateKeyEnc.authTag ? privateKeyEnc.authTag.toString('hex') : null,
+                relativeKeystorePath,
+                keystoreMetadata.iv,
+                keystoreMetadata.authTag,
+                relativePrivateKeyPath,
+                privateKeyMetadata.iv,
+                privateKeyMetadata.authTag,
                 hostId
             ]
         );
 
-        console.log('✅ Credentials encrypted and stored in DB successfully');
+        console.log('✅ Credentials encrypted and saved successfully');
 
         res.json({
             success: true,
-            message: 'Credentials uploaded and encrypted successfully (DB Storage). Please verify them before use.',
+            message: 'Credentials uploaded and encrypted successfully. Please verify them before use.',
             credentials: {
                 ico,
                 apiSubject,
                 verified: false,
-                encrypted: !!keystoreEnc.iv
+                encrypted: keystoreMetadata.encrypted
             }
         });
     } catch (error) {
