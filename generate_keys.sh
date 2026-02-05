@@ -14,14 +14,14 @@ echo "🔓 Generating Public Key (PEM)..."
 openssl rsa -in "$DIR/gov_fake_private.key" -pubout -out "$DIR/gov_fake_public.pem"
 
 echo "📜 Generating Self-Signed Certificate..."
-openssl req -new -x509 -key "$DIR/gov_fake_private.key" -out "$DIR/cert.pem" -days 3650 -subj "/CN=boris_hostshield_test/O=HostShield/C=SK"
+openssl req -new -x509 -key "$DIR/gov_fake_private.key" -out "$DIR/cert.pem" -days 3650 -subj "/CN=hostshield/O=HostShield/C=SK"
 
 echo "📦 Creating PKCS12 Keystore..."
 openssl pkcs12 -export \
     -in "$DIR/cert.pem" \
     -inkey "$DIR/gov_fake_private.key" \
     -out "$DIR/host_shield_test_prod.keystore" \
-    -name "boris_hostshield_test" \
+    -name "hostshield" \
     -passout pass:changeit
 
 # Cleanup intermediate cert
