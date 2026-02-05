@@ -51,7 +51,9 @@ class GovBridgeService {
    */
   async getApiJwt(credentials) {
     // Use provided credentials or fall back to environment defaults (for testing)
-    const apiSubject = credentials?.apiSubject || this.apiSubject;
+    // Use provided credentials or fall back to environment defaults (for testing)
+    const apiSubject = (credentials?.apiSubject || this.apiSubject || '').trim();
+
     const privateKeyPath = credentials?.privateKeyPath || this.privateKeyPath;
     const privateKeyMetadata = credentials?.privateKeyMetadata || {};
 
@@ -83,6 +85,8 @@ class GovBridgeService {
 
       const payload = {
         sub: apiSubject,
+        iss: apiSubject, // Some validators check issuer
+        nbf: now - 60,   // Account for clock skew (1 minute past)
         exp: now + 240,
         jti
       };
