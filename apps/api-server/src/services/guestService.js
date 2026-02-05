@@ -78,7 +78,10 @@ async function createGuest(hostId, guestData) {
  */
 async function getGuestById(hostId, guestId) {
     const { rows } = await query(
-        `SELECT g.*, p.name as property_name 
+        `SELECT g.*, 
+                p.name as property_name,
+                p.name as "propertyName",
+                g.property_id as "propertyId"
          FROM guest_register g 
          LEFT JOIN properties p ON g.property_id = p.id 
          WHERE g.id = $1 AND g.host_id = $2`,
@@ -100,7 +103,10 @@ module.exports = {
  */
 async function getGuestsByHostId(hostId) {
     const { rows } = await query(
-        `SELECT g.*, p.name as property_name
+        `SELECT g.*, 
+                p.name as property_name,
+                p.name as "propertyName",
+                g.property_id as "propertyId"
          FROM guest_register g
          LEFT JOIN properties p ON g.property_id = p.id
          WHERE g.host_id = $1 
