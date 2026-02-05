@@ -79,6 +79,9 @@ async function createGuest(hostId, guestData) {
 async function getGuestById(hostId, guestId) {
     const { rows } = await query(
         `SELECT g.*, 
+                p.name as property_name,
+                p.name as "propertyName",
+                g.property_id as "propertyId",
                 json_build_object(
                     'id', p.id, 
                     'name', p.name, 
@@ -107,6 +110,9 @@ module.exports = {
 async function getGuestsByHostId(hostId) {
     const { rows } = await query(
         `SELECT g.*, 
+                p.name as property_name,
+                p.name as "propertyName",
+                g.property_id as "propertyId",
                 json_build_object(
                     'id', p.id, 
                     'name', p.name, 
@@ -119,6 +125,9 @@ async function getGuestsByHostId(hostId) {
          ORDER BY g.created_at DESC`,
         [hostId]
     );
+    if (rows.length > 0) {
+        console.log('DEBUG: getGuestsByHostId first row:', JSON.stringify(rows[0], null, 2));
+    }
     return rows;
 }
 
