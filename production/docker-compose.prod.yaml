@@ -104,7 +104,7 @@ services:
       - CLIENT_URL=${CLIENT_URL}
     volumes:
       - ../security/gov_private.key:/app/security/gov_private.key:ro
-      - ../security/hosts:/app/security/hosts
+      - ../security/hosts:/usr/src/app/security/hosts
     depends_on:
       - db
       - mrz-reader
