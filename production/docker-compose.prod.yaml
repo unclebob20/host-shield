@@ -68,6 +68,7 @@ services:
       - redis
       - gov-db
     environment:
+      - API_TOKEN=56051026
       - RAILS_ENV=production
       - UPVS_ENV=prod
       - SECRET_KEY_BASE=${GOV_SECRET_KEY_BASE}
