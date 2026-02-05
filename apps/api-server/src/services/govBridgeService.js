@@ -55,6 +55,9 @@ class GovBridgeService {
     const privateKeyPath = credentials?.privateKeyPath || this.privateKeyPath;
     const privateKeyMetadata = credentials?.privateKeyMetadata || {};
 
+    console.log('DEBUG: Generating JWT for subject:', apiSubject);
+    console.log('DEBUG: Private Key Path:', privateKeyPath);
+
     if (this.apiToken) return this.apiToken;
     if (!privateKeyPath) {
       throw new Error('Missing BRIDGE_API_TOKEN or privateKeyPath in credentials');
