@@ -79,7 +79,7 @@ services:
     volumes:
       # Certificates MUST be provided in production
       - ../security/production_public.pem:/app/security/api_token_production.public.pem:ro
-      - ../security/hostshield.p12:/app/security/sts/production.keystore:ro
+      - ../security/hostshield.p12:/app/security/sts/Boris_prod.keystore:ro
 
   # 6. MRZ Reader Microservice
   mrz-reader:
