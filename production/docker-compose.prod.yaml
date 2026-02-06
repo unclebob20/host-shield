@@ -69,8 +69,8 @@ services:
       - gov-db
     environment:
       - API_TOKEN=56051026
-      - KEYSTORE_PASSWORD=Ubob!106
-      - KEY_PASSWORD=Ubob!106
+      - KEYSTORE_PASSWORD=${GOV_KEYSTORE_PASSWORD}
+      - KEY_PASSWORD=${GOV_KEYSTORE_PASSWORD}
       - RAILS_ENV=production
       - UPVS_ENV=prod
       - SECRET_KEY_BASE=${GOV_SECRET_KEY_BASE}
