@@ -91,6 +91,8 @@ class GovBridgeService {
         jti
       };
 
+      console.log('DEBUG: Generated JWT Payload sub:', `"${payload.sub}"`);
+
       const token = jwt.sign(
         payload,
         privateKey,
