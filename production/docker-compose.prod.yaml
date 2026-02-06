@@ -68,7 +68,9 @@ services:
       - redis
       - gov-db
     environment:
-      - API_TOKEN=${GOV_API_TOKEN}
+      - API_TOKEN=Boris
+      - KEYSTORE_PASSWORD=${GOV_KEYSTORE_PASSWORD}
+      - KEY_PASSWORD=${GOV_KEYSTORE_PASSWORD}
       - RAILS_ENV=production
       - UPVS_ENV=prod
       - SECRET_KEY_BASE=${GOV_SECRET_KEY_BASE}
@@ -76,8 +78,8 @@ services:
       - DATABASE_URL=postgres://${GOV_DB_USER:-gov}:${GOV_DB_PASSWORD}@gov-db:5432/gov_api_production
     volumes:
       # Certificates MUST be provided in production
-      - ../security/gov_fake_public.pem:/app/security/api_token_production.public.pem:ro
-      - ../security/host_shield_test_prod.keystore:/app/security/sts/production.keystore:ro
+      - ../security/production_public.pem:/app/security/api_token_production.public.pem:ro
+      - ../security/hostshield.p12:/app/security/sts/Boris_prod.keystore:ro
 
   # 6. MRZ Reader Microservice
   mrz-reader:
@@ -104,7 +106,7 @@ services:
       - CLIENT_URL=${CLIENT_URL}
     volumes:
       - ../security/gov_private.key:/app/security/gov_private.key:ro
-      - ../security/hosts:/app/security/hosts
+      - ../security/hosts:/usr/src/app/security/hosts
     depends_on:
       - db
       - mrz-reader
