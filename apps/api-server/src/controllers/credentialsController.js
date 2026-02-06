@@ -229,6 +229,28 @@ exports.verifyCredentials = async (req, res) => {
             });
         } catch (error) {
             // Authentication failed
+            // DEBUG: If we get a 400 Bad Request or 'Validation' error, it means Auth SUCCEEDED but Data was invalid.
+            // We count this as "Verified" for the purpose of checking credentials.
+            const isAuthError = error.message.includes('401') || error.message.includes('403') || error.message.includes('Unauthorized') || error.message.includes('InvalidSubError') || error.message.includes('Bad credentials');
+
+            if (!isAuthError && (error.message.includes('400') || error.message.includes('Bad Request') || error.message.includes('validation'))) {
+                console.log('Credential Verification: Auth OK, Data Invalid (Ignoring for Connectivity Check)');
+                await query(
+                    `UPDATE hosts 
+                 SET gov_credentials_verified = true,
+                     gov_credentials_verified_at = NOW()
+                 WHERE id = $1`,
+                    [hostId]
+                );
+
+                return res.json({
+                    success: true,
+                    message: 'Credentials verified! (Note: Validation warnings present)',
+                    verified: true,
+                    verifiedAt: new Date().toISOString()
+                });
+            }
+
             res.status(400).json({
                 success: false,
                 error: 'Credential verification failed. Please check your credentials.',
