@@ -233,7 +233,7 @@ exports.verifyCredentials = async (req, res) => {
             // We count this as "Verified" for the purpose of checking credentials.
             const isAuthError = error.message.includes('401') || error.message.includes('403') || error.message.includes('Unauthorized') || error.message.includes('InvalidSubError') || error.message.includes('Bad credentials');
 
-            if (!isAuthError && (error.message.includes('400') || error.message.includes('Bad Request') || error.message.includes('validation'))) {
+            if (!isAuthError && (error.message.includes('400') || error.message.includes('Bad Request') || error.message.includes('validation') || error.message.includes('Invalid form'))) {
                 console.log('Credential Verification: Auth OK, Data Invalid (Ignoring for Connectivity Check)');
                 await query(
                     `UPDATE hosts 
