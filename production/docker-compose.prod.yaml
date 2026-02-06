@@ -68,7 +68,7 @@ services:
       - redis
       - gov-db
     environment:
-      - API_TOKEN=56051026
+      - API_TOKEN=Boris
       - KEYSTORE_PASSWORD=${GOV_KEYSTORE_PASSWORD}
       - KEY_PASSWORD=${GOV_KEYSTORE_PASSWORD}
       - RAILS_ENV=production
