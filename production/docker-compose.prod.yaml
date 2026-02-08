@@ -68,18 +68,21 @@ services:
       - redis
       - gov-db
     environment:
-      - API_TOKEN=Boris
+      - API_TOKEN=${GOV_API_TOKEN}
       - KEYSTORE_PASSWORD=${GOV_KEYSTORE_PASSWORD}
       - KEY_PASSWORD=${GOV_KEYSTORE_PASSWORD}
       - RAILS_ENV=production
       - UPVS_ENV=prod
       - SECRET_KEY_BASE=${GOV_SECRET_KEY_BASE}
+      - UPVS_KS_SALT=9ae5be3009fb10238188bca6e218bb4c87e7f6bb
+      - UPVS_PK_SALT=795e20da0174e9e38083255187d72bae72b65a9b
       - REDIS_URL=redis://redis:6379/1
       - DATABASE_URL=postgres://${GOV_DB_USER:-gov}:${GOV_DB_PASSWORD}@gov-db:5432/gov_api_production
     volumes:
       # Certificates MUST be provided in production
       - ../security/production_public.pem:/app/security/api_token_production.public.pem:ro
-      - ../security/hostshield.p12:/app/security/sts/Boris_prod.keystore:ro
+      # SHARED VOLUME: The Bridge watches this folder for any new host .p12 files
+      - ../security/hosts:/app/security/sts:ro
 
   # 6. MRZ Reader Microservice
   mrz-reader:
@@ -100,13 +103,19 @@ services:
       - BRIDGE_BASE_URL=http://gov-bridge:3000/api
       - BRIDGE_API_SUBJECT=${GOV_API_TOKEN}
       - BRIDGE_PRIVATE_KEY_PATH=/app/security/gov_private.key
+      - GOV_KEYSTORE_DIR=/app/security/hosts
+      - BRIDGE_KEYSTORE_PASSWORD=${GOV_KEYSTORE_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
       - CLIENT_URL=${CLIENT_URL}
+      # Required for JKS Password derivation (Must match Gov-Bridge)
+      - UPVS_KS_SALT=9ae5be3009fb10238188bca6e218bb4c87e7f6bb
+      - UPVS_PK_SALT=795e20da0174e9e38083255187d72bae72b65a9b
     volumes:
       - ../security/gov_private.key:/app/security/gov_private.key:ro
-      - ../security/hosts:/usr/src/app/security/hosts
+      - ../security/hosts:/app/security/hosts
     depends_on:
       - db
       - mrz-reader

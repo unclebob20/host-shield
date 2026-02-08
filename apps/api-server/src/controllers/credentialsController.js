@@ -2,6 +2,7 @@ const { query } = require('../services/db');
 const fs = require('fs').promises;
 const path = require('path');
 const GovBridgeService = require('../services/govBridgeService');
+const govCredentialsService = require('../services/govCredentialsService');
 const encryptionService = require('../services/encryptionService');
 
 /**
@@ -50,7 +51,7 @@ exports.getCredentialStatus = async (req, res) => {
 exports.uploadCredentials = async (req, res) => {
     try {
         const { hostId } = req.params;
-        const { ico, apiSubject } = req.body;
+        const { ico, apiSubject, keystorePassword } = req.body;
 
         // Verify host ownership
         if (req.authenticatedHost.id !== hostId) {
@@ -65,75 +66,74 @@ exports.uploadCredentials = async (req, res) => {
             });
         }
 
-        // Validate files
-        if (!req.files || !req.files.keystore || !req.files.privateKey) {
+        if (!keystorePassword) {
             return res.status(400).json({
                 success: false,
-                error: 'Both keystore and private key files are required'
+                error: 'Keystore password is required'
+            });
+        }
+
+        // Validate files
+        if (!req.files || !req.files.keystore) {
+            return res.status(400).json({
+                success: false,
+                error: 'Keystore file (.p12) is required'
             });
         }
 
         const keystoreFile = req.files.keystore[0];
-        const privateKeyFile = req.files.privateKey[0];
 
-        // Create directory for host credentials
-        const credentialsDir = path.join(__dirname, '../../security/hosts', hostId.toString());
-        await fs.mkdir(credentialsDir, { recursive: true });
+        // "Normalize" the keystore:
+        // 1. Verify user password (by opening it)
+        // 2. Re-encrypt with Bridge password
+        // 3. Save to Shared Volume where Bridge can see it
+        console.log(`🔐 Normalizing credentials for Subject ${apiSubject} (ICO: ${ico})...`);
 
-        // Define file paths
-        const keystorePath = path.join(credentialsDir, `${ico}_prod.keystore`);
-        const privateKeyPath = path.join(credentialsDir, `${ico}_private.key`);
+        const sharedPath = await govCredentialsService.saveHostKeystore(
+            hostId,
+            apiSubject,
+            keystoreFile.buffer,
+            keystorePassword
+        );
 
-        // Encrypt and save files
-        console.log('🔐 Encrypting keystore file...');
-        const keystoreMetadata = await encryptionService.encryptFile(keystorePath, keystoreFile.buffer);
+        // Update database pointing to the shared volume path
+        // We assume the service returns an absolute path, but we might store relative path if needed.
+        // For simplicity and clarity, we store the path we got.
 
-        console.log('🔐 Encrypting private key file...');
-        const privateKeyMetadata = await encryptionService.encryptFile(privateKeyPath, privateKeyFile.buffer);
-
-        // Store relative paths in database
-        const relativeKeystorePath = `security/hosts/${hostId}/${ico}_prod.keystore`;
-        const relativePrivateKeyPath = `security/hosts/${hostId}/${ico}_private.key`;
-
-        // Update database with encryption metadata
         await query(
             `UPDATE hosts 
        SET gov_ico = $1, 
            gov_api_subject = $2, 
            gov_keystore_path = $3, 
-           gov_keystore_iv = $4,
-           gov_keystore_auth_tag = $5,
-           gov_private_key_path = $6,
-           gov_private_key_iv = $7,
-           gov_private_key_auth_tag = $8,
-           gov_keystore_data = NULL,
-           gov_private_key_data = NULL,
            gov_credentials_verified = false,
-           gov_credentials_verified_at = NULL
-       WHERE id = $9`,
+           gov_credentials_verified_at = NULL,
+           -- Clear legacy encryption fields as we use the shared volume now
+           gov_keystore_iv = NULL,
+           gov_keystore_auth_tag = NULL,
+           gov_private_key_path = NULL,
+           gov_private_key_iv = NULL,
+           gov_private_key_auth_tag = NULL,
+           gov_keystore_data = NULL,
+           gov_private_key_data = NULL
+       WHERE id = $4`,
             [
                 ico,
                 apiSubject,
-                relativeKeystorePath,
-                keystoreMetadata.iv,
-                keystoreMetadata.authTag,
-                relativePrivateKeyPath,
-                privateKeyMetadata.iv,
-                privateKeyMetadata.authTag,
+                sharedPath,
                 hostId
             ]
         );
 
-        console.log('✅ Credentials encrypted and saved successfully');
+        console.log('✅ Credentials normalized and stored in Shared Volume');
 
         res.json({
             success: true,
-            message: 'Credentials uploaded and encrypted successfully. Please verify them before use.',
+            message: 'Credentials uploaded and ready for GovBridge.',
             credentials: {
                 ico,
                 apiSubject,
                 verified: false,
-                encrypted: keystoreMetadata.encrypted
+                path: sharedPath
             }
         });
     } catch (error) {
@@ -154,11 +154,10 @@ exports.verifyCredentials = async (req, res) => {
             return res.status(403).json({ success: false, error: 'Access denied' });
         }
 
-        // Fetch credentials with encryption metadata
+        // Fetch credentials
+        // We now rely on gov_api_subject and gov_keystore_path (pointing to normalized .p12)
         const result = await query(
-            `SELECT gov_ico, gov_api_subject, gov_private_key_path, gov_keystore_path,
-              gov_private_key_iv, gov_private_key_auth_tag,
-              gov_keystore_iv, gov_keystore_auth_tag
+            `SELECT gov_ico, gov_api_subject, gov_keystore_path
        FROM hosts WHERE id = $1`,
             [hostId]
         );
@@ -169,31 +168,32 @@ exports.verifyCredentials = async (req, res) => {
 
         const host = result.rows[0];
 
-        if (!host.gov_ico || !host.gov_private_key_path) {
+        if (!host.gov_ico || !host.gov_api_subject) {
             return res.status(400).json({
                 success: false,
                 error: 'Credentials not configured. Please upload credentials first.'
             });
         }
 
-        // Prepare credentials for testing (with decryption metadata)
+        // Prepare credentials for testing
+        // We defer to GovBridgeService to find the keystore in the correct directory
+        // This makes the system robust against path changes (e.g. /usr/... vs /app/...)
         const credentials = {
             apiSubject: host.gov_api_subject,
-            privateKeyPath: path.join(__dirname, '../../', host.gov_private_key_path),
-            privateKeyMetadata: {
-                iv: host.gov_private_key_iv,
-                authTag: host.gov_private_key_auth_tag
-            }
+            // privateKeyPath: host.gov_keystore_path // Don't use DB path, it might be stale
         };
 
-        // Test 1: Try to generate JWT (will decrypt file internally)
+        // If path is missing but we have subject, GovBridgeService logic will try to find it in default dir.
+
+        // Test 1: Try to generate JWT (will use normalized key)
         let token;
         try {
             token = await GovBridgeService.getApiJwt(credentials);
         } catch (error) {
+            console.error('JWT Generation Failed:', error);
             return res.status(400).json({
                 success: false,
-                error: 'Failed to generate JWT. Please check your private key file.',
+                error: 'Failed to generate JWT. Please check your credentials.',
                 details: error.message
             });
         }
