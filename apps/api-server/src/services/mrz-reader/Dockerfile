@@ -3,11 +3,12 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system dependencies for PassportEye and PDF processing
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr \
     libtesseract-dev \
     libopencv-dev \
-    python3-opencv \
+    libgl1 \
+    libglib2.0-0 \
     poppler-utils \
     && rm -rf /var/lib/apt/lists/*
 

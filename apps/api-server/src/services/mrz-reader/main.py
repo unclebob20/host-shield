@@ -55,28 +55,134 @@ async def extract_mrz(file: UploadFile = File(...)):
                     }
                 )
         
-        # 1. Try Original
-        mrz = read_mrz(image_path, save_roi=True)
+        # Pre-process: Convert RGBA (transparent PNGs) to RGB
+        # This fixes specific issues with "cannot write mode RGBA as JPEG" during rotation
+        # and improves compatibility with PassportEye
+        try:
+            with PILImage.open(image_path) as img:
+                if img.mode == 'RGBA':
+                    print("Converting RGBA image to RGB...")
+                    rgb_path = os.path.splitext(image_path)[0] + "_rgb.jpg"
+                    img.convert('RGB').save(rgb_path, "JPEG")
+                    
+                    # If we already converted from PDF, clean up that intermediate file
+                    if converted_image_path and image_path == converted_image_path:
+                         try:
+                             os.unlink(image_path)
+                         except: pass
+                    
+                    image_path = rgb_path
+                    converted_image_path = rgb_path # Ensure it gets cleaned up
+        except Exception as e:
+            print(f"Image preprocessing warning: {e}")
+        except Exception as e:
+            print(f"Image preprocessing warning: {e}")
         
-        # 2. If fail, try rotations
-        rotated_path = image_path + "_rot.jpg"
+        # Try combinations of Rotations + Crops
+        # This handles cases where image is sideways AND needs cropping
         
-        if not mrz:
-            print("Original failed, trying rotations...")
-            try:
-                with PILImage.open(image_path) as img:
-                    for angle in [90, 180, 270]:
-                        print(f"Trying rotation {angle}...")
-                        rotated = img.rotate(angle, expand=True)
-                        rotated.save(rotated_path)
-                        
-                        mrz = read_mrz(rotated_path, save_roi=True)
-                        if mrz:
-                            print(f"Success at {angle} degrees!")
-                            break
-            except Exception as e:
-                print(f"Rotation error: {e}")
+        candidates = []
+        
+        # Helper to generate candidates for an image object
+        def add_candidates_from_image(img_obj, label=""):
+            # 1. Full Image (in case crop cuts off text)
+            full_path = tempfile.mktemp(suffix=f"_{label}_full.jpg")
+            img_obj.save(full_path)
+            candidates.append({"img": full_path, "crop": False})
+            
+            # 2. Bottom Crop
+            w, h = img_obj.size
+            crop_path = tempfile.mktemp(suffix=f"_{label}_crop.jpg")
+            crop_box = (0, int(h * 0.65), w, h)
+            img_obj.crop(crop_box).save(crop_path)
+            candidates.append({"img": crop_path, "crop": False}) # Already cropped, so flag is False for processing loop
 
+        try:
+            with PILImage.open(image_path) as img:
+                # A. Original
+                add_candidates_from_image(img, "orig")
+                
+                # B. Micro-Rotations for small skews (Fixes "cut off text" on slightly angled photos)
+                for small_angle in [-3, 3, -5, 5]:
+                    rotated = img.rotate(small_angle, expand=True) # expand changes size slightly but safer
+                    add_candidates_from_image(rotated, f"skew{small_angle}")
+
+                # C. Major Rotations
+                for angle in [90, 180, 270]:
+                    rotated = img.rotate(angle, expand=True)
+                    add_candidates_from_image(rotated, f"rot{angle}")
+
+        except Exception as e:
+            print(f"Candidate generation failed: {e}")
+
+        # Helper to clean image (Thresholding) to remove holograms
+        def clean_image_for_ocr(input_path):
+            try:
+                import cv2
+                # Load
+                img_cv = cv2.imread(input_path)
+                if img_cv is None: return input_path
+                
+                # Gray
+                gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+                # Blur
+                blurred = cv2.GaussianBlur(gray, (3, 3), 0)
+                # Adaptive Threshold (removes shadows/holograms)
+                thresh = cv2.adaptiveThreshold(
+                    blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 10
+                )
+                
+                out_path = input_path.replace(".jpg", "_clean.jpg")
+                cv2.imwrite(out_path, thresh)
+                return out_path
+            except Exception as e:
+                print(f"Cleaning failed: {e}")
+                return input_path
+
+        best_mrz = None
+        best_score = -1
+
+
+        
+        # Execute Search
+        for cand in candidates:
+            # Step 1: Get the geometry candidate (Crop/Rotate)
+            target_path = cand["img"]
+            
+            # --- PASS 1: Try RAW image (Best for clean, aligned scans) ---
+            print(f"Scanning RAW: {target_path}...")
+            mrz = read_mrz(target_path, save_roi=True)
+            
+            if mrz:
+                score = mrz.to_dict().get('valid_score', 0)
+                print(f"RAW score: {score}")
+                if score > best_score:
+                    best_score = score
+                    best_mrz = mrz
+                
+                if score >= 90: # High confidence? Stop looking.
+                    print("Found High Confidence Score (RAW). Stopping.")
+                    break
+            
+            # --- PASS 2: Try CLEANED image (Best for noisy holograms/ID cards) ---
+            print(f"Cleaning: {target_path}...")
+            clean_path = clean_image_for_ocr(target_path)
+            
+            print(f"Scanning CLEANED: {clean_path}...")
+            mrz = read_mrz(clean_path, save_roi=True)
+            
+            if mrz:
+                score = mrz.to_dict().get('valid_score', 0)
+                print(f"CLEANED score: {score}")
+                if score > best_score:
+                    best_score = score
+                    best_mrz = mrz
+
+                if score >= 90: # High confidence? Stop looking.
+                    print("Found High Confidence Score (CLEANED). Stopping.")
+                    break
+
+        mrz = best_mrz
         if not mrz:
             return JSONResponse(
                 status_code=200,
@@ -188,7 +294,7 @@ def map_document_type(doc_type: Optional[str]) -> str:
     doc_type = doc_type.upper()
     if doc_type.startswith('P'):
         return "PASSPORT"
-    elif doc_type in ['I', 'ID', 'AC', 'C']:
+    elif doc_type.startswith('I') or doc_type.startswith('A') or doc_type.startswith('C') or doc_type in ['ID', 'AC', 'IR', 'RP']:
         return "ID_CARD"
     else:
         return "UNKNOWN"
