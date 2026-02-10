@@ -30,8 +30,15 @@ const NewGuest = () => {
 
     const handleScanComplete = (data, file) => {
         setScannedData(data);
+
+        // Map API document types to Form values (P/ID)
+        let docType = 'P';
+        if (data.document_type === 'ID_CARD') docType = 'ID';
+        else if (data.document_type === 'PASSPORT') docType = 'P';
+
         setFormData({
             ...data,
+            document_type: docType,
             // Default dates if needed
             arrival_date: new Date().toISOString().split('T')[0],
             departure_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
