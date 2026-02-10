@@ -10,7 +10,9 @@ import {
     Shield,
     Key as KeyIcon,
     FileText,
-    Loader2
+    Loader2,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 
 const CredentialsManagement = () => {
@@ -28,7 +30,9 @@ const CredentialsManagement = () => {
     const [ico, setIco] = useState('');
     const [apiSubject, setApiSubject] = useState('');
     const [keystoreFile, setKeystoreFile] = useState(null);
-    const [privateKeyFile, setPrivateKeyFile] = useState(null);
+    const [keystorePassword, setKeystorePassword] = useState('');
+    const [showKeystorePassword, setShowKeystorePassword] = useState(false);
+    // privateKeyFile no longer needed as we extract it from P12
 
     useEffect(() => {
         fetchStatus();
@@ -50,7 +54,7 @@ const CredentialsManagement = () => {
     const handleUpload = async (e) => {
         e.preventDefault();
 
-        if (!ico || !apiSubject || !keystoreFile || !privateKeyFile) {
+        if (!ico || !apiSubject || !keystoreFile || !keystorePassword) {
             setError('All fields are required');
             return;
         }
@@ -63,7 +67,7 @@ const CredentialsManagement = () => {
             formData.append('ico', ico);
             formData.append('apiSubject', apiSubject);
             formData.append('keystore', keystoreFile);
-            formData.append('privateKey', privateKeyFile);
+            formData.append('keystorePassword', keystorePassword);
 
             await api.post(`/hosts/${user.id}/credentials`, formData, {
                 headers: {
@@ -75,11 +79,10 @@ const CredentialsManagement = () => {
             setIco('');
             setApiSubject('');
             setKeystoreFile(null);
-            setPrivateKeyFile(null);
+            setKeystorePassword('');
 
             // Reset file inputs
             document.getElementById('keystore-input').value = '';
-            document.getElementById('privatekey-input').value = '';
 
             await fetchStatus();
         } catch (err) {
@@ -89,6 +92,7 @@ const CredentialsManagement = () => {
         }
     };
 
+    // ... verification logic ...
     const handleVerify = async () => {
         try {
             setVerifying(true);
@@ -168,7 +172,11 @@ const CredentialsManagement = () => {
                         ) : (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                 <AlertCircle className="h-4 w-4" />
-                                {t('credentials.not_verified')}
+                                <span className="flex items-center gap-1">
+                                    {t('credentials.not_verified')}
+                                    {/* Show path for debugging if user is tech-savvy, or hidden */}
+                                    {status.path && <span className="text-xs text-gray-400 font-mono hidden">({status.path.split('/').pop()})</span>}
+                                </span>
                             </span>
                         )}
                     </div>
@@ -266,30 +274,47 @@ const CredentialsManagement = () => {
 
                         <div>
                             <label htmlFor="keystore-input" className="block text-sm font-medium text-gray-700 mb-1">
-                                {t('credentials.keystore_label')}
+                                Keystore File (.p12, .pfx)
                             </label>
                             <input
                                 id="keystore-input"
                                 type="file"
-                                accept=".keystore,.jks"
+                                accept=".p12,.pfx"
                                 onChange={(e) => setKeystoreFile(e.target.files[0])}
                                 required
                                 className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                             />
+                            <p className="mt-1 text-xs text-gray-500">
+                                Upload the .p12 file provided by the ministry.
+                            </p>
                         </div>
 
                         <div>
-                            <label htmlFor="privatekey-input" className="block text-sm font-medium text-gray-700 mb-1">
-                                {t('credentials.privatekey_label')}
+                            <label htmlFor="password-input" className="block text-sm font-medium text-gray-700 mb-1">
+                                Keystore Password
                             </label>
-                            <input
-                                id="privatekey-input"
-                                type="file"
-                                accept=".key,.pem"
-                                onChange={(e) => setPrivateKeyFile(e.target.files[0])}
-                                required
-                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                            />
+                            <div className="relative">
+                                <input
+                                    id="password-input"
+                                    type={showKeystorePassword ? "text" : "password"}
+                                    value={keystorePassword}
+                                    onChange={(e) => setKeystorePassword(e.target.value)}
+                                    required
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                    placeholder="Enter the password for your .p12 file"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowKeystorePassword(!showKeystorePassword)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                >
+                                    {showKeystorePassword ? (
+                                        <EyeOff className="h-5 w-5" aria-hidden="true" />
+                                    ) : (
+                                        <Eye className="h-5 w-5" aria-hidden="true" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         <button

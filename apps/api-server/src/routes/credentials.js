@@ -12,13 +12,13 @@ const upload = multer({
     },
     fileFilter: (req, file, cb) => {
         // Accept keystore and key files
-        const allowedExtensions = ['.keystore', '.key', '.pem', '.jks'];
+        const allowedExtensions = ['.keystore', '.key', '.pem', '.jks', '.p12', '.pfx'];
         const ext = file.originalname.substring(file.originalname.lastIndexOf('.'));
 
         if (allowedExtensions.includes(ext.toLowerCase())) {
             cb(null, true);
         } else {
-            cb(new Error('Invalid file type. Only .keystore, .key, .pem, and .jks files are allowed.'));
+            cb(new Error('Invalid file type. Only .p12, .pfx, .keystore, and .jks files are allowed.'));
         }
     }
 });
@@ -45,8 +45,7 @@ router.get('/:hostId/credentials/status', credentialsController.getCredentialSta
 router.post(
     '/:hostId/credentials',
     upload.fields([
-        { name: 'keystore', maxCount: 1 },
-        { name: 'privateKey', maxCount: 1 }
+        { name: 'keystore', maxCount: 1 }
     ]),
     credentialsController.uploadCredentials
 );

@@ -39,7 +39,6 @@ services:
       - redis
       - gov-db
     environment:
-      - API_TOKEN=test_token_123
       - RAILS_ENV=production
       - UPVS_ENV=prod
       - SECRET_KEY_BASE=a_random_string_of_at_least_32_chars
@@ -47,12 +46,10 @@ services:
       - REDIS_URL=redis://hostshield_gov_redis:6379/1
       - DATABASE_URL=postgres://${GOV_DB_USER:-gov_user}:${GOV_DB_PASSWORD:-gov_password}@gov-db:5432/gov_api_production
     volumes:
-      # Removed the SQLite override
+      # API Token Verification Key (Keep this!)
       - ./security/gov_fake_public.pem:/app/security/api_token_production.public.pem:ro
-      - ./security/host_shield_test_prod.keystore:/app/security/sts/host_shield_test_prod.keystore:ro
-      - ./security/host_shield_test_dev.keystore:/app/security/sts/host_shield_test_dev.keystore:ro
-      - ./security/iscep_test_subject_prod.keystore:/app/security/sts/iscep_test_subject_prod.keystore:ro
-      - ./security/iscep_test_subject_dev.keystore:/app/security/sts/iscep_test_subject_dev.keystore:ro
+      # SHARED VOLUME: The Bridge watches this folder for any new guest .keystore files
+      - ./security/hosts:/app/security/sts:ro
     ports:
       - "3001:3000"
 
@@ -74,8 +71,11 @@ services:
       - BRIDGE_BASE_URL=http://hostshield_gov_api:3000/api
       - CREDENTIAL_ENCRYPTION_KEY=${CREDENTIAL_ENCRYPTION_KEY}
       - BRIDGE_PRIVATE_KEY_PATH=/app/security/gov_fake_private.key
+      # Where we save the normalized keystores for the Bridge
+      - GOV_KEYSTORE_DIR=/app/security/hosts
     volumes:
-      - ./security:/app/security:ro
+      # Remove :ro so we can WRITE the normalized keystores
+      - ./security:/app/security
     ports:
       - "3000:3000"
     depends_on:

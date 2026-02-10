@@ -70,7 +70,7 @@ services:
     environment:
       # - API_TOKEN=boris_hostshield_test  # Temporarily disabled for testing
       - RAILS_ENV=production
-      - UPVS_ENV=test
+      - UPVS_ENV=prod # Changed from 'test' to 'prod' (valid values: dev, fix, prod)
       - SECRET_KEY_BASE=${GOV_SECRET_KEY_BASE}
       - REDIS_URL=redis://redis:6379/1
       - DATABASE_URL=postgres://${GOV_DB_USER:-gov}:${GOV_DB_PASSWORD}@gov-db:5432/gov_api_production

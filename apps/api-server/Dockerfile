@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libgif-dev \
     librsvg2-dev \
+    openssl \
+    openjdk-17-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory

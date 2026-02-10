@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Loader2, User, Mail, Lock, BadgeCheck, Languages } from 'lucide-react';
+import { Shield, Loader2, User, Mail, Lock, BadgeCheck, Languages, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Register = () => {
@@ -11,6 +11,7 @@ const Register = () => {
         full_name: '',
         police_provider_id: ''
     });
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { register } = useAuth();
@@ -140,13 +141,24 @@ const Register = () => {
                                     </div>
                                     <input
                                         name="password"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         required
                                         value={formData.password}
                                         onChange={handleChange}
-                                        className="block w-full rounded-lg border border-white/10 bg-white/5 py-3 pl-10 text-white placeholder-slate-400 focus:border-blue-500 focus:bg-white/10 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors"
+                                        className="block w-full rounded-lg border border-white/10 bg-white/5 py-3 pl-10 pr-10 text-white placeholder-slate-400 focus:border-blue-500 focus:bg-white/10 focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors"
                                         placeholder={t('auth.register.password_placeholder')}
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-white"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-5 w-5" />
+                                        ) : (
+                                            <Eye className="h-5 w-5" />
+                                        )}
+                                    </button>
                                 </div>
                             </div>
 
