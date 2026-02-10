@@ -2,6 +2,7 @@
 
 # Configuration
 BRIDGE_CONTAINER="hostshield_gov_api_prod"
+# API server container name from production (verified with docker ps)
 API_SERVER_CONTAINER="hostshield-api-server-1"
 TRUSTSTORE_HOST_PATH="/opt/hostshield/security/tls/upvs_prod.truststore"
 UPVS_HOST="iamwse.slovensko.sk" # Use this if DNS works, or correct host if changed
