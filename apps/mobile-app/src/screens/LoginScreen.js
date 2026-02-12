@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, StatusBar, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, StatusBar, KeyboardAvoidingView, Platform, Image, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
@@ -120,7 +120,7 @@ export default function LoginScreen({ onLoginSuccess }) {
 
                             <TouchableOpacity
                                 style={styles.secondaryButton}
-                                onPress={() => Alert.alert(t('auth.reg_alert'), t('auth.reg_msg'))}
+                                onPress={() => Linking.openURL('https://hostshield.org/register')}
                             >
                                 <Text style={styles.secondaryButtonText}>{t('auth.create_account')}</Text>
                             </TouchableOpacity>

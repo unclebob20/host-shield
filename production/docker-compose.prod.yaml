@@ -11,6 +11,7 @@ services:
       - "80:80"
       - "443:443" # Requires SSL cert volumes/config in nginx.conf
     volumes:
+      - ./downloads:/usr/share/nginx/html/downloads:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       # Let's Encrypt / SSL
       - ./certbot/conf:/etc/letsencrypt
