@@ -17,6 +17,7 @@
         "overview": "Prehľad",
         "new_guest": "Nový hosť",
         "guests": "Hostia",
+        "calendar": "Kalendár",
         "ledger": "Kniha",
         "logout": "Odhlásiť"
     },
@@ -56,6 +57,11 @@
         "dob": "Dátum narodenia",
         "arrival": "Príchod",
         "departure": "Odchod",
+        "doc_type": "Typ dokladu",
+        "passport": "Pas",
+        "id_card": "Občiansky preukaz",
+        "property": "Objekt",
+        "no_properties": "Žiadne objekty",
         "select_date": "Vybrať dátum",
         "select_date_range": "Vybrať obdobie"
     },

@@ -128,7 +128,17 @@ export default function CameraScreen({ onLogout }) {
             if (response.data.success) {
                 const today = new Date().toISOString().split('T')[0];
                 const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
-                setGuestData({ ...response.data.data, arrival_date: today, departure_date: tomorrow });
+
+                let docType = 'P';
+                if (response.data.data.document_type === 'ID_CARD') docType = 'ID';
+
+                setGuestData({
+                    ...response.data.data,
+                    document_type: docType,
+                    arrival_date: today,
+                    departure_date: tomorrow,
+                    objectId: properties.length === 1 ? properties[0].id : null
+                });
             } else {
                 Alert.alert(t('alerts.val_failed'), response.data.error || t('alerts.no_valid_data'), [{ text: t('new_guest.retry'), style: 'cancel', onPress: () => setPhoto(null) }, { text: t('new_guest.enter_manual'), onPress: () => initManualEntry() }]);
             }
@@ -145,13 +155,14 @@ export default function CameraScreen({ onLogout }) {
         const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
         setGuestData({
             first_name: '', last_name: '', document_number: '', nationality_iso3: '',
-            date_of_birth: '', document_type: 'PASSPORT', arrival_date: today, departure_date: tomorrow
+            date_of_birth: '', document_type: 'P', arrival_date: today, departure_date: tomorrow,
+            objectId: properties.length === 1 ? properties[0].id : null
         });
     };
 
     const saveGuest = async () => {
         try {
-            if (!guestData.arrival_date || !guestData.departure_date || !guestData.document_number) {
+            if (!guestData.arrival_date || !guestData.departure_date || !guestData.document_number || !guestData.objectId) {
                 Alert.alert(t('alerts.val_failed'), t('alerts.fill_required'));
                 return;
             }
@@ -229,6 +240,11 @@ export default function CameraScreen({ onLogout }) {
                             <Feather name="users" size={20} color={currentScreen === 'guests' ? '#2563eb' : '#64748b'} />
                             <Text style={[styles.navText, currentScreen === 'guests' && styles.navTextActive]}>{t('nav.guests')}</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.navItem, currentScreen === 'calendar' && styles.navItemActive]} onPress={() => { setCurrentScreen('calendar'); setIsSidebarOpen(false); }}>
+                            <Feather name="calendar" size={20} color={currentScreen === 'calendar' ? '#2563eb' : '#64748b'} />
+                            <Text style={[styles.navText, currentScreen === 'calendar' && styles.navTextActive]}>{t('nav.calendar')}</Text>
+                        </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity style={styles.logoutItem} onPress={onLogout}>
@@ -247,6 +263,7 @@ export default function CameraScreen({ onLogout }) {
     });
     const [guestList, setGuestList] = useState([]);
     const [selectedGuest, setSelectedGuest] = useState(null);
+    const [properties, setProperties] = useState([]);
 
     // Helper to shorten ISO dates
 
@@ -259,6 +276,11 @@ export default function CameraScreen({ onLogout }) {
     useEffect(() => {
         if (currentScreen === 'overview') fetchDashboardData();
         if (currentScreen === 'guests') fetchGuests();
+        if (currentScreen === 'new_guest') fetchProperties();
+        if (currentScreen === 'calendar') {
+            fetchGuests();
+            fetchProperties();
+        }
     }, [currentScreen]);
 
     const fetchGuests = async () => {
@@ -270,6 +292,18 @@ export default function CameraScreen({ onLogout }) {
             }
         } catch (error) {
             console.error('Failed to fetch guests', error);
+        }
+    };
+
+    const fetchProperties = async () => {
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            const response = await axios.get(`${API_URL}/properties`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.data.properties) {
+                setProperties(response.data.properties);
+            }
+        } catch (error) {
+            console.error('Failed to fetch properties', error);
         }
     };
 
@@ -462,6 +496,58 @@ export default function CameraScreen({ onLogout }) {
                             <View style={styles.formGroup}><Text style={styles.label}>{t('form.last_name')}</Text><TextInput style={styles.input} value={guestData.last_name} onChangeText={t => updateField('last_name', t)} /></View>
                             <View style={styles.formGroup}><Text style={styles.label}>{t('form.doc_number')}</Text><TextInput style={styles.input} value={guestData.document_number} onChangeText={t => updateField('document_number', t)} /></View>
                             <View style={styles.formGroup}><Text style={styles.label}>{t('form.nationality')}</Text><TextInput style={styles.input} value={guestData.nationality_iso3} onChangeText={t => updateField('nationality_iso3', t)} maxLength={3} autoCapitalize="characters" /></View>
+
+                            <View style={styles.formGroup}>
+                                <Text style={styles.label}>{t('form.doc_type')}</Text>
+                                <View style={styles.pickerContainer}>
+                                    <TouchableOpacity
+                                        style={[styles.pickerButton, guestData.document_type === 'P' && styles.pickerButtonActive]}
+                                        onPress={() => updateField('document_type', 'P')}
+                                    >
+                                        <Text style={[styles.pickerButtonText, guestData.document_type === 'P' && styles.pickerButtonTextActive]}>
+                                            {t('form.passport')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.pickerButton, guestData.document_type === 'ID' && styles.pickerButtonActive]}
+                                        onPress={() => updateField('document_type', 'ID')}
+                                    >
+                                        <Text style={[styles.pickerButtonText, guestData.document_type === 'ID' && styles.pickerButtonTextActive]}>
+                                            {t('form.id_card')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <View style={styles.formGroup}>
+                                <Text style={styles.label}>{t('form.property')}</Text>
+                                <View style={styles.input}>
+                                    {properties.length > 0 ? (
+                                        <View>
+                                            {properties.map(prop => (
+                                                <TouchableOpacity
+                                                    key={prop.id}
+                                                    style={[styles.propertyOption, guestData.objectId === prop.id && styles.propertyOptionActive]}
+                                                    onPress={() => updateField('objectId', prop.id)}
+                                                >
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <View style={[styles.radioButton, guestData.objectId === prop.id && styles.radioButtonActive]}>
+                                                            {guestData.objectId === prop.id && <View style={styles.radioButtonInner} />}
+                                                        </View>
+                                                        <View style={{ flex: 1 }}>
+                                                            <Text style={[styles.propertyName, guestData.objectId === prop.id && styles.propertyNameActive]}>{prop.name}</Text>
+                                                            <Text style={styles.propertyType}>{prop.type}</Text>
+                                                        </View>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    ) : (
+                                        <Text style={{ color: '#94a3b8', fontSize: 14 }}>{t('form.no_properties')}</Text>
+                                    )}
+                                </View>
+                            </View>
+
                             <TouchableOpacity onPress={() => openDatePicker('date_of_birth')}>
                                 <View style={styles.formGroup}><Text style={styles.label}>{t('form.dob')}</Text><View pointerEvents="none"><TextInput style={styles.input} value={guestData.date_of_birth} placeholder={t('form.select_date')} editable={false} /></View></View>
                             </TouchableOpacity>
@@ -572,6 +658,139 @@ export default function CameraScreen({ onLogout }) {
         );
     };
 
+    const renderCalendar = () => {
+        const [viewDate, setViewDate] = useState(new Date());
+
+        const changeMonth = (offset) => {
+            const d = new Date(viewDate);
+            d.setMonth(d.getMonth() + offset);
+            setViewDate(d);
+        };
+
+        const currentMonthBookings = guestList.filter(guest => {
+            const arrival = new Date(guest.arrival_date);
+            const departure = new Date(guest.departure_date);
+            const firstOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
+            const lastOfMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0);
+
+            // Overlap check
+            return arrival <= lastOfMonth && departure >= firstOfMonth;
+        });
+
+        const monthName = viewDate.toLocaleString(i18n.language, { month: 'long', year: 'numeric' });
+
+        return (
+            <View style={styles.containerLight}>
+                <View style={[styles.headerBar, { borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 }]}>
+                    <TouchableOpacity onPress={() => setIsSidebarOpen(true)} style={styles.burgerButton}>
+                        <Feather name="menu" size={24} color="#0f172a" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>{t('nav.calendar')}</Text>
+                    <TouchableOpacity onPress={() => setCurrentScreen('new_guest')} style={{ padding: 8 }}>
+                        <Feather name="plus-circle" size={24} color="#2563eb" />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 20,
+                    backgroundColor: 'white',
+                    marginHorizontal: 16,
+                    marginTop: 8,
+                    borderRadius: 16,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 3
+                }}>
+                    <TouchableOpacity onPress={() => changeMonth(-1)} style={{ padding: 8, backgroundColor: '#f1f5f9', borderRadius: 12 }}>
+                        <Feather name="chevron-left" size={20} color="#2563eb" />
+                    </TouchableOpacity>
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={{ fontSize: 18, fontWeight: '800', color: '#0f172a' }}>{monthName}</Text>
+                        <Text style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{currentMonthBookings.length} {t('nav.guests').toLowerCase()}</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => changeMonth(1)} style={{ padding: 8, backgroundColor: '#f1f5f9', borderRadius: 12 }}>
+                        <Feather name="chevron-right" size={20} color="#2563eb" />
+                    </TouchableOpacity>
+                </View>
+
+                <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 24 }}>
+                    {properties.length === 0 ? (
+                        <View style={{ padding: 40, alignItems: 'center' }}>
+                            <Feather name="info" size={48} color="#cbd5e1" />
+                            <Text style={{ marginTop: 16, color: '#64748b', textAlign: 'center' }}>{t('form.no_properties')}</Text>
+                        </View>
+                    ) : (
+                        properties.map(property => {
+                            const propertyBookings = currentMonthBookings.filter(b => (b.propertyId || b.object_id) === property.id);
+
+                            return (
+                                <View key={property.id} style={{ marginBottom: 24 }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                                        <Feather name="home" size={20} color="#2563eb" />
+                                        <Text style={{ marginLeft: 8, fontSize: 16, fontWeight: '700', color: '#334155' }}>{property.name}</Text>
+                                    </View>
+
+                                    {propertyBookings.length === 0 ? (
+                                        <Text style={{ fontSize: 14, color: '#94a3b8', fontStyle: 'italic', marginLeft: 28 }}>No bookings this month</Text>
+                                    ) : (
+                                        propertyBookings.sort((a, b) => new Date(a.arrival_date) - new Date(b.arrival_date)).map(booking => (
+                                            <TouchableOpacity
+                                                key={booking.id}
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    backgroundColor: 'white',
+                                                    padding: 12,
+                                                    borderRadius: 12,
+                                                    marginBottom: 8,
+                                                    marginLeft: 28,
+                                                    borderLeftWidth: 4,
+                                                    borderLeftColor: booking.submission_status === 'sent' ? '#10b981' : '#f59e0b',
+                                                    shadowColor: "#000",
+                                                    shadowOffset: { width: 0, height: 1 },
+                                                    shadowOpacity: 0.05,
+                                                    shadowRadius: 2,
+                                                    elevation: 2
+                                                }}
+                                                onPress={() => setSelectedGuest(booking)}
+                                            >
+                                                <View style={{ flex: 1 }}>
+                                                    <Text style={{ fontWeight: '600', color: '#1e293b' }}>{booking.first_name} {booking.last_name}</Text>
+                                                    <Text style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+                                                        {formatDate(booking.arrival_date)} → {formatDate(booking.departure_date)}
+                                                    </Text>
+                                                </View>
+                                                <View style={{
+                                                    paddingHorizontal: 8,
+                                                    paddingVertical: 4,
+                                                    borderRadius: 6,
+                                                    backgroundColor: booking.submission_status === 'sent' ? '#ecfdf5' : '#fffbeb',
+                                                    justifyContent: 'center'
+                                                }}>
+                                                    <Text style={{
+                                                        fontSize: 10,
+                                                        fontWeight: '700',
+                                                        color: booking.submission_status === 'sent' ? '#059669' : '#d97706'
+                                                    }}>
+                                                        {t(`status.${booking.submission_status || 'pending'}`).toUpperCase()}
+                                                    </Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        ))
+                                    )}
+                                </View>
+                            );
+                        })
+                    )}
+                </ScrollView>
+            </View>
+        );
+    };
+
     const renderGuestsList = () => (
         <View style={styles.containerLight}>
             {renderHeader(t('nav.guests'))}
@@ -615,6 +834,7 @@ export default function CameraScreen({ onLogout }) {
                             {currentScreen === 'overview' && renderDashboard()}
                             {currentScreen === 'new_guest' && renderNewGuest()}
                             {currentScreen === 'guests' && renderGuestsList()}
+                            {currentScreen === 'calendar' && renderCalendar()}
                         </>
                     ) : (
                         renderGuestDetails()
@@ -926,5 +1146,22 @@ const styles = StyleSheet.create({
     primaryButton: { backgroundColor: '#2563eb', paddingVertical: 16, borderRadius: 12, alignItems: 'center' },
     primaryButtonText: { color: '#ffffff', fontWeight: '600', fontSize: 16 },
     secondaryButton: { backgroundColor: '#fff', paddingVertical: 16, borderRadius: 12, alignItems: 'center', borderWidth: 1, borderColor: '#cbd5e1' },
-    secondaryButtonText: { color: '#64748b', fontWeight: '600', fontSize: 16 }
+    secondaryButtonText: { color: '#64748b', fontWeight: '600', fontSize: 16 },
+
+    // Document Type Picker
+    pickerContainer: { flexDirection: 'row', gap: 12 },
+    pickerButton: { flex: 1, paddingVertical: 12, paddingHorizontal: 16, borderRadius: 12, borderWidth: 1, borderColor: '#cbd5e1', backgroundColor: '#ffffff', alignItems: 'center' },
+    pickerButtonActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
+    pickerButtonText: { fontSize: 14, fontWeight: '600', color: '#64748b' },
+    pickerButtonTextActive: { color: '#ffffff' },
+
+    // Property Selector
+    propertyOption: { paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, marginBottom: 8, backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0' },
+    propertyOptionActive: { backgroundColor: '#eff6ff', borderColor: '#2563eb' },
+    radioButton: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#cbd5e1', marginRight: 12, justifyContent: 'center', alignItems: 'center' },
+    radioButtonActive: { borderColor: '#2563eb' },
+    radioButtonInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#2563eb' },
+    propertyName: { fontSize: 14, fontWeight: '600', color: '#0f172a' },
+    propertyNameActive: { color: '#2563eb' },
+    propertyType: { fontSize: 12, color: '#64748b', marginTop: 2 }
 });

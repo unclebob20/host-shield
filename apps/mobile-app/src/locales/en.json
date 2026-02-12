@@ -17,6 +17,7 @@
         "overview": "Overview",
         "new_guest": "New Guest",
         "guests": "Guests",
+        "calendar": "Calendar",
         "ledger": "Ledger",
         "logout": "Logout"
     },
@@ -56,6 +57,11 @@
         "dob": "Date of Birth",
         "arrival": "Arrival",
         "departure": "Departure",
+        "doc_type": "Document Type",
+        "passport": "Passport",
+        "id_card": "ID Card",
+        "property": "Property",
+        "no_properties": "No properties found",
         "select_date": "Select Date",
         "select_date_range": "Select Date Range"
     },

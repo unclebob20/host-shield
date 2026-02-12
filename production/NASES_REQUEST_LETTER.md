@@ -5,7 +5,7 @@
 
 ---
 
-**Predmet**: Žiadosť o prístup k produkčnému API ÚPVS - Aplikácia HostShield
+**Predmet**: Žiadosť o prístup k produkčnému API ÚPVS - [HSHLD] HostShield
 
 Vážený tým podpory NASES,
 
@@ -36,7 +36,7 @@ HostShield
 
 ## English Version (for reference)
 
-**Subject**: Request for UPVS Production API Access - HostShield Application
+**Subject**: Request for UPVS Production API Access - [HSHLD] HostShield
 
 Dear NASES Support Team,
 
