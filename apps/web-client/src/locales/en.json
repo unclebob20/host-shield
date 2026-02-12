@@ -15,6 +15,21 @@
         "download": "Download App",
         "help": "Help"
     },
+    "download_page": {
+        "title": "Download App",
+        "subtitle": "Get the HostShield mobile app for Android to manage guests on the go.",
+        "android_app": "Android App",
+        "version_info": "Version 1.0.0 • APK File",
+        "scan_to_download": "Scan to Download",
+        "download_apk": "Download APK",
+        "instructions_title": "Installation Instructions",
+        "step_1": "Download the APK file to your Android device.",
+        "step_2": "Open the downloaded file from your notifications or file manager.",
+        "step_3": "If prompted, allow installation from Unknown Sources in your settings.",
+        "step_4": "Tap Install and open the app.",
+        "security_note_title": "Security Note",
+        "security_note_desc": "Since this app is distributed directly (not via Play Store), your phone may warn you about installing from unknown sources. This is normal for direct downloads."
+    },
     "profile": {
         "title": "Settings",
         "subtitle": "Manage your profile and government API credentials",
