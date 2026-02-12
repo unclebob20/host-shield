@@ -264,6 +264,7 @@ export default function CameraScreen({ onLogout }) {
     const [guestList, setGuestList] = useState([]);
     const [selectedGuest, setSelectedGuest] = useState(null);
     const [properties, setProperties] = useState([]);
+    const [viewDate, setViewDate] = useState(new Date());
 
     // Helper to shorten ISO dates
 
@@ -659,8 +660,6 @@ export default function CameraScreen({ onLogout }) {
     };
 
     const renderCalendar = () => {
-        const [viewDate, setViewDate] = useState(new Date());
-
         const changeMonth = (offset) => {
             const d = new Date(viewDate);
             d.setMonth(d.getMonth() + offset);
