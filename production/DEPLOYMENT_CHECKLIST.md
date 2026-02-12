@@ -90,9 +90,10 @@ docker logs hostshield_gov_api_prod --tail 50 | grep -i "template\|form\|error"
 
 ### Contact NASES
 
-**Email**: podpora@nases.gov.sk
+**Email**: integracie@nases.gov.sk
+**CC**: prevadzka@nases.gov.sk
 
-**Subject**: Request for UPVS Production API Access - HostShield Application
+**Subject**: Request for UPVS Production API Access - [HSHLD] HostShield
 
 **Message Template**:
 ```
