@@ -11,6 +11,7 @@ import Calendar from './pages/Calendar';
 import Properties from './pages/Properties';
 import Profile from './pages/Profile';
 import Help from './pages/Help';
+import Download from './pages/Download';
 import Layout from './components/Layout';
 import MarketingLayout from './components/marketing/MarketingLayout';
 import Home from './pages/marketing/Home';
@@ -163,6 +164,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Properties />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/download"
+            element={
+              <ProtectedRoute>
+                <Download />
               </ProtectedRoute>
             }
           />
