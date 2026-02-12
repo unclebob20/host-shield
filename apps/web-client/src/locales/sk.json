@@ -15,6 +15,21 @@
         "download": "Stiahnuť aplikáciu",
         "help": "Pomoc"
     },
+    "download_page": {
+        "title": "Stiahnuť aplikáciu",
+        "subtitle": "Získajte mobilnú aplikáciu HostShield pre Android a spravujte hostí na cestách.",
+        "android_app": "Android Aplikácia",
+        "version_info": "Verzia 1.0.0 • APK Súbor",
+        "scan_to_download": "Naskenujte pre stiahnutie",
+        "download_apk": "Stiahnuť APK",
+        "instructions_title": "Inštrukcie na inštaláciu",
+        "step_1": "Stiahnite si APK súbor do vášho Android zariadenia.",
+        "step_2": "Otvorte stiahnutý súbor z notifikácií alebo správcu súborov.",
+        "step_3": "Ak budete vyzvaní, povoľte inštaláciu z Neznámych zdrojov v nastaveniach.",
+        "step_4": "Kliknite na Inštalovať a otvorte aplikáciu.",
+        "security_note_title": "Bezpečnostná poznámka",
+        "security_note_desc": "Keďže je táto aplikácia distribuovaná priamo (nie cez Play Store), váš telefón vás môže varovať pred inštaláciou z neznámych zdrojov. Pri priamom sťahovaní je to normálne."
+    },
     "profile": {
         "title": "Nastavenia",
         "subtitle": "Spravujte svoj profil a prístupové údaje k vládnemu API",
