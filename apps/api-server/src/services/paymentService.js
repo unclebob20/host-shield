@@ -7,11 +7,14 @@ function getStripeKey() {
     const rawKey = process.env.STRIPE_SECRET_KEY;
     if (!rawKey) return null;
 
-    if (rawKey.startsWith('enc:')) {
+    // Trim whitespace that might cause issues
+    const trimmedKey = rawKey.trim();
+
+    if (trimmedKey.startsWith('enc:')) {
         try {
             // Format: enc:iv:authTag:encryptedData
-            const parts = rawKey.split(':');
-            if (parts.length !== 4) return rawKey;
+            const parts = trimmedKey.split(':');
+            if (parts.length !== 4) return trimmedKey;
 
             const iv = parts[1];
             const authTag = parts[2];
@@ -22,13 +25,20 @@ function getStripeKey() {
                 Buffer.from(iv, 'hex'),
                 Buffer.from(authTag, 'hex')
             );
-            return decrypted.toString('utf8');
+            return decrypted.toString('utf8').trim();
         } catch (e) {
             console.error('Failed to decrypt STRIPE_SECRET_KEY:', e);
             return null;
         }
     }
-    return rawKey;
+
+    // Validate that the key looks like a Stripe key
+    if (!trimmedKey.startsWith('sk_test_') && !trimmedKey.startsWith('sk_live_')) {
+        console.error('Invalid Stripe key format. Key should start with sk_test_ or sk_live_');
+        return null;
+    }
+
+    return trimmedKey;
 }
 
 // Initialize Stripe lazily
