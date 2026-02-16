@@ -13,7 +13,7 @@ const SubscriptionManagement = () => {
     // This should ideally come from an environment variable or config
     // In a real app, you might fetch available plans from the backend
     const STRIPE_PRICE_IDS = {
-        professional: 'price_1QjXXXXXX', // Replace with real ID
+        professional: 'price_1Sx4txJNSFu4njaQWHAD9uUr', // Replace with real ID
         business: 'price_1QjYYYYYY'    // Replace with real ID
     };
 
