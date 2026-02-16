@@ -73,6 +73,12 @@ services:
       - BRIDGE_PRIVATE_KEY_PATH=/app/security/gov_fake_private.key
       # Where we save the normalized keystores for the Bridge
       - GOV_KEYSTORE_DIR=/app/security/hosts
+      # Payment (Stripe)
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - CLIENT_URL=${CLIENT_URL}
+      # Authentication
+      - JWT_SECRET=${JWT_SECRET}
     volumes:
       # Remove :ro so we can WRITE the normalized keystores
       - ./security:/app/security
