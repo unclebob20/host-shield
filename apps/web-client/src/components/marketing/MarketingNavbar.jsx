@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 
-const MarketingNavbar = () => {
+const MarketingNavbar = ({ topOffset = 0 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { t, i18n } = useTranslation();
     const { user } = useAuth();
@@ -23,7 +23,7 @@ const MarketingNavbar = () => {
     };
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 glass">
+        <nav className="fixed left-0 right-0 z-50 glass" style={{ top: `${topOffset}px` }}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
                     {/* Logo */}
