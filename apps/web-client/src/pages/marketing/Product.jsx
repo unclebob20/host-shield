@@ -297,7 +297,7 @@ const Product = () => {
                                         <Euro className="w-5 h-5 flex-shrink-0 mt-1" />
                                         <div>
                                             <p className="font-semibold">
-                                                {t('marketing.product.roi_hostshield_cost') || '€29/month flat rate'}
+                                                {t('marketing.product.roi_hostshield_cost') || '€15/month flat rate'}
                                             </p>
                                             <p className="text-sm text-white/80">
                                                 {t('marketing.product.roi_hostshield_cost_desc') || 'Unlimited guests, no hidden fees'}
@@ -320,10 +320,10 @@ const Product = () => {
 
                                 <div className="pt-6 border-t border-white/20">
                                     <p className="text-3xl font-bold">
-                                        €29<span className="text-lg font-normal text-white/80">/month</span>
+                                        €15<span className="text-lg font-normal text-white/80">/month</span>
                                     </p>
                                     <p className="text-sm text-white/90 mt-1 font-medium">
-                                        {t('marketing.product.roi_hostshield_total') || 'Save €120-270/month + peace of mind'}
+                                        {t('marketing.product.roi_hostshield_total') || 'Save €78–285/month + compliance peace of mind'}
                                     </p>
                                 </div>
                             </div>
@@ -341,6 +341,19 @@ const Product = () => {
                             </p>
                         </div>
 
+                        {/* Time context strip */}
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 text-sm">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-full">
+                                <span className="text-red-500 font-bold">✗</span>
+                                <span className="text-red-700 font-medium">Manual check-in: ~7 min per guest</span>
+                            </div>
+                            <span className="text-slate-400 font-bold text-lg hidden sm:block">→</span>
+                            <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full">
+                                <span className="text-green-500 font-bold">✓</span>
+                                <span className="text-green-700 font-medium">HostShield: ~30 sec per guest</span>
+                            </div>
+                        </div>
+
                         <div className="grid md:grid-cols-3 gap-8">
                             {/* 50 Guests/Month */}
                             <div className="text-center p-6 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200">
@@ -351,11 +364,16 @@ const Product = () => {
                                 <p className="text-sm text-slate-600 mb-4">
                                     {t('marketing.product.roi_calc_guests_month') || 'guests/month'}
                                 </p>
-                                <div className="pt-4 border-t border-blue-200">
-                                    <p className="text-2xl font-bold text-green-600 mb-1">€121</p>
-                                    <p className="text-xs text-slate-600">
-                                        {t('marketing.product.roi_calc_saved') || 'saved per month'}
-                                    </p>
+                                <div className="pt-4 border-t border-blue-200 space-y-3">
+                                    <div>
+                                        <p className="text-2xl font-bold text-green-600 mb-0.5">€78</p>
+                                        <p className="text-xs text-slate-500">{t('marketing.product.roi_calc_saved') || 'saved per month'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center gap-1.5 bg-blue-100 rounded-lg py-2 px-3">
+                                        <span className="text-blue-600 text-lg">⏱</span>
+                                        <p className="text-sm font-bold text-blue-700">~6 hrs</p>
+                                        <p className="text-xs text-blue-600">saved / month</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -371,11 +389,16 @@ const Product = () => {
                                 <p className="text-sm text-slate-600 mb-4">
                                     {t('marketing.product.roi_calc_guests_month') || 'guests/month'}
                                 </p>
-                                <div className="pt-4 border-t border-green-200">
-                                    <p className="text-2xl font-bold text-green-600 mb-1">€271</p>
-                                    <p className="text-xs text-slate-600">
-                                        {t('marketing.product.roi_calc_saved') || 'saved per month'}
-                                    </p>
+                                <div className="pt-4 border-t border-green-200 space-y-3">
+                                    <div>
+                                        <p className="text-2xl font-bold text-green-600 mb-0.5">€142</p>
+                                        <p className="text-xs text-slate-500">{t('marketing.product.roi_calc_saved') || 'saved per month'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center gap-1.5 bg-green-100 rounded-lg py-2 px-3">
+                                        <span className="text-green-600 text-lg">⏱</span>
+                                        <p className="text-sm font-bold text-green-700">~12 hrs</p>
+                                        <p className="text-xs text-green-600">saved / month</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -388,11 +411,16 @@ const Product = () => {
                                 <p className="text-sm text-slate-600 mb-4">
                                     {t('marketing.product.roi_calc_guests_month') || 'guests/month'}
                                 </p>
-                                <div className="pt-4 border-t border-purple-200">
-                                    <p className="text-2xl font-bold text-green-600 mb-1">€571</p>
-                                    <p className="text-xs text-slate-600">
-                                        {t('marketing.product.roi_calc_saved') || 'saved per month'}
-                                    </p>
+                                <div className="pt-4 border-t border-purple-200 space-y-3">
+                                    <div>
+                                        <p className="text-2xl font-bold text-green-600 mb-0.5">€285</p>
+                                        <p className="text-xs text-slate-500">{t('marketing.product.roi_calc_saved') || 'saved per month'}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center gap-1.5 bg-purple-100 rounded-lg py-2 px-3">
+                                        <span className="text-purple-600 text-lg">⏱</span>
+                                        <p className="text-sm font-bold text-purple-700">~23 hrs</p>
+                                        <p className="text-xs text-purple-600">saved / month</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

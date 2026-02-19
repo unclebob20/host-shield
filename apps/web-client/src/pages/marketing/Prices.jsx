@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -61,6 +61,49 @@ const Prices = () => {
                     <p className="text-xl text-slate-600">
                         {t('marketing.prices.subtitle')}
                     </p>
+                </div>
+
+                {/* Risk Comparison Box */}
+                <div className="max-w-6xl mx-auto mb-12">
+                    <div className="bg-gradient-to-br from-slate-900 to-red-950 rounded-3xl p-8 border border-red-800/30 shadow-2xl">
+                        <div className="flex items-center gap-2 mb-6">
+                            <AlertTriangle className="w-5 h-5 text-red-400" />
+                            <h2 className="text-white font-bold text-lg">
+                                {t('marketing.prices.risk_box_title')}
+                            </h2>
+                            <span className="ml-auto text-xs text-red-300 border border-red-400/30 px-2 py-0.5 rounded-full font-medium">
+                                {t('marketing.prices.risk_box_deadline')}
+                            </span>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* Fine column */}
+                            <div className="bg-red-500/10 border border-red-400/20 rounded-2xl p-6 text-center">
+                                <p className="text-red-300 text-sm font-semibold uppercase tracking-widest mb-3">
+                                    {t('marketing.prices.risk_box_fine_label')}
+                                </p>
+                                <p className="text-5xl font-extrabold text-red-400 mb-2">
+                                    {t('marketing.prices.risk_box_fine_value')}
+                                </p>
+                                <p className="text-slate-400 text-xs">per violation · EU Reg. 2024/1028</p>
+                            </div>
+                            {/* Service column */}
+                            <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-2xl p-6 text-center flex flex-col justify-center">
+                                <div className="flex items-center justify-center gap-2 mb-3">
+                                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                                    <p className="text-emerald-300 text-sm font-semibold uppercase tracking-widest">
+                                        {t('marketing.prices.risk_box_service_label')}
+                                    </p>
+                                </div>
+                                <p className="text-5xl font-extrabold text-emerald-400 mb-2">
+                                    {t('marketing.prices.risk_box_service_value')}
+                                </p>
+                                <p className="text-slate-400 text-xs">full compliance · unlimited guests</p>
+                            </div>
+                        </div>
+                        <p className="text-slate-300 text-center mt-6 text-sm font-medium leading-relaxed">
+                            {t('marketing.prices.risk_box_verdict')}
+                        </p>
+                    </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">

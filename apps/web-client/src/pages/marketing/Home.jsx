@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Scan, FileText, Smartphone, CheckCircle, ChevronDown } from 'lucide-react';
+import { Shield, Scan, FileText, Smartphone, CheckCircle, ChevronDown, AlertTriangle, ChevronUp, Euro, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Home = () => {
     const { t } = useTranslation();
+    const [faqOpen, setFaqOpen] = useState(null);
+
+    const faqs = [
+        { q: t('marketing.home.faq_1_q'), a: t('marketing.home.faq_1_a') },
+        { q: t('marketing.home.faq_2_q'), a: t('marketing.home.faq_2_a') },
+        { q: t('marketing.home.faq_3_q'), a: t('marketing.home.faq_3_a') },
+    ];
 
     return (
         <div className="overflow-hidden">
@@ -92,9 +99,90 @@ const Home = () => {
                 </div>
             </section>
 
+            {/* EU Regulation Urgency Section */}
+            <section className="py-24 relative overflow-hidden">
+                {/* Lighter warm background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-rose-50 to-orange-50 pointer-events-none" />
+                {/* Decorative blobs */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-rose-200/40 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-orange-200/40 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Badge */}
+                    <div className="flex justify-center mb-6">
+                        <span className="inline-flex items-center gap-2 bg-rose-100 border border-rose-300 text-rose-700 text-sm font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide">
+                            <AlertTriangle className="w-4 h-4" />
+                            {t('marketing.home.urgency_section_badge')}
+                        </span>
+                    </div>
+
+                    {/* Section title */}
+                    <h2 className="text-3xl md:text-5xl font-bold text-slate-800 text-center mb-16 font-display max-w-4xl mx-auto leading-tight">
+                        {t('marketing.home.urgency_section_title')}
+                    </h2>
+
+                    {/* Two-column urgency cards */}
+                    <div className="grid md:grid-cols-2 gap-8 mb-16">
+                        {/* Card 1: Fine risk */}
+                        <div className="bg-white border border-rose-200 rounded-3xl p-8 shadow-lg hover:shadow-rose-100 hover:shadow-xl transition-shadow">
+                            <div className="flex items-center gap-3 mb-5">
+                                <div className="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center">
+                                    <Euro className="w-6 h-6 text-rose-500" />
+                                </div>
+                                <div>
+                                    <p className="text-rose-500 text-xs font-bold uppercase tracking-widest">DAC7 Directive</p>
+                                </div>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 mb-4">
+                                {t('marketing.home.urgency_fine_title')}
+                            </h3>
+                            <p className="text-slate-600 leading-relaxed text-sm">
+                                {t('marketing.home.urgency_fine_body')}
+                            </p>
+                        </div>
+
+                        {/* Card 2: Deadline */}
+                        <div className="bg-white border border-orange-200 rounded-3xl p-8 shadow-lg hover:shadow-orange-100 hover:shadow-xl transition-shadow">
+                            <div className="flex items-center gap-3 mb-5">
+                                <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center">
+                                    <Clock className="w-6 h-6 text-orange-500" />
+                                </div>
+                                <div>
+                                    <p className="text-orange-500 text-xs font-bold uppercase tracking-widest">
+                                        EU Regulation 2024/1028
+                                    </p>
+                                </div>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 mb-4">
+                                {t('marketing.home.urgency_deadline_title')}
+                            </h3>
+                            <p className="text-slate-600 leading-relaxed text-sm">
+                                {t('marketing.home.urgency_deadline_body')}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Countdown / CTA banner */}
+                    <div className="bg-gradient-to-r from-rose-500 to-orange-500 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-rose-200">
+                        <div className="text-center md:text-left">
+                            <p className="text-rose-100 text-sm font-semibold uppercase tracking-widest mb-1">
+                                {t('marketing.home.urgency_time_left')}
+                            </p>
+                            <p className="text-white text-2xl font-bold">May 20, 2026 · EU Regulation 2024/1028</p>
+                        </div>
+                        <Link
+                            to="/register"
+                            className="flex-shrink-0 px-8 py-4 bg-white text-rose-600 font-bold text-lg rounded-full hover:bg-rose-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                        >
+                            {t('marketing.home.urgency_cta')} →
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
             {/* Mobile Optimization Section */}
-            <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-900/20 to-transparent pointer-events-none"></div>
+            <section className="py-24 bg-gradient-to-br from-indigo-900 to-slate-800 text-white overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-600/10 to-transparent pointer-events-none"></div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-16">
                     <div className="md:w-1/2">
                         <h2 className="text-3xl md:text-4xl font-bold mb-6 font-display">{t('marketing.home.mobile_title')}</h2>
@@ -103,9 +191,9 @@ const Home = () => {
                         </p>
                         <ul className="space-y-4">
                             {[
-                                t('marketing.home.mobile_list_1'),
                                 t('marketing.home.mobile_list_2'),
-                                t('marketing.home.mobile_list_3')
+                                t('marketing.home.mobile_list_3'),
+                                'Available for Android'
                             ].map((item) => (
                                 <li key={item} className="flex items-center gap-3 text-slate-200">
                                     <CheckCircle className="w-5 h-5 text-teal-400" />
@@ -120,6 +208,41 @@ const Home = () => {
                             <Smartphone className="w-24 h-24 text-slate-600" />
                             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-blue-600/20 to-transparent"></div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-24 bg-white">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-12 font-display">
+                        {t('marketing.home.faq_section_title')}
+                    </h2>
+                    <div className="space-y-4">
+                        {faqs.map((faq, i) => (
+                            <div
+                                key={i}
+                                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${faqOpen === i ? 'border-blue-300 shadow-md shadow-blue-100' : 'border-slate-200'}`}
+                            >
+                                <button
+                                    onClick={() => setFaqOpen(faqOpen === i ? null : i)}
+                                    className="w-full text-left flex items-center justify-between gap-4 p-6"
+                                >
+                                    <span className={`font-semibold text-base leading-snug ${faqOpen === i ? 'text-blue-700' : 'text-slate-800'}`}>
+                                        {faq.q}
+                                    </span>
+                                    {faqOpen === i
+                                        ? <ChevronUp className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                                        : <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                                    }
+                                </button>
+                                {faqOpen === i && (
+                                    <div className="px-6 pb-6 text-slate-600 leading-relaxed text-sm border-t border-blue-100 pt-4">
+                                        {faq.a}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
