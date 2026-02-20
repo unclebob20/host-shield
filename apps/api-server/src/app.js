@@ -11,6 +11,7 @@ const ocrRoutes = require('./routes/ocrRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
 const credentialsRoutes = require('./routes/credentials');
 const paymentRoutes = require('./routes/paymentRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +47,8 @@ app.use('/api/properties', propertyRoutes);
 app.use('/api/hosts', credentialsRoutes);
 // Payment routes
 app.use('/api/payments', paymentRoutes);
+// Admin routes
+app.use('/api/admin', adminRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {

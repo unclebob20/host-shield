@@ -62,6 +62,12 @@ This guide is based on the official [NASES Integration Process](https://www.nase
 *   **How**: Log into the [ÚPVS FIX Portal](https://schranka.upvsfixnew.gov.sk/) using a test FO identity.
 *   **Path**: `My Profile (Môj profil) -> Technical Accounts and Certificates (Technické účty a certifikáty)`.
 *   **Purpose**: This allows your system to call ÚPVS services on behalf of the identity.
+*   ✅ **REGISTERED (FIX):**
+    *   **Technical Account Name**: `T5000015401`
+    *   **Certificate Subject (CN)**: `CN=rc-8810100155`
+    *   **Certificate SHA-256 Fingerprint**: `BE726840F19334DF834C8B03467953F1AB093E4E01518F2CBD9CAA3C137180BD`
+    *   **Certificate files**: `security/hostshield_iam_v2.crt` (PEM), `security/hostshield_iam_v2.cer` (DER), `security/hostshield_iam_v2.key` (private key)
+    *   **Default PFP/account password**: `Poprad@Ta3` (change on first login)
 
 ### 4. Service Provider Metadata (SP)
 *   **Action**: Register Service Provider metadata for SAML authentication.
@@ -72,7 +78,9 @@ This guide is based on the official [NASES Integration Process](https://www.nase
 ## Phase 2: Formal Integration Agreement (DIZ)
 
 1.  **Drafting DIZ**: Document the scope and method of integration.
-2.  **Templates**: Download the appropriate template from [NASES GitHub](https://github.com/NASES-Slovakia/integration_templates/tree/main/01-DIZ-Dohoda%20o%20integra%C4%8Dnom%20z%C3%A1mere).
+2.  **Templates**: Download the DIZ template from the **[Partner Framework Portal (PFP)](https://pfp.slovensko.sk/)**.
+    *   ⚠️ The old GitHub link (`NASES-Slovakia/integration_templates`) is **dead (404)**. Templates moved to PFP.
+    *   **PFP Registration** (required first): Submit the [PFP access request form](https://schranka.slovensko.sk/FormConstructor/Default.aspx?IdService=508090) on behalf of your PO/company via slovensko.sk. Access is granted by email.
 3.  **Submission**:
     *   **Adresat**: `integracie@nases.gov.sk`
     *   **Subject**: `[HSHLD] - FIX - DIZ - Žiadosť - Revízia dohody o integračnom zámere`
@@ -83,7 +91,8 @@ This guide is based on the official [NASES Integration Process](https://www.nase
 ## Phase 3: Testing & Acceptance (UAT)
 
 1.  **Execution**: Perform tests as described in your DIZ Agreement. These are done by you (the consumer) without NASES participation.
-2.  **UAT Protocol**: Complete the protocol using templates from [NASES GitHub](https://github.com/NASES-Slovakia/integration_templates/tree/main/02-UAT-Protokol%20o%20vykonan%C3%AD%20testov).
+2.  **UAT Protocol**: Complete the protocol using the UAT template from the **[Partner Framework Portal (PFP)](https://pfp.slovensko.sk/)**.
+    *   ⚠️ The old GitHub link is **dead (404)**. Templates are now on PFP (requires same registration as DIZ — see Phase 2).
 3.  **Submission**:
     *   **Adresat**: `integracie@nases.gov.sk`
     *   **Subject**: `[HSHLD] - FIX - UAT - Žiadosť - Revízia UAT protokolu`
