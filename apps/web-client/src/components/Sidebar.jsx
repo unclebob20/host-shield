@@ -1,13 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Users, FileText, Settings, LogOut, X, PlusCircle, Calendar, Building, ExternalLink, HelpCircle, Smartphone } from 'lucide-react';
+import { Home, Users, FileText, Settings, LogOut, X, PlusCircle, Calendar, Building, ExternalLink, HelpCircle, Smartphone, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
 
 import { useTranslation } from 'react-i18next';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const { t, i18n } = useTranslation();
 
     const navItems = [
@@ -87,6 +87,17 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     </nav>
 
                     <div className="pt-4 border-t border-white/10 space-y-2">
+                        {/* Admin Panel Link (only for admins) */}
+                        {user?.is_admin && (
+                            <NavLink
+                                to="/admin"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center px-4 py-3.5 text-sm font-medium text-violet-600 rounded-xl hover:bg-violet-50 hover:text-violet-800 transition-all duration-200 group"
+                            >
+                                <ShieldAlert className="w-5 h-5 mr-3 text-violet-400 group-hover:text-violet-600 transition-colors" />
+                                Admin Panel
+                            </NavLink>
+                        )}
                         {/* Public Site Link */}
                         <NavLink
                             to="/"

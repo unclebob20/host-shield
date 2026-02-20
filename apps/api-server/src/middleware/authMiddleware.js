@@ -39,7 +39,7 @@ async function requireAuth(req, res, next) {
 
         // Fetch host from database to ensure they still exist
         const { rows } = await query(
-            'SELECT id, email, full_name, police_provider_id FROM hosts WHERE id = $1',
+            'SELECT id, email, full_name, police_provider_id, is_admin FROM hosts WHERE id = $1',
             [decoded.hostId]
         );
 
@@ -77,7 +77,7 @@ async function optionalAuth(req, res, next) {
 
         if (decoded.type === 'access') {
             const { rows } = await query(
-                'SELECT id, email, full_name, police_provider_id FROM hosts WHERE id = $1',
+                'SELECT id, email, full_name, police_provider_id, is_admin FROM hosts WHERE id = $1',
                 [decoded.hostId]
             );
             if (rows.length > 0) {

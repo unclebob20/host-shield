@@ -18,6 +18,11 @@ import Home from './pages/marketing/Home';
 import Product from './pages/marketing/Product';
 import Prices from './pages/marketing/Prices';
 import Contact from './pages/marketing/Contact';
+import AdminRoute from './components/AdminRoute';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminOverview from './pages/admin/AdminOverview';
+import AdminHosts from './pages/admin/AdminHosts';
+import AdminHostDetail from './pages/admin/AdminHostDetail';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = ({ children }) => {
@@ -189,6 +194,38 @@ function App() {
               <ProtectedRoute>
                 <Help />
               </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminOverview />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/hosts"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminHosts />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/hosts/:id"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminHostDetail />
+                </AdminLayout>
+              </AdminRoute>
             }
           />
         </Routes>
