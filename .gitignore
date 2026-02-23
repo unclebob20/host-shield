@@ -28,3 +28,4 @@ samples/
 .vscode/
 .idea/
 docs/
+agent_prompt.txt
